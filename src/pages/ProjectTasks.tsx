@@ -18,7 +18,8 @@ export default function ProjectTasks({ project }: Props) {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const selectedTask = selectedTaskId ? tasks.find((t) => t.id === selectedTaskId) ?? null : null;
   const [showNewTaskModal, setShowNewTaskModal] = useState(false);
 
   const projectTasks = tasks
@@ -110,7 +111,7 @@ export default function ProjectTasks({ project }: Props) {
                   <tr
                     key={task.id}
                     className="hover:bg-gray-50 transition-colors cursor-pointer"
-                    onClick={() => setSelectedTask(task)}
+                    onClick={() => setSelectedTaskId(task.id)}
                   >
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
@@ -207,7 +208,7 @@ export default function ProjectTasks({ project }: Props) {
         task={selectedTask}
         projectId={project.id}
         isOpen={!!selectedTask}
-        onClose={() => setSelectedTask(null)}
+        onClose={() => setSelectedTaskId(null)}
       />
 
       {/* New Task Modal */}

@@ -139,7 +139,8 @@ function SortableTaskCard({ task, onClick }: { task: Task; onClick: () => void }
 export default function ProjectKanban({ project }: Props) {
   const { tasks, moveTask } = useAppStore();
   const [activeTask, setActiveTask] = useState<Task | null>(null);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const selectedTask = selectedTaskId ? tasks.find((t) => t.id === selectedTaskId) ?? null : null;
   const [showNewTaskModal, setShowNewTaskModal] = useState(false);
 
   const sensors = useSensors(
@@ -238,7 +239,7 @@ export default function ProjectKanban({ project }: Props) {
                       <SortableTaskCard
                         key={task.id}
                         task={task}
-                        onClick={() => setSelectedTask(task)}
+                        onClick={() => setSelectedTaskId(task.id)}
                       />
                     ))}
                     {columnTasks.length === 0 && (
@@ -265,7 +266,7 @@ export default function ProjectKanban({ project }: Props) {
         task={selectedTask}
         projectId={project.id}
         isOpen={!!selectedTask}
-        onClose={() => setSelectedTask(null)}
+        onClose={() => setSelectedTaskId(null)}
       />
 
       {/* New Task Modal */}

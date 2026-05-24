@@ -11,7 +11,8 @@ export default function MyTasks() {
   const { tasks, projects, currentUser, updateTask } = useAppStore();
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const selectedTask = selectedTaskId ? tasks.find((t) => t.id === selectedTaskId) ?? null : null;
 
   const myTasks = tasks
     .filter((t) => t.assigneeId === currentUser.id)
@@ -84,7 +85,7 @@ export default function MyTasks() {
                     return (
                       <div
                         key={task.id}
-                        onClick={() => setSelectedTask(task)}
+                        onClick={() => setSelectedTaskId(task.id)}
                         className="flex items-center gap-4 bg-white rounded-xl px-5 py-3.5 shadow-sm border border-gray-100 hover:shadow-md hover:border-indigo-200 cursor-pointer transition-all"
                       >
                         <input
@@ -135,7 +136,7 @@ export default function MyTasks() {
           task={selectedTask}
           projectId={selectedTask.projectId}
           isOpen={!!selectedTask}
-          onClose={() => setSelectedTask(null)}
+          onClose={() => setSelectedTaskId(null)}
         />
       )}
     </div>

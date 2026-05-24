@@ -137,7 +137,8 @@ export default function TaskModal({ task, projectId, isOpen, onClose }: TaskModa
     setForm({ ...form, tags: form.tags.filter((t) => t !== tag) });
   };
 
-  const assignee = users.find((u) => u.id === task?.assigneeId || u.id === form.assigneeId);
+  const assigneeId = isEditing ? form.assigneeId : task?.assigneeId;
+  const assignee = users.find((u) => u.id === assigneeId);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
