@@ -756,7 +756,11 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
 
 <!-- KDS FULL SCREEN -->
 <div id="kds-screen" style="display:none;position:fixed;inset:0;background:#0a0f14;z-index:800;flex-direction:column">
-  <div style="background:#111820;border-bottom:2px solid var(--amber);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+  <!-- Sound unlock banner -->
+  <div id="kds-sound-banner" onclick="unlockKDSSound()" style="background:rgba(210,153,34,.15);border-bottom:1px solid rgba(210,153,34,.4);padding:8px 20px;text-align:center;cursor:pointer;font-size:12px;font-weight:700;color:var(--amber);display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0">
+    🔔 Tap here to enable order notification sounds
+  </div>
+  <div style="background:#111820;border-bottom:2px solid var(--amber);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0" id="kds-header">
     <div style="display:flex;align-items:center;gap:12px">
       <div style="font-size:20px;font-weight:900;color:var(--amber)">👨‍🍳 Kitchen Display</div>
       <div style="background:rgba(210,153,34,.15);border:1px solid rgba(210,153,34,.3);border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;color:var(--amber)" id="kds-count">0 orders</div>
@@ -5197,10 +5201,34 @@ let _kdsClockInterval=null;
 
 // ── KITCHEN SOUND & ALERT ────────────────────────────────────────────────────
 let _audioCtx=null;
+let _audioUnlocked=false;
 function _getAudioCtx(){
   if(!_audioCtx) _audioCtx=new(window.AudioContext||window.webkitAudioContext)();
   if(_audioCtx.state==='suspended') _audioCtx.resume();
   return _audioCtx;
+}
+function unlockKDSSound(){
+  try{
+    const ctx=_getAudioCtx();
+    // Play a silent buffer to unlock
+    const buf=ctx.createBuffer(1,1,22050);
+    const src=ctx.createBufferSource();
+    src.buffer=buf;src.connect(ctx.destination);src.start(0);
+    _audioUnlocked=true;
+    const banner=document.getElementById('kds-sound-banner');
+    if(banner){
+      banner.style.background='rgba(0,165,80,.15)';
+      banner.style.borderColor='rgba(0,165,80,.3)';
+      banner.style.color='var(--accent2)';
+      banner.innerHTML='✅ Sound enabled — you will hear alerts for new orders';
+      setTimeout(()=>{banner.style.display='none';},2500);
+    }
+    // Play test beep to confirm
+    setTimeout(playKitchenSound,100);
+  }catch(e){
+    const banner=document.getElementById('kds-sound-banner');
+    if(banner) banner.textContent='❌ Sound not supported on this device';
+  }
 }
 function playKitchenSound(){
   try{
@@ -5238,10 +5266,9 @@ function startKDS(){
   document.getElementById('app').style.display='none';
   document.getElementById('kds-screen').style.display='flex';
   renderKDS();
-  // Unlock audio context on first user interaction (browser requirement)
-  document.getElementById('kds-screen').addEventListener('click',()=>{
-    try{_getAudioCtx();}catch(e){}
-  },{once:true});
+  // Show sound banner — user must tap it to unlock audio
+  const banner=document.getElementById('kds-sound-banner');
+  if(banner){banner.style.display='flex';_audioUnlocked=false;}
   // Auto-refresh every 20 seconds
   _kdsInterval=setInterval(async()=>{
     await loadOrders();
