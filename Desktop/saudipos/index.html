@@ -3037,7 +3037,20 @@ function numpadPress(v){
   sbUpdateTendered();
 }
 
+let _paymentInProgress=false;
 async function confirmPayment(){
+  if(_paymentInProgress) return;
+  _paymentInProgress=true;
+  const btn=document.getElementById('confirm-pay-btn');
+  if(btn){btn.disabled=true;btn.textContent='⏳ Processing…';}
+  try{
+    await _doConfirmPayment();
+  }finally{
+    _paymentInProgress=false;
+    if(btn){btn.disabled=false;btn.innerHTML='✅ Settle Bill';}
+  }
+}
+async function _doConfirmPayment(){
   const{sub,vatAmt,discAmt,total}=getTotal();
   const cur=_settings.currency||'SAR';
   // Validate
