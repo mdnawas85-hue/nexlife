@@ -5233,19 +5233,22 @@ function unlockKDSSound(){
 function playKitchenSound(){
   try{
     const ctx=_getAudioCtx();
-    // Urgent double-ding: two quick high tones
-    [[880,0],[880,.18],[660,.36]].forEach(([freq,delay])=>{
-      const osc=ctx.createOscillator();
-      const gain=ctx.createGain();
-      osc.connect(gain);gain.connect(ctx.destination);
-      osc.type='square';
-      osc.frequency.value=freq;
-      gain.gain.setValueAtTime(0,ctx.currentTime+delay);
-      gain.gain.linearRampToValueAtTime(.3,ctx.currentTime+delay+.01);
-      gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+delay+.25);
-      osc.start(ctx.currentTime+delay);
-      osc.stop(ctx.currentTime+delay+.3);
-    });
+    const doPlay=()=>{
+      [[880,0],[880,.18],[660,.36]].forEach(([freq,delay])=>{
+        const osc=ctx.createOscillator();
+        const gain=ctx.createGain();
+        osc.connect(gain);gain.connect(ctx.destination);
+        osc.type='square';
+        osc.frequency.value=freq;
+        gain.gain.setValueAtTime(0,ctx.currentTime+delay);
+        gain.gain.linearRampToValueAtTime(.3,ctx.currentTime+delay+.01);
+        gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+delay+.25);
+        osc.start(ctx.currentTime+delay);
+        osc.stop(ctx.currentTime+delay+.3);
+      });
+    };
+    if(ctx.state==='running'){doPlay();}
+    else{ctx.resume().then(doPlay).catch(()=>{});}
   }catch(e){}
 }
 function flashKDSAlert(orderNum){
@@ -5613,6 +5616,16 @@ async function loadAuditLogs(){
     }).join('');
   }catch(e){el.innerHTML=`<div style="color:var(--muted);text-align:center;padding:20px">Run the SQL below to enable audit logs</div>`;}
 }
+
+// Unlock AudioContext on first user interaction (any tap/click anywhere)
+document.addEventListener('click',function _unlockAudio(){
+  try{_getAudioCtx();}catch(e){}
+  document.removeEventListener('click',_unlockAudio);
+},{capture:true,once:true});
+document.addEventListener('touchstart',function _unlockAudioTouch(){
+  try{_getAudioCtx();}catch(e){}
+  document.removeEventListener('touchstart',_unlockAudioTouch);
+},{capture:true,once:true,passive:true});
 
 window.addEventListener('DOMContentLoaded',async()=>{
   // ── Special display modes: skip auth entirely ──
