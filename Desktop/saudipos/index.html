@@ -2273,6 +2273,9 @@ function subscribeKitchenRealtime(){
         _orders.unshift(newOrder);
         renderKitchen();
         renderKDS();
+        // Sound + flash for kitchen/KDS screens
+        playKitchenSound();
+        flashKDSAlert(newOrder.order_num);
         if(document.getElementById('kds-screen')?.style.display==='flex'){
           showToast(`🔔 New order #${String(newOrder.order_num).padStart(3,'0')} arrived!`);
         }
@@ -3090,7 +3093,7 @@ async function confirmPayment(){
   // Award loyalty points
   await awardLoyaltyPoints(order);
   // Send to kitchen if restaurant
-  if(_mode==='restaurant') renderKitchen();
+  if(_mode==='restaurant'){renderKitchen();playKitchenSound();flashKDSAlert(order.order_num);}
 }
 
 // ── RECEIPT ───────────────────────────────────────────────────────────────────
@@ -5192,10 +5195,53 @@ function switchRole(){
 let _kdsInterval=null;
 let _kdsClockInterval=null;
 
+// ── KITCHEN SOUND & ALERT ────────────────────────────────────────────────────
+let _audioCtx=null;
+function _getAudioCtx(){
+  if(!_audioCtx) _audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(_audioCtx.state==='suspended') _audioCtx.resume();
+  return _audioCtx;
+}
+function playKitchenSound(){
+  try{
+    const ctx=_getAudioCtx();
+    // Urgent double-ding: two quick high tones
+    [[880,0],[880,.18],[660,.36]].forEach(([freq,delay])=>{
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.type='square';
+      osc.frequency.value=freq;
+      gain.gain.setValueAtTime(0,ctx.currentTime+delay);
+      gain.gain.linearRampToValueAtTime(.3,ctx.currentTime+delay+.01);
+      gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+delay+.25);
+      osc.start(ctx.currentTime+delay);
+      osc.stop(ctx.currentTime+delay+.3);
+    });
+  }catch(e){}
+}
+function flashKDSAlert(orderNum){
+  // Flash the KDS header green briefly
+  const hdr=document.getElementById('kds-header');
+  if(!hdr) return;
+  const orig=hdr.style.background;
+  hdr.style.transition='background .1s';
+  hdr.style.background='rgba(0,200,80,.35)';
+  setTimeout(()=>{hdr.style.background='rgba(0,200,80,.35)';},100);
+  setTimeout(()=>{hdr.style.background=orig||'';},700);
+  // Also flash twice
+  setTimeout(()=>{hdr.style.background='rgba(0,200,80,.35)';},900);
+  setTimeout(()=>{hdr.style.background=orig||'';},1400);
+}
+
 function startKDS(){
   document.getElementById('app').style.display='none';
   document.getElementById('kds-screen').style.display='flex';
   renderKDS();
+  // Unlock audio context on first user interaction (browser requirement)
+  document.getElementById('kds-screen').addEventListener('click',()=>{
+    try{_getAudioCtx();}catch(e){}
+  },{once:true});
   // Auto-refresh every 20 seconds
   _kdsInterval=setInterval(async()=>{
     await loadOrders();
