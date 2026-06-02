@@ -2500,29 +2500,21 @@ async function confirmPushMenu(){
   if(!checked.length){showToast('Select at least one branch',true);return;}
   const btn=document.querySelector('#push-menu-modal .btn-primary');
   if(btn){btn.disabled=true;btn.textContent='⏳ Pushing...';}
-  let ok=0,fail=0,lastErr='';
+  // Store pushed menu in businesses.settings.branch_menus — avoids RLS issues
+  const branch_menus=_settings.branch_menus||{};
   for(const targetId of checked){
-    // Delete existing
-    await sb.from('products').delete().eq('biz_id',targetId);
-    await sb.from('categories').delete().eq('biz_id',targetId);
-    // Copy categories — strip id so DB generates new ones
-    if(_cats.length){
-      const newCats=_cats.map(c=>{const{id,...rest}=c;return{...rest,biz_id:targetId};});
-      const{error:ce}=await sb.from('categories').insert(newCats);
-      if(ce){fail++;lastErr=ce.message;continue;}
-    }
-    // Copy products — strip id so DB generates new ones
-    if(_products.length){
-      const newProds=_products.map(p=>{const{id,...rest}=p;return{...rest,biz_id:targetId};});
-      const{error:pe}=await sb.from('products').insert(newProds);
-      if(pe){fail++;lastErr=pe.message;continue;}
-    }
-    ok++;
+    branch_menus[targetId]={
+      cats:_cats,
+      products:_products,
+      pushed_at:new Date().toISOString()
+    };
   }
+  _settings.branch_menus=branch_menus;
+  const{error}=await sb.from('businesses').update({settings:{..._settings}}).eq('id',_businessId);
   closePushMenuModal();
   if(btn){btn.disabled=false;btn.textContent='🔄 Push Menu';}
-  if(ok>0) showToast(`✅ Menu pushed to ${ok} branch${ok>1?'es':''}!`+(fail?` (${fail} failed: ${lastErr})`:''));
-  else showToast('Push failed: '+lastErr,true);
+  if(error) showToast('Push failed: '+error.message,true);
+  else showToast(`✅ Menu pushed to ${checked.length} branch${checked.length>1?'es':''}!`);
 }
 
 // ── LOAD ALL DATA ─────────────────────────────────────────────────────────────
@@ -2581,6 +2573,9 @@ function subscribeKitchenRealtime(){
 }
 async function loadCats(){
   if(!_bizId){_cats=defaultCats();return;}
+  // Check if this branch has a pushed menu in settings
+  const branchMenu=_settings.branch_menus?.[_bizId];
+  if(branchMenu?.cats?.length&&_bizId!==_businessId){_cats=branchMenu.cats;return;}
   const{data}=await sb.from('categories').select('*').eq('biz_id',_bizId).order('sort_order');
   if(data?.length){_cats=data;return;}
   // No categories in DB yet — save defaults so products get real cat UUIDs
@@ -2590,6 +2585,9 @@ async function loadCats(){
 }
 async function loadProducts(){
   if(!_bizId){_products=[];return;}
+  // Check if this branch has a pushed menu in settings
+  const branchMenu=_settings.branch_menus?.[_bizId];
+  if(branchMenu?.products?.length&&_bizId!==_businessId){_products=branchMenu.products;updateBranchIndicator();return;}
   const{data}=await sb.from('products').select('*').eq('biz_id',_bizId).order('sort_order');
   _products=data||[];
   updateBranchIndicator();
