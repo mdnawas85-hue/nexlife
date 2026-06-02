@@ -4754,9 +4754,10 @@ function togglePromosView(){
   const typeLabels={pct:'% Discount',amt:'Fixed Amount Off',bogo:'Buy 1 Get 1 Free',happy:'Happy Hour',buyxget1:'Buy X Get 1 Free'};
   const typeIcons={pct:'🏷',amt:'💰',bogo:'🎁',happy:'⏰',buyxget1:'🎁'};
   const cur=_settings.currency||'SAR';
-  const backBtn=`<div style="grid-column:1/-1;margin-bottom:4px"><button onclick="closePromosView()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">← Back to Menu</button></div>`;
+  const isManager=_role==='manager';
+  const backBtn=`<div style="grid-column:1/-1;margin-bottom:4px;display:flex;align-items:center;gap:8px"><button onclick="closePromosView()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">← Back to Menu</button>${isManager?`<button onclick="closePromosView();openPromoModal()" style="background:rgba(88,166,255,.15);border:1.5px solid rgba(88,166,255,.4);color:#58a6ff;border-radius:10px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">＋ Add Promo</button>`:''}</div>`;
   if(!active.length){
-    grid.innerHTML=backBtn+'<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)"><div style="font-size:40px;margin-bottom:10px">🎯</div><div style="font-size:14px;font-weight:600">No active promotions</div><div style="font-size:12px;margin-top:6px">Add promotions in the Promos tab</div></div>';
+    grid.innerHTML=backBtn+'<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)"><div style="font-size:40px;margin-bottom:10px">🎯</div><div style="font-size:14px;font-weight:600">No active promotions</div><div style="font-size:12px;margin-top:6px">'+(isManager?'Click <strong>+ Add Promo</strong> above to create one':'Ask your manager to add promotions')+'</div></div>';
   } else {
     grid.innerHTML=backBtn+active.map(p=>{
       const icon=typeIcons[p.type]||'🎯';
