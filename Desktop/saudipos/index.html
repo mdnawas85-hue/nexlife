@@ -2254,6 +2254,8 @@ async function loadAll(){
   await loadShift();
   setInterval(updateShiftBtn,60000);
   subscribeKitchenRealtime();
+  loadCartState();
+  if(_cart.length){renderCart();updateOrderNum();renderTableBadge();}
 }
 
 // ── REALTIME: sync kitchen_status across all open windows/devices ─────────────
@@ -2689,7 +2691,22 @@ function changeQty(productId,delta){
   else renderCart();
 }
 
+function saveCartState(){
+  try{localStorage.setItem('spos_cart',JSON.stringify({cart:_cart,orderType:_orderType,orderNum:_orderNum,tableNum:_tableNum}));}catch(e){}
+}
+function loadCartState(){
+  try{
+    const s=JSON.parse(localStorage.getItem('spos_cart')||'null');
+    if(s&&Array.isArray(s.cart)&&s.cart.length){
+      _cart=s.cart;
+      if(s.orderType) _orderType=s.orderType;
+      if(s.orderNum) _orderNum=s.orderNum;
+      if(s.tableNum) _tableNum=s.tableNum;
+    }
+  }catch(e){}
+}
 function renderCart(){
+  saveCartState();
   const el=document.getElementById('cart-items');
   if(!_cart.length){
     el.innerHTML=`<div class="cart-empty"><div class="cart-empty-icon">🛒</div><div style="font-size:13px;font-weight:600">${tr('cart-empty')}</div><div style="font-size:11px;color:var(--muted)">${tr('cart-empty-sub')}</div></div>`;
@@ -2938,9 +2955,15 @@ function initMobileLayout(){
 window.addEventListener('resize',initMobileLayout);
 
 function discardOrder(){
-  _cart=[];_discount={type:'pct',value:0};_tableNum=null;
+  _cart=[];_discount={type:'pct',value:0};_tableNum=null;_appliedPromo=null;
+  try{localStorage.removeItem('spos_cart');}catch(e){}
   _orderNum++;
   clearCustomer();
+  // Clear promo badge
+  const badge=document.getElementById('promo-badge');
+  if(badge) badge.style.display='none';
+  const btn=document.getElementById('btn-promos');
+  if(btn){btn.style.background='';btn.style.color='';}
   renderCart();updateOrderNum();renderTableBadge();
   // Reset display to idle
   if(_cdChannel||_cdOpen){
