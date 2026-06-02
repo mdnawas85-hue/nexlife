@@ -2499,11 +2499,11 @@ async function confirmPushMenu(){
   for(const targetId of checked){
     // Delete existing
     await sb.from('products').delete().eq('biz_id',targetId);
-    await sb.from('cats').delete().eq('biz_id',targetId);
-    // Copy cats — strip id so DB generates new ones
+    await sb.from('categories').delete().eq('biz_id',targetId);
+    // Copy categories — strip id so DB generates new ones
     if(_cats.length){
       const newCats=_cats.map(c=>{const{id,...rest}=c;return{...rest,biz_id:targetId};});
-      const{error:ce}=await sb.from('cats').insert(newCats);
+      const{error:ce}=await sb.from('categories').insert(newCats);
       if(ce){fail++;lastErr=ce.message;continue;}
     }
     // Copy products — strip id so DB generates new ones
