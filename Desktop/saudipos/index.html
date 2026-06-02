@@ -2723,8 +2723,9 @@ function updateTotals(){
   const vatAmt=sub*vatRate;
   // Recalculate BOGO discount dynamically based on current cart
   if(_appliedPromo&&_appliedPromo.type==='bogo'){
+    const totalQty=_cart.reduce((s,i)=>s+i.qty,0);
     const prices=_cart.map(i=>i.price);
-    _discount={type:'amt',value:prices.length>0?Math.min(...prices):0};
+    _discount={type:'amt',value:totalQty>=2&&prices.length>0?Math.min(...prices):0};
   }
   // Recalculate buyxget1 discount dynamically
   if(_appliedPromo&&_appliedPromo.type==='buyxget1'){
@@ -2763,8 +2764,9 @@ function getTotal(){
   let disc=_discount;
   // Recalculate BOGO discount dynamically based on current cart
   if(_appliedPromo&&_appliedPromo.type==='bogo'){
+    const totalQty=_cart.reduce((s,i)=>s+i.qty,0);
     const prices=_cart.map(i=>i.price);
-    disc={type:'amt',value:prices.length>0?Math.min(...prices):0};
+    disc={type:'amt',value:totalQty>=2&&prices.length>0?Math.min(...prices):0};
   }
   // Recalculate buyxget1 discount dynamically
   if(_appliedPromo&&_appliedPromo.type==='buyxget1'){
@@ -4865,6 +4867,13 @@ function applyPromoToCart(id){
   } else if(p.type==='amt'){
     _discount={type:'amt',value:+p.value||0};
   } else if(p.type==='bogo'){
+    // Require at least 2 items in cart
+    const totalQty=_cart.reduce((s,i)=>s+i.qty,0);
+    if(totalQty<2){
+      showToast('Add at least 2 items to use Buy 1 Get 1',true);
+      _appliedPromo=null;
+      return;
+    }
     // Add linked item to cart if configured
     if(p.item_id){
       addToCart(p.item_id);
