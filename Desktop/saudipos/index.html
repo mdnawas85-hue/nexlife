@@ -2291,17 +2291,8 @@ async function onSignedIn(user){
     _mode=biz.type||'restaurant';
     _settings={..._settings,...(biz.settings||{})};
   }
-  // Load branches
-  let branches=[];
-  try{
-    const{data:branchData,error:branchErr}=await sb.from('branches').select('*').eq('business_id',_businessId).eq('is_active',true);
-    if(branchErr&&(branchErr.message?.includes('relation')||branchErr.message?.includes('does not exist'))){
-      branches=[];
-    } else {
-      branches=branchData||[];
-    }
-  }catch(e){branches=[];}
-  _branches=branches;
+  // Load branches from businesses.settings.branches (no extra table needed)
+  _branches=(biz?.settings?.branches||[]).filter(b=>b.is_active!==false);
   // Set user UI
   const meta=user.user_metadata||{};
   document.getElementById('user-avatar').textContent=(meta.biz_name||user.email||'?').charAt(0).toUpperCase();
@@ -2405,51 +2396,46 @@ function closeAddBranchModal(){
   document.getElementById('add-branch-modal').style.display='none';
 }
 
+async function _saveBranchesToDB(){
+  // Save _branches array into businesses.settings.branches
+  const allBranches=[..._branches,...(_settings.branches||[]).filter(b=>!_branches.find(x=>x.id===b.id))];
+  _settings.branches=_branches;
+  await sb.from('businesses').update({settings:{..._settings,branches:_branches}}).eq('id',_businessId);
+}
+
 async function saveBranch(){
   const name=document.getElementById('branch-name-input').value.trim();
   if(!name){showToast('Branch name is required',true);return;}
   const addr=document.getElementById('branch-addr-input').value.trim();
   const phone=document.getElementById('branch-phone-input').value.trim();
-  const{data,error}=await sb.from('branches').insert({
-    business_id:_businessId,name,
-    ...(addr&&{address:addr}),
-    ...(phone&&{phone}),
-    is_active:true
-  }).select().single();
-  if(error){showToast('Error: '+error.message,true);return;}
-  _branches.push(data);
+  const branch={id:'br-'+Date.now(),name,address:addr||null,phone:phone||null,is_active:true,created_at:new Date().toISOString()};
+  _branches.push(branch);
+  await _saveBranchesToDB();
   closeAddBranchModal();
   showToast('Branch added!');
   showBranchScreen();
   renderBranchesSettings();
 }
 
-// From settings panel
 async function addBranchFromSettings(){
   const name=document.getElementById('set-branch-name').value.trim();
   if(!name){showToast('Branch name is required',true);return;}
   const addr=document.getElementById('set-branch-addr').value.trim();
   const phone=document.getElementById('set-branch-phone').value.trim();
-  const{data,error}=await sb.from('branches').insert({
-    business_id:_businessId,name,
-    ...(addr&&{address:addr}),
-    ...(phone&&{phone}),
-    is_active:true
-  }).select().single();
-  if(error){showToast('Error: '+error.message,true);return;}
-  _branches.push(data);
+  const branch={id:'br-'+Date.now(),name,address:addr||null,phone:phone||null,is_active:true,created_at:new Date().toISOString()};
+  _branches.push(branch);
+  await _saveBranchesToDB();
   document.getElementById('set-branch-name').value='';
   document.getElementById('set-branch-addr').value='';
   document.getElementById('set-branch-phone').value='';
-  showToast('Branch added!');
+  showToast('Branch added! ✅');
   renderBranchesSettings();
   updateBranchIndicator();
 }
 
 async function toggleBranchActive(branchId,current){
-  await sb.from('branches').update({is_active:!current}).eq('id',branchId);
   const br=_branches.find(b=>b.id===branchId);
-  if(br) br.is_active=!current;
+  if(br){br.is_active=!current;await _saveBranchesToDB();}
   renderBranchesSettings();
 }
 
