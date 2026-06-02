@@ -2342,9 +2342,9 @@ function updateBranchIndicator(){
   // Show/hide switch branch button on role screen
   const sw=document.getElementById('switch-branch-wrap');
   if(sw) sw.style.display=_branches.length>1?'block':'none';
-  // Show/hide push menu button
+  // Show push menu button only when this branch has products AND there are other branches
   const pb=document.getElementById('push-menu-btn');
-  if(pb) pb.style.display=_branches.length>1?'inline-flex':'none';
+  if(pb) pb.style.display=(_branches.length>1&&_products.length>0)?'inline-flex':'none';
 }
 
 async function selectBranch(branch, skipScreen=false){
@@ -2580,6 +2580,7 @@ async function loadProducts(){
   if(!_bizId){_products=[];return;}
   const{data}=await sb.from('products').select('*').eq('biz_id',_bizId).order('sort_order');
   _products=data||[];
+  updateBranchIndicator();
 }
 async function loadOrders(){
   if(!_bizId){_orders=[];return;}
