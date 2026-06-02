@@ -2293,11 +2293,16 @@ async function onSignedIn(user){
   }
   // Load branches from businesses.settings.branches (no extra table needed)
   _branches=(biz?.settings?.branches||[]).filter(b=>b.is_active!==false);
-  // Auto-fix: if first branch has a wrong ID (not the businessId), correct it and save
+  // Auto-fix: if first branch has a wrong ID (not the businessId), correct it
+  // Auto-fix: any branch with non-UUID id (br-TIMESTAMP) gets a proper UUID
+  let needsSave=false;
   if(_branches.length>0&&_branches[0].id!==_businessId&&_branches[0].id.startsWith('br-')){
-    _branches[0].id=_businessId;
-    await sb.from('businesses').update({settings:{...(biz.settings||{}),branches:_branches}}).eq('id',_businessId);
+    _branches[0].id=_businessId;needsSave=true;
   }
+  for(let i=1;i<_branches.length;i++){
+    if(_branches[i].id.startsWith('br-')){_branches[i].id=crypto.randomUUID();needsSave=true;}
+  }
+  if(needsSave) await sb.from('businesses').update({settings:{...(biz.settings||{}),branches:_branches}}).eq('id',_businessId);
   // Set user UI
   const meta=user.user_metadata||{};
   document.getElementById('user-avatar').textContent=(meta.biz_name||user.email||'?').charAt(0).toUpperCase();
@@ -2414,7 +2419,7 @@ async function saveBranch(){
   const addr=document.getElementById('branch-addr-input').value.trim();
   const phone=document.getElementById('branch-phone-input').value.trim();
   // First branch always uses the original businessId so existing data is inherited
-  const branchId=_branches.length===0?_businessId:('br-'+Date.now());
+  const branchId=_branches.length===0?_businessId:(crypto.randomUUID());
   const branch={id:branchId,name,address:addr||null,phone:phone||null,is_active:true,created_at:new Date().toISOString()};
   _branches.push(branch);
   await _saveBranchesToDB();
@@ -2430,7 +2435,7 @@ async function addBranchFromSettings(){
   const addr=document.getElementById('set-branch-addr').value.trim();
   const phone=document.getElementById('set-branch-phone').value.trim();
   // First branch always uses the original businessId so existing data is inherited
-  const branchId=_branches.length===0?_businessId:('br-'+Date.now());
+  const branchId=_branches.length===0?_businessId:(crypto.randomUUID());
   const branch={id:branchId,name,address:addr||null,phone:phone||null,is_active:true,created_at:new Date().toISOString()};
   _branches.push(branch);
   await _saveBranchesToDB();
