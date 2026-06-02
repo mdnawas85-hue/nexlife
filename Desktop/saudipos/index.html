@@ -2493,24 +2493,31 @@ function closePushMenuModal(){
 async function confirmPushMenu(){
   const checked=[...document.querySelectorAll('#push-branch-list input[type=checkbox]:checked')].map(c=>c.value);
   if(!checked.length){showToast('Select at least one branch',true);return;}
-  showToast('Pushing menu...');
-  let ok=0,fail=0;
+  const btn=document.querySelector('#push-menu-modal .btn-primary');
+  if(btn){btn.disabled=true;btn.textContent='⏳ Pushing...';}
+  let ok=0,fail=0,lastErr='';
   for(const targetId of checked){
-    try{
-      // Delete existing cats & products for target
-      await sb.from('products').delete().eq('biz_id',targetId);
-      await sb.from('cats').delete().eq('biz_id',targetId);
-      // Copy cats
-      const newCats=_cats.map(c=>({...c,id:undefined,biz_id:targetId}));
-      if(newCats.length) await sb.from('cats').insert(newCats);
-      // Copy products
-      const newProds=_products.map(p=>({...p,id:undefined,biz_id:targetId}));
-      if(newProds.length) await sb.from('products').insert(newProds);
-      ok++;
-    }catch(e){fail++;}
+    // Delete existing
+    await sb.from('products').delete().eq('biz_id',targetId);
+    await sb.from('cats').delete().eq('biz_id',targetId);
+    // Copy cats — strip id so DB generates new ones
+    if(_cats.length){
+      const newCats=_cats.map(c=>{const{id,...rest}=c;return{...rest,biz_id:targetId};});
+      const{error:ce}=await sb.from('cats').insert(newCats);
+      if(ce){fail++;lastErr=ce.message;continue;}
+    }
+    // Copy products — strip id so DB generates new ones
+    if(_products.length){
+      const newProds=_products.map(p=>{const{id,...rest}=p;return{...rest,biz_id:targetId};});
+      const{error:pe}=await sb.from('products').insert(newProds);
+      if(pe){fail++;lastErr=pe.message;continue;}
+    }
+    ok++;
   }
   closePushMenuModal();
-  showToast(ok>0?`Menu pushed to ${ok} branch${ok>1?'es':''}!`+(fail?` (${fail} failed)`:''):'Push failed',fail>0&&ok===0);
+  if(btn){btn.disabled=false;btn.textContent='🔄 Push Menu';}
+  if(ok>0) showToast(`✅ Menu pushed to ${ok} branch${ok>1?'es':''}!`+(fail?` (${fail} failed: ${lastErr})`:''));
+  else showToast('Push failed: '+lastErr,true);
 }
 
 // ── LOAD ALL DATA ─────────────────────────────────────────────────────────────
