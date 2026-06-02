@@ -708,7 +708,53 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
     <button onclick="showRoleCards()" style="width:100%;margin-top:10px;padding:10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:13px;cursor:pointer">← Back</button>
   </div>
 
+  <div id="switch-branch-wrap" style="display:none">
+    <button onclick="showBranchScreen()" style="background:none;border:none;color:var(--accent2);font-size:12px;cursor:pointer">🏪 Switch Branch</button>
+  </div>
   <button onclick="doLogout()" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;margin-top:4px">⎋ Logout</button>
+</div>
+
+<!-- BRANCH PICKER SCREEN -->
+<div id="branch-screen" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:860;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:20px">
+  <div style="text-align:center">
+    <div style="font-size:30px;font-weight:900">Saudi<span style="color:var(--accent2)">POS</span></div>
+    <div style="font-size:15px;font-weight:700;margin-top:6px" id="branch-biz-title">Select Branch</div>
+    <div style="font-size:12px;color:var(--muted);margin-top:2px" id="branch-biz-sub">Choose a branch to continue</div>
+  </div>
+  <div id="branch-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;width:100%;max-width:700px"></div>
+  <div id="branch-add-btn-wrap" style="display:none">
+    <button onclick="openAddBranchModal()" class="btn btn-primary">+ Add Branch</button>
+  </div>
+  <button onclick="doLogout()" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;margin-top:4px">⎋ Logout</button>
+</div>
+
+<!-- ADD BRANCH MODAL -->
+<div id="add-branch-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1100;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border-radius:16px;padding:24px;width:100%;max-width:420px;border:1px solid var(--border)">
+    <div style="font-size:15px;font-weight:800;margin-bottom:16px">🏪 Add Branch</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <input class="form-input" id="branch-name-input" placeholder="Branch Name *" style="width:100%"/>
+      <input class="form-input" id="branch-addr-input" placeholder="Address" style="width:100%"/>
+      <input class="form-input" id="branch-phone-input" placeholder="Phone" style="width:100%"/>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-primary" onclick="saveBranch()" style="flex:1">Save Branch</button>
+      <button class="btn btn-secondary" onclick="closeAddBranchModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- PUSH MENU MODAL -->
+<div id="push-menu-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1100;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border-radius:16px;padding:24px;width:100%;max-width:460px;border:1px solid var(--border)">
+    <div style="font-size:15px;font-weight:800;margin-bottom:4px">🔄 Push Menu to Branch</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Select branches to copy the current menu to</div>
+    <div id="push-branch-list" style="display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto;margin-bottom:16px"></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" onclick="confirmPushMenu()" style="flex:1">🔄 Push Menu</button>
+      <button class="btn btn-secondary" onclick="closePushMenuModal()">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <!-- IT ADMIN PANEL -->
@@ -806,6 +852,7 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
         <div style="font-size:11px">
           <div style="font-weight:600;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="user-name">—</div>
           <div style="color:var(--muted);font-size:10px" id="user-role">Owner</div>
+          <div style="color:var(--accent2);font-size:10px;font-weight:600;display:none" id="branch-indicator"></div>
         </div>
         <button onclick="switchRole()" style="background:rgba(0,165,80,.12);border:1px solid rgba(0,165,80,.3);color:var(--accent2);font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;cursor:pointer;white-space:nowrap">⇄ Switch</button>
         <button onclick="doLogout()" style="background:none;border:none;color:var(--muted);font-size:16px;padding:0 2px;cursor:pointer" title="Logout">⎋</button>
@@ -959,6 +1006,7 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
     <div class="screen-header">
       <span class="screen-title" data-i18n="menu-title">Menu Management</span>
       <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary" id="push-menu-btn" onclick="openPushMenuModal()" style="display:none">🔄 Push Menu to Branch</button>
         <button class="btn btn-secondary" onclick="openCatModal()">+ Category</button>
         <button class="btn btn-primary" onclick="openProductModal()">+ Product</button>
       </div>
@@ -1101,6 +1149,22 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
         <div class="settings-row">
           <div></div>
           <button class="btn btn-danger" onclick="doLogout()">Sign Out</button>
+        </div>
+      </div>
+      <!-- BRANCHES SECTION -->
+      <div class="settings-section" id="branches-settings-section">
+        <div class="settings-section-title">🏪 Branches</div>
+        <div id="branches-list-settings" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+          <div style="color:var(--muted);font-size:12px">Loading branches...</div>
+        </div>
+        <div style="border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:4px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:10px">Add New Branch</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <input class="form-input" id="set-branch-name" placeholder="Branch Name *" style="width:100%"/>
+            <input class="form-input" id="set-branch-addr" placeholder="Address" style="width:100%"/>
+            <input class="form-input" id="set-branch-phone" placeholder="Phone" style="width:100%"/>
+            <button class="btn btn-primary" onclick="addBranchFromSettings()" style="width:100%">+ Add Branch</button>
+          </div>
         </div>
       </div>
     </div>
@@ -2071,6 +2135,9 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 
 // ── STATE ────────────────────────────────────────────────────────────────────
 let _user=null,_profile=null,_bizId=null;
+let _businessId=null; // parent business id (never changes)
+let _branches=[]; // list of branches
+let _currentBranch=null; // selected branch object
 let _mode='restaurant'; // 'restaurant' | 'retail'
 let _lang='en';
 let _cats=[],_products=[],_orders=[],_tables=[];
@@ -2190,12 +2257,13 @@ async function doSignup(){
 async function doLogout(){
   sessionStorage.removeItem('posRole');
   await sb.auth.signOut();
-  _user=null;_profile=null;_bizId=null;
+  _user=null;_profile=null;_bizId=null;_businessId=null;_branches=[];_currentBranch=null;
   clearInterval(_kdsInterval);clearInterval(_kdsClockInterval);
   document.getElementById('app').style.display='none';
   document.getElementById('kds-screen').style.display='none';
   document.getElementById('role-screen').style.display='none';
   document.getElementById('admin-screen').style.display='none';
+  document.getElementById('branch-screen').style.display='none';
   document.getElementById('auth-screen').style.display='flex';
 }
 
@@ -2218,10 +2286,22 @@ async function onSignedIn(user){
     biz=newBiz;
   }
   if(biz){
-    _bizId=biz.id;
+    _businessId=biz.id;
+    _bizId=biz.id; // default; may be overridden by branch selection
     _mode=biz.type||'restaurant';
     _settings={..._settings,...(biz.settings||{})};
   }
+  // Load branches
+  let branches=[];
+  try{
+    const{data:branchData,error:branchErr}=await sb.from('branches').select('*').eq('business_id',_businessId).eq('is_active',true);
+    if(branchErr&&(branchErr.message?.includes('relation')||branchErr.message?.includes('does not exist'))){
+      branches=[];
+    } else {
+      branches=branchData||[];
+    }
+  }catch(e){branches=[];}
+  _branches=branches;
   // Set user UI
   const meta=user.user_metadata||{};
   document.getElementById('user-avatar').textContent=(meta.biz_name||user.email||'?').charAt(0).toUpperCase();
@@ -2236,15 +2316,206 @@ async function onSignedIn(user){
   document.getElementById('set-show-vat').checked=_settings.show_vat!==false;
   document.getElementById('set-admin-pin').value=_settings.admin_pin||'';
   applyMode();
+  document.getElementById('loading').style.display='none';
+  // Branch routing
+  if(_branches.length===0){
+    // No branches — backward compatible, use business id
+    _currentBranch=null;
+    updateBranchIndicator();
+    await loadAll();
+    const savedRole=sessionStorage.getItem('posRole');
+    if(savedRole){selectRole(savedRole);}else{showRoleScreen();}
+    renderPOS();
+  } else if(_branches.length===1){
+    // Auto-select single branch
+    await selectBranch(_branches[0],true);
+  } else {
+    // Show branch picker
+    showBranchScreen();
+  }
+}
+
+function updateBranchIndicator(){
+  const el=document.getElementById('branch-indicator');
+  if(_currentBranch){
+    el.textContent='📍 '+_currentBranch.name;
+    el.style.display='block';
+  } else {
+    el.style.display='none';
+  }
+  // Show/hide switch branch button on role screen
+  const sw=document.getElementById('switch-branch-wrap');
+  if(sw) sw.style.display=_branches.length>1?'block':'none';
+  // Show/hide push menu button
+  const pb=document.getElementById('push-menu-btn');
+  if(pb) pb.style.display=_branches.length>1?'inline-flex':'none';
+}
+
+async function selectBranch(branch, skipScreen=false){
+  _currentBranch=branch;
+  _bizId=branch.id;
+  updateBranchIndicator();
+  // Hide branch screen
+  document.getElementById('branch-screen').style.display='none';
+  document.getElementById('loading').style.display='flex';
+  document.getElementById('loading-text').textContent='Loading branch data...';
   await loadAll();
   document.getElementById('loading').style.display='none';
   const savedRole=sessionStorage.getItem('posRole');
-  if(savedRole){
-    selectRole(savedRole);
-  } else {
-    showRoleScreen();
-  }
+  if(savedRole){selectRole(savedRole);}else{showRoleScreen();}
   renderPOS();
+}
+
+function showBranchScreen(){
+  const meta=_user?.user_metadata||{};
+  const bizName=meta.biz_name||_user?.email?.split('@')[0]||'Business';
+  document.getElementById('branch-biz-title').textContent=bizName;
+  document.getElementById('branch-biz-sub').textContent='Select a branch to continue';
+  // Render branch cards
+  const container=document.getElementById('branch-cards');
+  container.innerHTML='';
+  _branches.forEach(b=>{
+    const card=document.createElement('div');
+    card.style.cssText='background:var(--bg2);border:2px solid rgba(0,165,80,.3);border-radius:16px;padding:20px 16px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:6px';
+    card.innerHTML=`<div style="font-size:22px">🏪</div>
+      <div style="font-size:14px;font-weight:800">${b.name}</div>
+      ${b.address?`<div style="font-size:11px;color:var(--muted)">${b.address}</div>`:''}
+      ${b.phone?`<div style="font-size:11px;color:var(--muted)">${b.phone}</div>`:''}
+      <div style="margin-top:4px"><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:rgba(0,165,80,.15);color:var(--accent2)">Active</span></div>`;
+    card.onmouseenter=()=>card.style.borderColor='var(--accent2)';
+    card.onmouseleave=()=>card.style.borderColor='rgba(0,165,80,.3)';
+    card.onclick=()=>selectBranch(b);
+    container.appendChild(card);
+  });
+  // Show add branch button only for owner (they have _businessId)
+  const addWrap=document.getElementById('branch-add-btn-wrap');
+  if(addWrap) addWrap.style.display=_businessId?'block':'none';
+  // Show branch screen
+  document.getElementById('role-screen').style.display='none';
+  document.getElementById('branch-screen').style.display='flex';
+}
+
+function openAddBranchModal(){
+  document.getElementById('branch-name-input').value='';
+  document.getElementById('branch-addr-input').value='';
+  document.getElementById('branch-phone-input').value='';
+  document.getElementById('add-branch-modal').style.display='flex';
+}
+function closeAddBranchModal(){
+  document.getElementById('add-branch-modal').style.display='none';
+}
+
+async function saveBranch(){
+  const name=document.getElementById('branch-name-input').value.trim();
+  if(!name){showToast('Branch name is required',true);return;}
+  const addr=document.getElementById('branch-addr-input').value.trim();
+  const phone=document.getElementById('branch-phone-input').value.trim();
+  const{data,error}=await sb.from('branches').insert({
+    business_id:_businessId,name,
+    ...(addr&&{address:addr}),
+    ...(phone&&{phone}),
+    is_active:true
+  }).select().single();
+  if(error){showToast('Error: '+error.message,true);return;}
+  _branches.push(data);
+  closeAddBranchModal();
+  showToast('Branch added!');
+  showBranchScreen();
+  renderBranchesSettings();
+}
+
+// From settings panel
+async function addBranchFromSettings(){
+  const name=document.getElementById('set-branch-name').value.trim();
+  if(!name){showToast('Branch name is required',true);return;}
+  const addr=document.getElementById('set-branch-addr').value.trim();
+  const phone=document.getElementById('set-branch-phone').value.trim();
+  const{data,error}=await sb.from('branches').insert({
+    business_id:_businessId,name,
+    ...(addr&&{address:addr}),
+    ...(phone&&{phone}),
+    is_active:true
+  }).select().single();
+  if(error){showToast('Error: '+error.message,true);return;}
+  _branches.push(data);
+  document.getElementById('set-branch-name').value='';
+  document.getElementById('set-branch-addr').value='';
+  document.getElementById('set-branch-phone').value='';
+  showToast('Branch added!');
+  renderBranchesSettings();
+  updateBranchIndicator();
+}
+
+async function toggleBranchActive(branchId,current){
+  await sb.from('branches').update({is_active:!current}).eq('id',branchId);
+  const br=_branches.find(b=>b.id===branchId);
+  if(br) br.is_active=!current;
+  renderBranchesSettings();
+}
+
+function renderBranchesSettings(){
+  const el=document.getElementById('branches-list-settings');
+  if(!el) return;
+  if(_branches.length===0){
+    el.innerHTML='<div style="color:var(--muted);font-size:12px">No branches yet. Add one below.</div>';
+    return;
+  }
+  el.innerHTML=_branches.map(b=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">
+      <div>
+        <div style="font-size:12px;font-weight:700">${b.name}${_currentBranch?.id===b.id?' <span style="font-size:10px;color:var(--accent2)">(current)</span>':''}</div>
+        ${b.address?`<div style="font-size:11px;color:var(--muted)">${b.address}</div>`:''}
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span style="font-size:10px;padding:2px 8px;border-radius:8px;${b.is_active?'background:rgba(0,165,80,.15);color:var(--accent2)':'background:rgba(248,81,73,.12);color:var(--red)'}">${b.is_active?'Active':'Inactive'}</span>
+        <button onclick="toggleBranchActive('${b.id}',${b.is_active})" class="btn btn-secondary" style="font-size:10px;padding:3px 8px">${b.is_active?'Disable':'Enable'}</button>
+      </div>
+    </div>`).join('');
+}
+
+// Push Menu
+function openPushMenuModal(){
+  const otherBranches=_branches.filter(b=>b.id!==_bizId&&b.is_active);
+  const list=document.getElementById('push-branch-list');
+  if(otherBranches.length===0){
+    list.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px">No other branches available.</div>';
+  } else {
+    list.innerHTML=otherBranches.map(b=>`
+      <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);cursor:pointer">
+        <input type="checkbox" value="${b.id}" style="width:16px;height:16px">
+        <div>
+          <div style="font-size:13px;font-weight:700">${b.name}</div>
+          ${b.address?`<div style="font-size:11px;color:var(--muted)">${b.address}</div>`:''}
+        </div>
+      </label>`).join('');
+  }
+  document.getElementById('push-menu-modal').style.display='flex';
+}
+function closePushMenuModal(){
+  document.getElementById('push-menu-modal').style.display='none';
+}
+
+async function confirmPushMenu(){
+  const checked=[...document.querySelectorAll('#push-branch-list input[type=checkbox]:checked')].map(c=>c.value);
+  if(!checked.length){showToast('Select at least one branch',true);return;}
+  showToast('Pushing menu...');
+  let ok=0,fail=0;
+  for(const targetId of checked){
+    try{
+      // Delete existing cats & products for target
+      await sb.from('products').delete().eq('biz_id',targetId);
+      await sb.from('cats').delete().eq('biz_id',targetId);
+      // Copy cats
+      const newCats=_cats.map(c=>({...c,id:undefined,biz_id:targetId}));
+      if(newCats.length) await sb.from('cats').insert(newCats);
+      // Copy products
+      const newProds=_products.map(p=>({...p,id:undefined,biz_id:targetId}));
+      if(newProds.length) await sb.from('products').insert(newProds);
+      ok++;
+    }catch(e){fail++;}
+  }
+  closePushMenuModal();
+  showToast(ok>0?`Menu pushed to ${ok} branch${ok>1?'es':''}!`+(fail?` (${fail} failed)`:''):'Push failed',fail>0&&ok===0);
 }
 
 // ── LOAD ALL DATA ─────────────────────────────────────────────────────────────
@@ -2396,6 +2667,7 @@ function setScreen(name){
   if(name==='staff') renderStaff();
   if(name==='promos') renderPromos();
   if(name==='devices'){loadDevices();renderDevices();}
+  if(name==='settings') renderBranchesSettings();
 }
 
 // ── POS ───────────────────────────────────────────────────────────────────────
