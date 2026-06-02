@@ -2319,6 +2319,11 @@ async function loadOrders(){
   if(!_bizId){_orders=[];return;}
   const{data}=await sb.from('orders').select('*').eq('biz_id',_bizId).order('created_at',{ascending:false}).limit(500);
   _orders=data||[];
+  // Always set _orderNum to max existing order_num + 1 to prevent duplicates after refresh
+  if(_orders.length){
+    const maxNum=Math.max(..._orders.map(o=>o.order_num||0));
+    if(maxNum>=_orderNum) _orderNum=maxNum+1;
+  }
 }
 async function loadTables(){
   if(!_bizId){_tables=defaultTables();return;}
@@ -2692,7 +2697,7 @@ function changeQty(productId,delta){
 }
 
 function saveCartState(){
-  try{localStorage.setItem('spos_cart',JSON.stringify({cart:_cart,orderType:_orderType,orderNum:_orderNum,tableNum:_tableNum}));}catch(e){}
+  try{localStorage.setItem('spos_cart',JSON.stringify({cart:_cart,orderType:_orderType,tableNum:_tableNum}));}catch(e){}
 }
 function loadCartState(){
   try{
@@ -2700,8 +2705,8 @@ function loadCartState(){
     if(s&&Array.isArray(s.cart)&&s.cart.length){
       _cart=s.cart;
       if(s.orderType) _orderType=s.orderType;
-      if(s.orderNum) _orderNum=s.orderNum;
       if(s.tableNum) _tableNum=s.tableNum;
+      // Do NOT restore orderNum — always derive from last order to avoid duplicates
     }
   }catch(e){}
 }
