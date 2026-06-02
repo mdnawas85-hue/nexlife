@@ -4532,8 +4532,7 @@ async function saveProduct(){
     is_combo:isCombo,combo_items:comboItems.length?comboItems:null,
     image_url:imageUrl
   };
-  // For branches with pushed menus, save to settings JSON instead of DB
-  const isBranchMenu=_bizId!==_businessId&&!!(_settings.branch_menus?.[_bizId]);
+  const isBranchMenu=_isBranchMode();
   if(_editProduct){
     Object.assign(_editProduct,product);
     if(_bizId&&!isBranchMenu){
@@ -4564,7 +4563,8 @@ async function deleteProduct(id){
   const p=_products.find(x=>x.id===id);
   confirmDelete({icon:'🍽',title:'Delete Product?',name:p?.name||'this product'},async()=>{
     _products=_products.filter(x=>x.id!==id);
-    if(_bizId) await sb.from('products').delete().eq('id',id);
+    if(!_isBranchMode()&&_bizId) await sb.from('products').delete().eq('id',id);
+    await _saveBranchMenuSnapshot();
     await auditLog('DELETE_PRODUCT',{name:p?.name,id});
     renderProductsList();renderProducts();showToast('Product deleted');
   });
@@ -4573,10 +4573,11 @@ async function toggleProduct(id,active){
   const p=_products.find(x=>x.id===id);
   if(!p) return;
   p.is_active=active;
-  if(_bizId){
+  if(!_isBranchMode()&&_bizId){
     const{error}=await sb.from('products').update({is_active:active}).eq('id',id);
     if(error){showToast('Save failed: '+error.message,true);p.is_active=!active;renderProductsList();return;}
   }
+  await _saveBranchMenuSnapshot();
   showToast(active?`${p.name} enabled`:`${p.name} hidden from POS`);
   renderProducts();
   renderProductsList();
@@ -4592,18 +4593,27 @@ function openCatModal(id){
   document.getElementById('cat-modal').style.display='flex';
 }
 function closeCatModal(){document.getElementById('cat-modal').style.display='none';}
+function _isBranchMode(){return _businessId&&_bizId!==_businessId;}
+async function _saveBranchMenuSnapshot(){
+  if(!_isBranchMode()) return;
+  const bm=_settings.branch_menus||{};
+  bm[_bizId]={...(bm[_bizId]||{}),cats:_cats,products:_products,pushed_at:new Date().toISOString()};
+  _settings.branch_menus=bm;
+  await sb.from('businesses').update({settings:{..._settings}}).eq('id',_businessId);
+}
 async function saveCat(){
   const name=document.getElementById('c-name').value.trim();
   if(!name){showToast('Category name required',true);return;}
   const cat={biz_id:_bizId,name,name_ar:document.getElementById('c-name-ar').value.trim(),emoji:document.getElementById('c-emoji').value||'📁',sort_order:_cats.length};
   if(_editingCat){
     Object.assign(_editingCat,cat);
-    if(_bizId) await sb.from('categories').update(cat).eq('id',_editingCat.id);
+    if(!_isBranchMode()&&_bizId) await sb.from('categories').update(cat).eq('id',_editingCat.id);
   } else {
-    if(_bizId){const{data}=await sb.from('categories').insert(cat).select().single();if(data)cat.id=data.id;}
-    else cat.id='cat-'+Date.now();
+    cat.id=crypto.randomUUID();
+    if(!_isBranchMode()&&_bizId){const{data}=await sb.from('categories').insert(cat).select().single();if(data)cat.id=data.id;}
     _cats.push(cat);
   }
+  await _saveBranchMenuSnapshot();
   closeCatModal();renderCatList();renderCatBar();
   showToast('Category saved');
 }
@@ -4611,7 +4621,8 @@ async function deleteCat(id){
   const c=_cats.find(x=>x.id===id);
   confirmDelete({icon:'📁',title:'Delete Category?',name:(c?.name||'this category'),warn:'Products in this category will become uncategorized.'},async()=>{
     _cats=_cats.filter(x=>x.id!==id);
-    if(_bizId) await sb.from('categories').delete().eq('id',id);
+    if(!_isBranchMode()&&_bizId) await sb.from('categories').delete().eq('id',id);
+    await _saveBranchMenuSnapshot();
     await auditLog('DELETE_CATEGORY',{name:c?.name,id});
     renderCatList();renderCatBar();showToast('Category deleted');
   });
