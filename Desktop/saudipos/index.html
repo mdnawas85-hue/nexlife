@@ -4488,19 +4488,29 @@ async function saveProduct(){
     is_combo:isCombo,combo_items:comboItems.length?comboItems:null,
     image_url:imageUrl
   };
+  // For branches with pushed menus, save to settings JSON instead of DB
+  const isBranchMenu=_bizId!==_businessId&&!!(_settings.branch_menus?.[_bizId]);
   if(_editProduct){
     Object.assign(_editProduct,product);
-    if(_bizId){
+    if(_bizId&&!isBranchMenu){
       const{error}=await sb.from('products').update(product).eq('id',_editProduct.id);
       if(error){showToast('Save failed: '+error.message,true);btn.disabled=false;btn.textContent='Save Product';return;}
     }
   } else {
-    if(_bizId){
+    product.id=crypto.randomUUID();
+    if(_bizId&&!isBranchMenu){
       const{data,error}=await sb.from('products').insert(product).select().single();
       if(error){showToast('Save failed: '+error.message,true);btn.disabled=false;btn.textContent='Save Product';return;}
       if(data) product.id=data.id;
-    } else {product.id='p-'+Date.now();}
+    }
     _products.push(product);
+  }
+  // Save to branch menu settings if on a branch
+  if(isBranchMenu){
+    const bm=_settings.branch_menus||{};
+    bm[_bizId]={...(bm[_bizId]||{}),cats:_cats,products:_products,pushed_at:new Date().toISOString()};
+    _settings.branch_menus=bm;
+    await sb.from('businesses').update({settings:{..._settings}}).eq('id',_businessId);
   }
   btn.disabled=false;btn.textContent='Save Product';
   closeProductModal();renderProductsList();renderProducts();
