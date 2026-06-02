@@ -678,6 +678,11 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
       <div style="font-size:13px;font-weight:800">Customer Display</div>
       <div style="font-size:10px;color:var(--muted);margin-top:3px">Customer-facing screen</div>
     </div>
+    <div id="rs-dashboard-card" onclick="openOwnerDashboard()" style="display:none;background:linear-gradient(135deg,rgba(88,166,255,.15),rgba(0,165,80,.1));border:2px solid rgba(88,166,255,.4);border-radius:16px;padding:22px 14px;text-align:center;cursor:pointer;transition:all .15s">
+      <div style="font-size:38px;margin-bottom:8px">📊</div>
+      <div style="font-size:13px;font-weight:800">Owner Dashboard</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:3px">All branches overview</div>
+    </div>
   </div>
 
   <!-- PIN pad (shown after selecting cashier/manager) -->
@@ -754,6 +759,35 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
       <button class="btn btn-primary" onclick="confirmPushMenu()" style="flex:1">🔄 Push Menu</button>
       <button class="btn btn-secondary" onclick="closePushMenuModal()">Cancel</button>
     </div>
+  </div>
+</div>
+
+<!-- OWNER DASHBOARD -->
+<div id="owner-dashboard" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:870;flex-direction:column;overflow:hidden">
+  <!-- Header -->
+  <div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:18px;font-weight:900">Saudi<span style="color:var(--accent2)">POS</span></span>
+      <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(88,166,255,.15);color:#58a6ff;border:1px solid rgba(88,166,255,.3)">📊 Owner Dashboard</span>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <select id="dash-range" onchange="loadDashboard()" style="padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px">
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month" selected>This Month</option>
+        <option value="all">All Time</option>
+      </select>
+      <button onclick="closeOwnerDashboard()" style="padding:7px 16px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;font-weight:600;cursor:pointer">← Back</button>
+    </div>
+  </div>
+  <!-- Summary cards -->
+  <div id="dash-summary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;padding:16px 20px;flex-shrink:0"></div>
+  <!-- Branch breakdown -->
+  <div style="flex:1;overflow-y:auto;padding:0 20px 20px">
+    <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Branch Breakdown</div>
+    <div id="dash-branches" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div style="font-size:12px;font-weight:700;color:var(--muted);margin:18px 0 10px;text-transform:uppercase;letter-spacing:.5px">Top Selling Items</div>
+    <div id="dash-top-items" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px"></div>
   </div>
 </div>
 
@@ -5327,6 +5361,97 @@ function showRoleScreen(){
   document.getElementById('app').style.display='none';
   document.getElementById('kds-screen').style.display='none';
   document.getElementById('role-screen').style.display='flex';
+  // Show dashboard card only if owner has 2+ branches
+  const dc=document.getElementById('rs-dashboard-card');
+  if(dc) dc.style.display=_branches.length>1?'block':'none';
+}
+
+// ── OWNER DASHBOARD ──────────────────────────────────────────────────────────
+async function openOwnerDashboard(){
+  document.getElementById('role-screen').style.display='none';
+  document.getElementById('owner-dashboard').style.display='flex';
+  await loadDashboard();
+}
+function closeOwnerDashboard(){
+  document.getElementById('owner-dashboard').style.display='none';
+  document.getElementById('role-screen').style.display='flex';
+}
+async function loadDashboard(){
+  const range=document.getElementById('dash-range').value;
+  const now=new Date();
+  let fromDate=null;
+  if(range==='today'){fromDate=new Date(now.getFullYear(),now.getMonth(),now.getDate()).toISOString();}
+  else if(range==='week'){const d=new Date(now);d.setDate(d.getDate()-7);fromDate=d.toISOString();}
+  else if(range==='month'){fromDate=new Date(now.getFullYear(),now.getMonth(),1).toISOString();}
+  // Load orders for all branch IDs
+  const allBranchIds=[_businessId,..._branches.filter(b=>b.id!==_businessId).map(b=>b.id)];
+  let query=sb.from('orders').select('*').in('biz_id',allBranchIds).neq('status','voided');
+  if(fromDate) query=query.gte('created_at',fromDate);
+  const{data:orders=[]}=await query;
+  const cur=_settings.currency||'SAR';
+  // Aggregate totals
+  const totalRev=orders.reduce((s,o)=>s+(+o.total||0),0);
+  const totalOrders=orders.length;
+  const totalToday=orders.filter(o=>o.created_at>=new Date(now.getFullYear(),now.getMonth(),now.getDate()).toISOString()).reduce((s,o)=>s+(+o.total||0),0);
+  // Summary cards
+  document.getElementById('dash-summary').innerHTML=`
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Total Revenue</div>
+      <div style="font-size:22px;font-weight:900;color:var(--accent2)">${totalRev.toFixed(2)} ${cur}</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Total Orders</div>
+      <div style="font-size:22px;font-weight:900;color:#58a6ff">${totalOrders}</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Today's Revenue</div>
+      <div style="font-size:22px;font-weight:900;color:var(--amber)">${totalToday.toFixed(2)} ${cur}</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Active Branches</div>
+      <div style="font-size:22px;font-weight:900;color:var(--teal)">${_branches.length}</div>
+    </div>`;
+  // Per-branch breakdown
+  const branchMap={};
+  _branches.forEach(b=>branchMap[b.id]={name:b.name,orders:0,revenue:0,today:0});
+  orders.forEach(o=>{
+    if(branchMap[o.biz_id]){
+      branchMap[o.biz_id].orders++;
+      branchMap[o.biz_id].revenue+=(+o.total||0);
+      if(o.created_at>=new Date(now.getFullYear(),now.getMonth(),now.getDate()).toISOString())
+        branchMap[o.biz_id].today+=(+o.total||0);
+    }
+  });
+  const sorted=Object.entries(branchMap).sort((a,b)=>b[1].revenue-a[1].revenue);
+  document.getElementById('dash-branches').innerHTML=sorted.map(([id,b])=>`
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:16px">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:800">${b.name}${id===_businessId?' <span style="font-size:10px;color:var(--accent2);font-weight:600">Main</span>':''}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${b.orders} orders · Today: ${b.today.toFixed(2)} ${cur}</div>
+      </div>
+      <div style="font-size:18px;font-weight:900;color:var(--accent2)">${b.revenue.toFixed(2)} ${cur}</div>
+      <div style="width:80px;background:var(--bg3);border-radius:4px;height:6px;overflow:hidden">
+        <div style="width:${totalRev>0?Math.round(b.revenue/totalRev*100):0}%;height:100%;background:var(--accent2);border-radius:4px"></div>
+      </div>
+    </div>`).join('');
+  // Top selling items across all branches
+  const itemMap={};
+  orders.forEach(o=>{
+    (o.items||[]).forEach(i=>{
+      if(!itemMap[i.name]) itemMap[i.name]={name:i.name,emoji:i.emoji||'🍽',qty:0,revenue:0};
+      itemMap[i.name].qty+=(i.qty||1);
+      itemMap[i.name].revenue+=(+i.price||0)*(i.qty||1);
+    });
+  });
+  const topItems=Object.values(itemMap).sort((a,b)=>b.qty-a.qty).slice(0,8);
+  document.getElementById('dash-top-items').innerHTML=topItems.length?topItems.map(i=>`
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px">
+      <div style="font-size:24px">${i.emoji}</div>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:700">${i.name}</div>
+        <div style="font-size:11px;color:var(--muted)">${i.qty} sold · ${i.revenue.toFixed(2)} ${cur}</div>
+      </div>
+    </div>`).join(''):'<div style="color:var(--muted);font-size:13px">No items data yet</div>';
 }
 
 function selectRole(role){
