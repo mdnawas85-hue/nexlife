@@ -1278,11 +1278,24 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
         <option value="pct">% Percentage Discount</option>
         <option value="amt">Fixed Amount Off</option>
         <option value="bogo">Buy 1 Get 1 Free</option>
+        <option value="buyxget1">Buy X Get 1 Free + Surcharge</option>
         <option value="happy">Happy Hour (time-based)</option>
       </select>
     </div>
     <div class="form-group" id="promo-value-row"><label class="form-label" id="promo-value-label">Discount %</label><input class="form-input" id="promo-value" type="number" placeholder="0"/></div>
     <div class="form-group" id="promo-item-row" style="display:none"><label class="form-label">Free Item (added to cart automatically)</label><select class="form-input" id="promo-item"><option value="">— Select menu item —</option></select></div>
+    <!-- BuyX Get 1 config -->
+    <div id="promo-buyxget1-row" style="display:none">
+      <div style="background:rgba(88,166,255,.06);border:1px solid rgba(88,166,255,.2);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px;margin-bottom:2px">
+        <div style="font-size:11px;color:var(--blue);font-weight:700">🎁 Buy X Get 1 Free + Surcharge</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="form-group" style="margin:0"><label class="form-label">Buy Quantity (X)</label><input class="form-input" id="promo-buy-qty" type="number" min="1" value="2" placeholder="e.g. 2"/></div>
+          <div class="form-group" style="margin:0"><label class="form-label">Extra Charge (SAR)</label><input class="form-input" id="promo-surcharge" type="number" min="0" step="0.01" value="1" placeholder="e.g. 1.00"/></div>
+        </div>
+        <div class="form-group" style="margin:0"><label class="form-label">Apply To Product</label><select class="form-input" id="promo-buyxget1-item"><option value="">— Any product —</option></select></div>
+        <div style="font-size:10px;color:var(--muted)">Example: Buy 2 items + 1 SAR → get 1 more item free</div>
+      </div>
+    </div>
     <div id="promo-time-row" style="display:none;display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div class="form-group"><label class="form-label">Start Time</label><input class="form-input" id="promo-start-time" type="time" value="15:00"/></div>
       <div class="form-group"><label class="form-label">End Time</label><input class="form-input" id="promo-end-time" type="time" value="18:00"/></div>
@@ -2713,6 +2726,20 @@ function updateTotals(){
     const prices=_cart.map(i=>i.price);
     _discount={type:'amt',value:prices.length>0?Math.min(...prices):0};
   }
+  // Recalculate buyxget1 discount dynamically
+  if(_appliedPromo&&_appliedPromo.type==='buyxget1'){
+    const p=_appliedPromo;
+    const buyQty=p.buy_qty||2;
+    const surcharge=p.surcharge||0;
+    const qualifying=p.item_id?_cart.filter(i=>i.id===p.item_id||i.id.startsWith(p.item_id)):_cart.filter(i=>!i.id.includes('-free-'));
+    const totalQty=qualifying.reduce((s,i)=>s+i.qty,0);
+    const freeCount=Math.floor(totalQty/buyQty);
+    const setsUsed=freeCount;
+    const sortedPrices=qualifying.map(i=>+i.price).sort((a,b)=>a-b);
+    const freeValue=sortedPrices.slice(0,freeCount).reduce((s,v)=>s+v,0);
+    const totalSurcharge=surcharge*setsUsed;
+    _discount={type:'amt',value:Math.max(0,freeValue-totalSurcharge)};
+  }
   const discAmt=_discount.type==='pct'?(sub*(_discount.value||0)/100):(_discount.value||0);
   const total=sub+vatAmt-discAmt;
   const cur=_settings.currency||'SAR';
@@ -2738,6 +2765,19 @@ function getTotal(){
   if(_appliedPromo&&_appliedPromo.type==='bogo'){
     const prices=_cart.map(i=>i.price);
     disc={type:'amt',value:prices.length>0?Math.min(...prices):0};
+  }
+  // Recalculate buyxget1 discount dynamically
+  if(_appliedPromo&&_appliedPromo.type==='buyxget1'){
+    const p=_appliedPromo;
+    const buyQty=p.buy_qty||2;
+    const surcharge=p.surcharge||0;
+    const qualifying=p.item_id?_cart.filter(i=>i.id===p.item_id||i.id.startsWith(p.item_id)):_cart.filter(i=>!i.id.includes('-free-'));
+    const totalQty=qualifying.reduce((s,i)=>s+i.qty,0);
+    const freeCount=Math.floor(totalQty/buyQty);
+    const sortedPrices=qualifying.map(i=>+i.price).sort((a,b)=>a-b);
+    const freeValue=sortedPrices.slice(0,freeCount).reduce((s,v)=>s+v,0);
+    const totalSurcharge=surcharge*freeCount;
+    disc={type:'amt',value:Math.max(0,freeValue-totalSurcharge)};
   }
   const discAmt=disc.type==='pct'?(sub*(disc.value||0)/100):(disc.value||0);
   return{sub,vatAmt,discAmt,total:sub+vatAmt-discAmt};
@@ -4648,25 +4688,35 @@ function renderPromos(){
   document.getElementById('loyalty-points').textContent=loyalty.reduce((s,c)=>s+(c.loyalty_points||0),0);
   const list=document.getElementById('promos-list');
   if(!_promos.length){list.innerHTML='<div style="color:var(--muted);font-size:13px">No promotions yet</div>';return;}
-  const typeLabels={pct:'% Discount',amt:'Fixed Amount',bogo:'Buy 1 Get 1',happy:'Happy Hour'};
-  list.innerHTML=_promos.map(p=>`
+  const typeLabels={pct:'% Discount',amt:'Fixed Amount',bogo:'Buy 1 Get 1',happy:'Happy Hour',buyxget1:'Buy X Get 1 Free'};
+  list.innerHTML=_promos.map(p=>{
+    let detail='';
+    if(p.type==='buyxget1') detail=` · Buy ${p.buy_qty||2} + ${p.surcharge||0} SAR → 1 Free`;
+    else if(p.value) detail=` · ${p.value}${p.type==='pct'?'%':' SAR'}`;
+    return`
     <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px">
       <div style="flex:1">
         <div style="font-size:13px;font-weight:700">${p.name}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px">${typeLabels[p.type]||p.type}${p.value?' · '+p.value+(p.type==='pct'?'%':' SAR'):''}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${typeLabels[p.type]||p.type}${detail}</div>
         ${p.valid_from||p.valid_to?`<div style="font-size:10px;color:var(--muted);margin-top:2px">${p.valid_from||''}${p.valid_from&&p.valid_to?' → ':''}${p.valid_to||''}</div>`:''}
       </div>
       <label class="toggle-switch"><input type="checkbox" ${p.is_active?'checked':''} onchange="togglePromo('${p.id}',this.checked)"/><span class="toggle-slider"></span></label>
       <button onclick="deletePromo('${p.id}')" style="background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer">✕</button>
-    </div>`).join('');
+    </div>`;}).join('');
 }
 function onPromoTypeChange(){
   const t=document.getElementById('promo-type').value;
-  document.getElementById('promo-value-row').style.display=t==='bogo'?'none':'';
+  document.getElementById('promo-value-row').style.display=(t==='bogo'||t==='buyxget1')?'none':'';
   document.getElementById('promo-item-row').style.display=t==='bogo'?'':'none';
+  document.getElementById('promo-buyxget1-row').style.display=t==='buyxget1'?'':'none';
   const timeRow=document.getElementById('promo-time-row');
   timeRow.style.display=t==='happy'?'grid':'none';
   document.getElementById('promo-value-label').textContent=t==='pct'?'Discount %':'Amount Off (SAR)';
+  // Populate buyxget1 product dropdown
+  if(t==='buyxget1'){
+    const sel=document.getElementById('promo-buyxget1-item');
+    sel.innerHTML='<option value="">— Any product —</option>'+(_products||[]).map(m=>`<option value="${m.id}">${m.name} (${(+m.price||0).toFixed(2)} SAR)</option>`).join('');
+  }
 }
 function openPromoModal(id){
   _editPromo=id?_promos.find(p=>p.id===id):null;
@@ -4680,7 +4730,13 @@ function openPromoModal(id){
   const sel=document.getElementById('promo-item');
   sel.innerHTML='<option value="">— Select menu item —</option>'+(_products||[]).map(m=>`<option value="${m.id}">${m.name} (${(+m.price||0).toFixed(2)} SAR)</option>`).join('');
   sel.value=_editPromo?.item_id||'';
+  // buyxget1 fields
+  document.getElementById('promo-buy-qty').value=_editPromo?.buy_qty||2;
+  document.getElementById('promo-surcharge').value=_editPromo?.surcharge??1;
   onPromoTypeChange();
+  if(_editPromo?.type==='buyxget1'){
+    document.getElementById('promo-buyxget1-item').value=_editPromo?.item_id||'';
+  }
   document.getElementById('promo-modal').style.display='flex';
 }
 function closePromoModal(){document.getElementById('promo-modal').style.display='none';}
@@ -4695,8 +4751,8 @@ function togglePromosView(){
   document.getElementById('cat-bar').style.display='none';
   const grid=document.getElementById('products-grid');
   const active=_promos.filter(p=>p.is_active);
-  const typeLabels={pct:'% Discount',amt:'Fixed Amount Off',bogo:'Buy 1 Get 1 Free',happy:'Happy Hour'};
-  const typeIcons={pct:'🏷',amt:'💰',bogo:'🎁',happy:'⏰'};
+  const typeLabels={pct:'% Discount',amt:'Fixed Amount Off',bogo:'Buy 1 Get 1 Free',happy:'Happy Hour',buyxget1:'Buy X Get 1 Free'};
+  const typeIcons={pct:'🏷',amt:'💰',bogo:'🎁',happy:'⏰',buyxget1:'🎁'};
   const cur=_settings.currency||'SAR';
   const backBtn=`<div style="grid-column:1/-1;margin-bottom:4px"><button onclick="closePromosView()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">← Back to Menu</button></div>`;
   if(!active.length){
@@ -4704,14 +4760,15 @@ function togglePromosView(){
   } else {
     grid.innerHTML=backBtn+active.map(p=>{
       const icon=typeIcons[p.type]||'🎯';
-      const valDisplay=p.type==='pct'?`${p.value}% OFF`:p.type==='amt'?`${p.value} ${cur} OFF`:p.type==='bogo'?'BUY 1 GET 1':'SPECIAL';
-      const colors={pct:'rgba(0,165,80,.6)',amt:'rgba(88,166,255,.6)',bogo:'rgba(210,153,34,.6)',happy:'rgba(248,81,73,.6)'};
-      const bgs={pct:'rgba(0,165,80,.1)',amt:'rgba(88,166,255,.1)',bogo:'rgba(210,153,34,.1)',happy:'rgba(248,81,73,.1)'};
+      let valDisplay=p.type==='pct'?`${p.value}% OFF`:p.type==='amt'?`${p.value} ${cur} OFF`:p.type==='bogo'?'BUY 1 GET 1':p.type==='buyxget1'?`BUY ${p.buy_qty||2} GET 1`:'SPECIAL';
+      const colors={pct:'rgba(0,165,80,.6)',amt:'rgba(88,166,255,.6)',bogo:'rgba(210,153,34,.6)',happy:'rgba(248,81,73,.6)',buyxget1:'rgba(138,43,226,.6)'};
+      const bgs={pct:'rgba(0,165,80,.1)',amt:'rgba(88,166,255,.1)',bogo:'rgba(210,153,34,.1)',happy:'rgba(248,81,73,.1)',buyxget1:'rgba(138,43,226,.1)'};
       return`<div onclick="applyPromoToCart('${p.id}')" style="background:${bgs[p.type]||'rgba(0,165,80,.1)'};border:2px solid ${colors[p.type]||'rgba(0,165,80,.4)'};border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transition:all .15s" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform=''">
         <div style="font-size:30px">${icon}</div>
         <div style="font-size:13px;font-weight:800;color:var(--text)">${p.name}</div>
         <div style="font-size:10px;color:var(--muted)">${typeLabels[p.type]||p.type}</div>
         <div style="font-size:16px;font-weight:900;color:var(--accent2)">${valDisplay}</div>
+        ${p.type==='buyxget1'&&p.surcharge?`<div style="font-size:10px;color:var(--muted)">+${p.surcharge} SAR charge/set</div>`:''}
         ${p.valid_to?`<div style="font-size:9px;color:var(--amber)">Until ${p.valid_to}</div>`:''}
       </div>`;
     }).join('');
@@ -4755,6 +4812,49 @@ function openPromosPanel_old(){
 }
 function closePromosPanel(){document.getElementById('promos-panel-modal').style.display='none';}
 let _appliedPromo=null;
+
+function applyBuyXGet1(p){
+  // Determine which items qualify (specific product or any)
+  const buyQty=p.buy_qty||2;
+  const surcharge=p.surcharge||0;
+  // Find qualifying items in cart
+  const qualifying=p.item_id
+    ? _cart.filter(i=>i.id===p.item_id||i.id.startsWith(p.item_id))
+    : _cart;
+  const totalQty=qualifying.reduce((s,i)=>s+i.qty,0);
+  if(totalQty<buyQty){
+    showToast(`Add ${buyQty} items to qualify for this promo`,true);
+    _appliedPromo=null;return;
+  }
+  // How many free items: floor(totalQty / buyQty) free items
+  const freeCount=Math.floor(totalQty/buyQty);
+  // Find cheapest qualifying item price for the free item value
+  const sortedPrices=qualifying.map(i=>+i.price).sort((a,b)=>a-b);
+  const freeValue=sortedPrices.slice(0,freeCount).reduce((s,v)=>s+v,0);
+  // Discount = free item value - surcharge per set
+  const setsUsed=Math.floor(totalQty/buyQty);
+  const totalSurcharge=surcharge*setsUsed;
+  const discount=Math.max(0,freeValue-totalSurcharge);
+  _discount={type:'amt',value:discount};
+  // Add free item(s) to cart if specific product set
+  if(p.item_id){
+    for(let i=0;i<freeCount;i++){
+      const prod=_products.find(x=>x.id===p.item_id);
+      if(prod){
+        // Add as free item with note
+        _cart.push({
+          id:prod.id+'-free-'+Date.now()+i,
+          name:prod.name,name_ar:prod.name_ar,emoji:prod.emoji,
+          image_url:prod.image_url,price:0,qty:1,
+          note:'🎁 FREE ('+p.name+')'
+        });
+      }
+    }
+  }
+  renderCart();
+  showToast(`🎁 ${freeCount} free item${freeCount>1?'s':''} added! (+${surcharge} SAR surcharge per set)`);
+}
+
 function applyPromoToCart(id){
   const p=_promos.find(x=>x.id===id);
   if(!p) return;
@@ -4772,6 +4872,8 @@ function applyPromoToCart(id){
     const prices=_cart.map(i=>i.price);
     const cheapest=prices.length>0?Math.min(...prices):0;
     _discount={type:'amt',value:cheapest};
+  } else if(p.type==='buyxget1'){
+    applyBuyXGet1(p);
   }
   updateTotals();
   closePromosView();
@@ -4792,17 +4894,26 @@ async function savePromo(){
   if(!name){showToast('Name required',true);return;}
   const promoType=document.getElementById('promo-type').value;
   const itemId=document.getElementById('promo-item').value||null;
+  const buyxget1ItemId=document.getElementById('promo-buyxget1-item')?.value||null;
   const rec={biz_id:_bizId,name,type:promoType,
-    value:promoType==='bogo'?null:(+document.getElementById('promo-value').value||null),
-    item_id:promoType==='bogo'?itemId:null,
+    value:['bogo','buyxget1'].includes(promoType)?null:(+document.getElementById('promo-value').value||null),
+    item_id:promoType==='bogo'?itemId:promoType==='buyxget1'?buyxget1ItemId:null,
+    buy_qty:promoType==='buyxget1'?(+document.getElementById('promo-buy-qty').value||2):null,
+    surcharge:promoType==='buyxget1'?(+document.getElementById('promo-surcharge').value||0):null,
     valid_from:document.getElementById('promo-from').value||null,
     valid_to:document.getElementById('promo-to').value||null,
     is_active:true};
   if(_bizId){
     let{data,error}=await sb.from('promotions').insert(rec).select().single();
+    if(error&&error.message&&(error.message.includes('buy_qty')||error.message.includes('surcharge'))){
+      // buy_qty/surcharge columns not yet in DB — retry without them
+      const rec2={...rec};delete rec2.buy_qty;delete rec2.surcharge;
+      const r2=await sb.from('promotions').insert(rec2).select().single();
+      data=r2.data;error=r2.error;
+    }
     if(error&&error.message&&error.message.includes('item_id')){
       // item_id column not yet in DB — retry without it
-      const rec2={...rec};delete rec2.item_id;
+      const rec2={...rec};delete rec2.item_id;delete rec2.buy_qty;delete rec2.surcharge;
       const r2=await sb.from('promotions').insert(rec2).select().single();
       data=r2.data;error=r2.error;
     }
