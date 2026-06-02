@@ -2573,21 +2573,31 @@ function subscribeKitchenRealtime(){
 }
 async function loadCats(){
   if(!_bizId){_cats=defaultCats();return;}
-  // Check if this branch has a pushed menu in settings
-  const branchMenu=_settings.branch_menus?.[_bizId];
-  if(branchMenu?.cats?.length&&_bizId!==_businessId){_cats=branchMenu.cats;return;}
+  const isBranch=_businessId&&_bizId!==_businessId;
+  if(isBranch){
+    // Branch: ONLY use its own snapshot — never fall back to main DB
+    const branchMenu=_settings.branch_menus?.[_bizId];
+    _cats=branchMenu?.cats||[];
+    return;
+  }
+  // Main branch: read from DB
   const{data}=await sb.from('categories').select('*').eq('biz_id',_bizId).order('sort_order');
   if(data?.length){_cats=data;return;}
-  // No categories in DB yet — save defaults so products get real cat UUIDs
   const defaults=defaultCats().map(({id,...c})=>({...c,biz_id:_bizId}));
   const{data:saved}=await sb.from('categories').insert(defaults).select();
   _cats=saved||defaultCats();
 }
 async function loadProducts(){
   if(!_bizId){_products=[];return;}
-  // Check if this branch has a pushed menu in settings
-  const branchMenu=_settings.branch_menus?.[_bizId];
-  if(branchMenu?.products?.length&&_bizId!==_businessId){_products=branchMenu.products;updateBranchIndicator();return;}
+  const isBranch=_businessId&&_bizId!==_businessId;
+  if(isBranch){
+    // Branch: ONLY use its own snapshot — never fall back to main DB
+    const branchMenu=_settings.branch_menus?.[_bizId];
+    _products=branchMenu?.products||[];
+    updateBranchIndicator();
+    return;
+  }
+  // Main branch: read from DB
   const{data}=await sb.from('products').select('*').eq('biz_id',_bizId).order('sort_order');
   _products=data||[];
   updateBranchIndicator();
