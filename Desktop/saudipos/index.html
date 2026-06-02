@@ -2293,6 +2293,11 @@ async function onSignedIn(user){
   }
   // Load branches from businesses.settings.branches (no extra table needed)
   _branches=(biz?.settings?.branches||[]).filter(b=>b.is_active!==false);
+  // Auto-fix: if first branch has a wrong ID (not the businessId), correct it and save
+  if(_branches.length>0&&_branches[0].id!==_businessId&&_branches[0].id.startsWith('br-')){
+    _branches[0].id=_businessId;
+    await sb.from('businesses').update({settings:{...(biz.settings||{}),branches:_branches}}).eq('id',_businessId);
+  }
   // Set user UI
   const meta=user.user_metadata||{};
   document.getElementById('user-avatar').textContent=(meta.biz_name||user.email||'?').charAt(0).toUpperCase();
@@ -2408,7 +2413,9 @@ async function saveBranch(){
   if(!name){showToast('Branch name is required',true);return;}
   const addr=document.getElementById('branch-addr-input').value.trim();
   const phone=document.getElementById('branch-phone-input').value.trim();
-  const branch={id:'br-'+Date.now(),name,address:addr||null,phone:phone||null,is_active:true,created_at:new Date().toISOString()};
+  // First branch always uses the original businessId so existing data is inherited
+  const branchId=_branches.length===0?_businessId:('br-'+Date.now());
+  const branch={id:branchId,name,address:addr||null,phone:phone||null,is_active:true,created_at:new Date().toISOString()};
   _branches.push(branch);
   await _saveBranchesToDB();
   closeAddBranchModal();
@@ -2422,7 +2429,9 @@ async function addBranchFromSettings(){
   if(!name){showToast('Branch name is required',true);return;}
   const addr=document.getElementById('set-branch-addr').value.trim();
   const phone=document.getElementById('set-branch-phone').value.trim();
-  const branch={id:'br-'+Date.now(),name,address:addr||null,phone:phone||null,is_active:true,created_at:new Date().toISOString()};
+  // First branch always uses the original businessId so existing data is inherited
+  const branchId=_branches.length===0?_businessId:('br-'+Date.now());
+  const branch={id:branchId,name,address:addr||null,phone:phone||null,is_active:true,created_at:new Date().toISOString()};
   _branches.push(branch);
   await _saveBranchesToDB();
   document.getElementById('set-branch-name').value='';
