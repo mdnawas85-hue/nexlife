@@ -4640,7 +4640,8 @@ let _editCustomer=null;
 
 async function loadCustomers(){
   if(!_bizId){_customers=[];return;}
-  const{data}=await sb.from('customers').select('*').eq('biz_id',_bizId).order('name');
+  // Customers shared across all branches
+  const{data}=await sb.from('customers').select('*').eq('biz_id',_businessId||_bizId).order('name');
   _customers=data||[];
   updateCustomerSelector();
 }
@@ -4964,7 +4965,9 @@ function exportInventoryCSV(){
 let _staff=[],_editStaff=null;
 async function loadStaff(){
   if(!_bizId){_staff=[];return;}
-  const{data}=await sb.from('staff').select('*').eq('biz_id',_bizId).order('name');
+  // Staff is shared across all branches — always load from main business ID
+  const staffBizId=_businessId||_bizId;
+  const{data}=await sb.from('staff').select('*').eq('biz_id',staffBizId).order('name');
   _staff=data||[];
 }
 function renderStaff(){
@@ -5011,7 +5014,8 @@ function closeStaffModal(){document.getElementById('staff-modal').style.display=
 async function saveStaff(){
   const name=document.getElementById('st-name').value.trim();
   if(!name){showToast('Name required',true);return;}
-  const rec={biz_id:_bizId,name,role:document.getElementById('st-role').value,
+  // Staff always saved to main business ID so they're shared across branches
+  const rec={biz_id:_businessId||_bizId,name,role:document.getElementById('st-role').value,
     phone:document.getElementById('st-phone').value.trim(),
     pin:document.getElementById('st-pin').value.trim(),
     salary:+document.getElementById('st-salary').value||null,
@@ -5040,7 +5044,8 @@ async function deleteStaff(id){
 let _promos=[],_editPromo=null;
 async function loadPromos(){
   if(!_bizId){_promos=[];return;}
-  const{data}=await sb.from('promotions').select('*').eq('biz_id',_bizId).order('created_at',{ascending:false});
+  // Promos shared across all branches
+  const{data}=await sb.from('promotions').select('*').eq('biz_id',_businessId||_bizId).order('created_at',{ascending:false});
   _promos=data||[];
 }
 function renderPromos(){
