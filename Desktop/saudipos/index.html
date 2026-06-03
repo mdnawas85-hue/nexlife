@@ -962,7 +962,7 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px">
       <div style="font-size:13px;font-weight:800;margin-bottom:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">🔧 System Actions</div>
       <div style="display:flex;flex-wrap:wrap;gap:10px">
-        <button onclick="adminClearKitchen()" style="padding:10px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--amber);font-size:12px;font-weight:600;cursor:pointer">🧹 Clear Kitchen Queue</button>
+        <button onclick="adminClearKitchen()" id="admin-clear-kitchen-btn" style="padding:10px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--amber);font-size:12px;font-weight:600;cursor:pointer">🧹 Clear Kitchen Queue</button>
         <button onclick="adminReloadData()" style="padding:10px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--blue);font-size:12px;font-weight:600;cursor:pointer">↻ Reload All Data</button>
         <button onclick="document.getElementById('admin-screen').style.display='none';selectRole('manager');setScreen('settings');" style="padding:10px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;font-weight:600;cursor:pointer">⚙️ Business Settings</button>
         <button onclick="document.getElementById('admin-screen').style.display='none';selectRole('manager');setScreen('reports');" style="padding:10px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--accent2);font-size:12px;font-weight:600;cursor:pointer">📊 View Reports</button>
@@ -2199,7 +2199,7 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
         <button onclick="setDeviceType('printer')" class="device-type-btn" data-type="printer" style="padding:12px 8px;border-radius:10px;border:2px solid var(--border);background:var(--bg3);cursor:pointer;text-align:center;transition:all .15s">
           <div style="font-size:24px;margin-bottom:4px">🖨️</div><div style="font-size:11px;font-weight:700">Receipt Printer</div>
         </button>
-        <button onclick="setDeviceType('kds')" class="device-type-btn" data-type="kds" style="padding:12px 8px;border-radius:10px;border:2px solid var(--border);background:var(--bg3);cursor:pointer;text-align:center;transition:all .15s">
+        <button onclick="setDeviceType('kds')" class="device-type-btn" id="device-type-kds" data-type="kds" style="padding:12px 8px;border-radius:10px;border:2px solid var(--border);background:var(--bg3);cursor:pointer;text-align:center;transition:all .15s">
           <div style="font-size:24px;margin-bottom:4px">📺</div><div style="font-size:11px;font-weight:700">Kitchen Display</div>
         </button>
         <button onclick="setDeviceType('display')" class="device-type-btn" data-type="display" style="padding:12px 8px;border-radius:10px;border:2px solid var(--border);background:var(--bg3);cursor:pointer;text-align:center;transition:all .15s">
@@ -4308,7 +4308,7 @@ function renderQuickLaunch(){
   const grid=document.getElementById('quick-launch-grid');
   if(!grid) return;
   const items=[
-    {role:'kitchen',icon:'📺',label:'Kitchen Display (KDS)',color:'rgba(210,153,34,.5)',bg:'rgba(210,153,34,.08)'},
+    ...(_mode==='retail'?[]:[{role:'kitchen',icon:'📺',label:'Kitchen Display (KDS)',color:'rgba(210,153,34,.5)',bg:'rgba(210,153,34,.08)'}]),
     {role:'cashier',icon:'💵',label:'Sub Cashier Station',color:'rgba(57,211,83,.5)',bg:'rgba(57,211,83,.08)'},
     {role:'display',icon:'🖥️',label:'Customer Display',color:'rgba(88,166,255,.5)',bg:'rgba(88,166,255,.08)'},
   ];
@@ -4332,6 +4332,9 @@ function openDeviceModal(id){
   document.getElementById('device-modal-title').textContent=_editDevice?'Edit Device':'Add Device';
   // Reset type selection
   document.querySelectorAll('.device-type-btn').forEach(b=>{b.style.borderColor='var(--border)';b.style.background='var(--bg3)';b.style.color='var(--text)';});
+  // Hide KDS option for retail
+  const kdsBtn=document.getElementById('device-type-kds');
+  if(kdsBtn) kdsBtn.style.display=_mode==='retail'?'none':'';
   document.getElementById('device-config-area').style.display='none';
   _devType='';
   if(_editDevice){
@@ -7424,18 +7427,22 @@ async function renderAdminPanel(){
   const activeKitchen=_orders.filter(o=>o.status==='paid'&&!o.kitchen_done).length;
   const staffCount=(_staff||[]).length;
   const statsEl=document.getElementById('admin-stats');
-  if(statsEl) statsEl.innerHTML=[
-    {icon:'📦',label:'Total Orders',val:totalOrders,color:'var(--blue)'},
+  const stats=[
+    {icon:'📦',label:_mode==='retail'?'Total Sales':'Total Orders',val:totalOrders,color:'var(--blue)'},
     {icon:'💰',label:"Today's Sales",val:todaySales.toFixed(2)+' SAR',color:'var(--accent2)'},
-    {icon:'🍳',label:'Active Kitchen',val:activeKitchen,color:'var(--amber)'},
+    ...(_mode==='retail'?[]:[{icon:'🍳',label:'Active Kitchen',val:activeKitchen,color:'var(--amber)'}]),
     {icon:'👥',label:'Staff',val:staffCount,color:'var(--muted)'},
-  ].map(s=>`<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px">
+  ];
+  if(statsEl) statsEl.innerHTML=stats.map(s=>`<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px">
     <div style="font-size:22px">${s.icon}</div>
     <div style="font-size:20px;font-weight:800;color:${s.color};margin:4px 0">${s.val}</div>
     <div style="font-size:11px;color:var(--muted)">${s.label}</div>
   </div>`).join('');
 
   // Business info
+  // Hide kitchen button for retail
+  const ckBtn=document.getElementById('admin-clear-kitchen-btn');
+  if(ckBtn) ckBtn.style.display=_mode==='retail'?'none':'';
   const bizEl=document.getElementById('admin-biz-info');
   if(bizEl&&_settings){
     bizEl.innerHTML=[
