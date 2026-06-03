@@ -6860,13 +6860,11 @@ function _renderITAProductList(){
   }).join('');
 }
 function itaOpenProductModal(id){
-  // Set _bizId to main so product modal saves correctly
-  const prev=_bizId;
   _bizId=_businessId||_bizId;
   openProductModal(id);
-  // Override close to refresh ITA
-  const origClose=window.closeProductModal;
-  window._itaProductModalActive=true;
+  // Bring product modal above ITA portal
+  const pm=document.getElementById('product-modal');
+  if(pm) pm.style.zIndex='1000';
 }
 function itaEditProduct(id){itaOpenProductModal(id);}
 function itaDeleteProduct(id){
@@ -6888,6 +6886,8 @@ function itaDeleteProduct(id){
 }
 function itaOpenCatModal(){
   openCatModal();
+  const cm=document.getElementById('cat-modal');
+  if(cm) cm.style.zIndex='1000';
 }
 
 // ── ITA: BRANCHES ─────────────────────────────────────────────────────────────
@@ -6959,28 +6959,40 @@ async function toggleITABranchActive(branchId,setActive){
 function editITABranch(branchId){
   const b=_branches.find(x=>x.id===branchId);
   if(!b) return;
-  document.getElementById('branch-name-input').value=b.name;
-  document.getElementById('branch-addr-input').value=b.address||'';
-  document.getElementById('branch-phone-input').value=b.phone||'';
-  // Repurpose add modal as edit
-  const modal=document.getElementById('add-branch-modal');
-  modal.querySelector('div > div:first-child').textContent='✏️ Edit Branch';
-  const saveBtn=modal.querySelector('button.btn-primary');
-  saveBtn.textContent='Save Changes';
-  saveBtn.onclick=async()=>{
-    const name=document.getElementById('branch-name-input').value.trim();
-    if(!name){showToast('Name required',true);return;}
-    b.name=name;b.address=document.getElementById('branch-addr-input').value.trim()||null;
-    b.phone=document.getElementById('branch-phone-input').value.trim()||null;
-    await _saveBranchesToDB();
-    closeAddBranchModal();
-    _renderITABranches();
-    showToast('Branch updated ✅');
-    // Reset modal back to Add mode
-    modal.querySelector('div > div:first-child').textContent='🏪 Add Branch';
-    saveBtn.textContent='Save Branch';saveBtn.onclick=saveBranch;
-  };
-  modal.style.display='flex';
+  // Use a dedicated edit modal built inline
+  const existing=document.getElementById('ita-edit-branch-modal');
+  if(existing) existing.remove();
+  const modal=document.createElement('div');
+  modal.id='ita-edit-branch-modal';
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center';
+  modal.innerHTML=`<div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:420px;margin:16px">
+    <div style="font-size:15px;font-weight:800;margin-bottom:16px">✏️ Edit Branch</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <input class="form-input" id="ita-edit-branch-name" value="${b.name}" placeholder="Branch Name *"/>
+      <input class="form-input" id="ita-edit-branch-addr" value="${b.address||''}" placeholder="Address"/>
+      <input class="form-input" id="ita-edit-branch-phone" value="${b.phone||''}" placeholder="Phone"/>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button onclick="saveITABranchEdit('${b.id}')" class="btn btn-primary" style="flex:1">💾 Save Changes</button>
+      <button onclick="document.getElementById('ita-edit-branch-modal').remove()" class="btn btn-secondary">Cancel</button>
+    </div>
+  </div>`;
+  document.body.appendChild(modal);
+}
+async function saveITABranchEdit(branchId){
+  const b=_branches.find(x=>x.id===branchId);
+  if(!b) return;
+  const name=document.getElementById('ita-edit-branch-name').value.trim();
+  if(!name){showToast('Name required',true);return;}
+  b.name=name;
+  b.address=document.getElementById('ita-edit-branch-addr').value.trim()||null;
+  b.phone=document.getElementById('ita-edit-branch-phone').value.trim()||null;
+  await _saveBranchesToDB();
+  document.getElementById('ita-edit-branch-modal').remove();
+  _renderITABranches();
+  showBranchScreen();
+  setITATab('branches');
+  showToast('Branch updated ✅');
 }
 async function deleteITABranch(branchId,name){
   openSAModal({
@@ -7027,15 +7039,26 @@ function _renderITAVisibilityBody(){
 
 // ── ITA: DASHBOARD ────────────────────────────────────────────────────────────
 async function _renderITADashboard(){
-  // Show owner dashboard panel on top of ITA portal
-  document.getElementById('owner-dashboard').style.display='flex';
-  await loadDashboard();
-  // Override close button to return to ITA
-  const closeBtn=document.querySelector('#owner-dashboard button[onclick="closeOwnerDashboard()"]');
-  if(closeBtn){
-    closeBtn.setAttribute('onclick','closeOwnerDashboardToITA()');
-    closeBtn.textContent='← IT Admin';
+  // Load orders for all branches if not loaded
+  if(!_orders.length&&_businessId){
+    const{data}=await sb.from('orders').select('*').eq('biz_id',_businessId).order('created_at',{ascending:false}).limit(1000);
+    if(data) _orders=data;
   }
+  // Show owner dashboard panel on top of ITA portal
+  const dash=document.getElementById('owner-dashboard');
+  dash.style.display='flex';
+  dash.style.zIndex='920'; // above ITA portal (880)
+  await loadDashboard();
+  // Override back button to return to ITA
+  setTimeout(()=>{
+    const btns=document.querySelectorAll('#owner-dashboard button');
+    btns.forEach(btn=>{
+      if(btn.textContent.includes('Back')||btn.textContent.includes('←')){
+        btn.setAttribute('onclick','closeOwnerDashboardToITA()');
+        btn.textContent='← IT Admin';
+      }
+    });
+  },100);
 }
 function closeOwnerDashboardToITA(){
   document.getElementById('owner-dashboard').style.display='none';
