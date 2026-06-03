@@ -1042,7 +1042,18 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
       <div id="ita-pin-d4" style="width:44px;height:52px;border-radius:10px;border:2px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800">—</div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:220px;margin:0 auto">
-      ${[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>`<button onclick="itaPinKey('${k}')" style="padding:14px;border-radius:12px;border:1px solid var(--border);background:${k===''?'transparent':'var(--bg3)'};color:var(--text);font-size:18px;font-weight:700;cursor:pointer;${k===''?'cursor:default;pointer-events:none':''}">${k}</button>`).join('')}
+      <button onclick="itaPinKey('1')" style="padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:18px;font-weight:700;cursor:pointer">1</button>
+      <button onclick="itaPinKey('2')" style="padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:18px;font-weight:700;cursor:pointer">2</button>
+      <button onclick="itaPinKey('3')" style="padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:18px;font-weight:700;cursor:pointer">3</button>
+      <button onclick="itaPinKey('4')" style="padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:18px;font-weight:700;cursor:pointer">4</button>
+      <button onclick="itaPinKey('5')" style="padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:18px;font-weight:700;cursor:pointer">5</button>
+      <button onclick="itaPinKey('6')" style="padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:18px;font-weight:700;cursor:pointer">6</button>
+      <button onclick="itaPinKey('7')" style="padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:18px;font-weight:700;cursor:pointer">7</button>
+      <button onclick="itaPinKey('8')" style="padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:18px;font-weight:700;cursor:pointer">8</button>
+      <button onclick="itaPinKey('9')" style="padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:18px;font-weight:700;cursor:pointer">9</button>
+      <div></div>
+      <button onclick="itaPinKey('0')" style="padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:18px;font-weight:700;cursor:pointer">0</button>
+      <button onclick="itaPinKey('⌫')" style="padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:18px;font-weight:700;cursor:pointer">⌫</button>
     </div>
     <div id="ita-pin-error" style="color:var(--red);font-size:12px;margin-top:12px;min-height:18px"></div>
     <button onclick="closeITAPinModal()" style="margin-top:10px;background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer">Cancel</button>
@@ -6660,10 +6671,22 @@ function openITAdminPortal(){
   _itaUpdatePinDisplay();
   document.getElementById('ita-pin-error').textContent='';
   document.getElementById('ita-pin-modal').style.display='flex';
+  // Keyboard support
+  document._itaPinKeyHandler=function(e){
+    if(document.getElementById('ita-pin-modal').style.display==='none') return;
+    if(e.key>='0'&&e.key<='9') itaPinKey(e.key);
+    else if(e.key==='Backspace') itaPinKey('⌫');
+    else if(e.key==='Escape') closeITAPinModal();
+  };
+  document.addEventListener('keydown',document._itaPinKeyHandler);
 }
 function closeITAPinModal(){
   document.getElementById('ita-pin-modal').style.display='none';
   _itaPinVal='';
+  if(document._itaPinKeyHandler){
+    document.removeEventListener('keydown',document._itaPinKeyHandler);
+    document._itaPinKeyHandler=null;
+  }
 }
 function itaPinKey(k){
   if(k==='⌫'){_itaPinVal=_itaPinVal.slice(0,-1);}
