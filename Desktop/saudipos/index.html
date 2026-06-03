@@ -971,6 +971,19 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
   </div>
 </div>
 
+<!-- SA ACTION MODAL -->
+<div id="sa-action-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1200;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:420px;margin:16px">
+    <div style="font-size:15px;font-weight:800;margin-bottom:4px" id="sa-modal-title">Action</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:18px" id="sa-modal-subtitle"></div>
+    <div id="sa-modal-body"></div>
+    <div style="display:flex;gap:8px;margin-top:18px">
+      <button id="sa-modal-confirm" onclick="saModalConfirm()" style="flex:1;padding:11px;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer">Confirm</button>
+      <button onclick="closeSAModal()" style="padding:11px 18px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:13px;font-weight:600;cursor:pointer">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- SUPER ADMIN PANEL -->
 <div id="super-admin-panel" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:900;flex-direction:column;overflow:hidden">
   <div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
@@ -6327,7 +6340,7 @@ function renderSAClients(){
         <button onclick="saChangePlan('${c.id}')" style="padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-size:12px;cursor:pointer">📋 Change Plan</button>
         ${waNum?`<a href="https://wa.me/${waNum}?text=${encodeURIComponent('Hi '+(s.biz_name||c.name||'')+', your SaudiPOS subscription is ready!')}" target="_blank" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(37,211,102,.4);background:rgba(37,211,102,.1);color:#25D366;font-size:12px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center">📱 WhatsApp</a>`:''}
         <button onclick="saAddNote('${c.id}')" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(88,166,255,.3);background:rgba(88,166,255,.08);color:#58a6ff;font-size:12px;cursor:pointer">📝 Note</button>
-        <button onclick="saDeleteClient('${c.id}','${(s.biz_name||c.name||'').replace(/'/g,"\\'")}',this)" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(248,81,73,.4);background:rgba(248,81,73,.1);color:var(--red);font-size:12px;cursor:pointer;margin-left:auto">🗑 Delete</button>
+        <button onclick="saDeleteClient('${c.id}','${(s.biz_name||c.name||'').replace(/'/g,"\\'")}' )" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(248,81,73,.4);background:rgba(248,81,73,.1);color:var(--red);font-size:12px;cursor:pointer;margin-left:auto">🗑 Delete</button>
       </div>
     </div>`;
   }).join('');
@@ -6338,12 +6351,47 @@ async function _saUpdate(bizId,newSettings){
   const{error}=await sb.from('businesses').update({settings:newSettings}).eq('id',bizId);
   return error;
 }
-async function saActivateClient(bizId){
-  if(!confirm('Activate this client as paid?')) return;
+// ── SA ACTION MODAL ───────────────────────────────────────────────────────────
+let _saModalCallback=null;
+function openSAModal({title,subtitle,body,confirmLabel,confirmColor,onConfirm}){
+  document.getElementById('sa-modal-title').textContent=title;
+  document.getElementById('sa-modal-subtitle').textContent=subtitle||'';
+  document.getElementById('sa-modal-body').innerHTML=body||'';
+  const btn=document.getElementById('sa-modal-confirm');
+  btn.textContent=confirmLabel||'Confirm';
+  btn.style.background=confirmColor||'var(--accent2)';
+  btn.style.color='#fff';
+  _saModalCallback=onConfirm;
+  document.getElementById('sa-action-modal').style.display='flex';
+}
+function closeSAModal(){
+  document.getElementById('sa-action-modal').style.display='none';
+  _saModalCallback=null;
+}
+async function saModalConfirm(){
+  if(!_saModalCallback) return;
+  const result=await _saModalCallback();
+  if(result!==false) closeSAModal();
+}
+
+function saActivateClient(bizId){
   const c=_saClients.find(x=>x.id===bizId);
-  const error=await _saUpdate(bizId,{...(c?.settings||{}),status:'active'});
-  if(error){showToast('RLS blocked — run SA SQL in Supabase',true);_showSASqlInstructions();}
-  else{showToast('✅ Client activated!');loadSAClients();}
+  const name=c?.settings?.biz_name||c?.name||'this client';
+  openSAModal({
+    title:'✅ Activate Client',
+    subtitle:`Set "${name}" as active (paid)?`,
+    body:`<div style="background:rgba(0,165,80,.08);border:1px solid rgba(0,165,80,.3);border-radius:10px;padding:14px;font-size:13px">
+      <div style="font-weight:700;color:var(--accent2);margin-bottom:6px">${name}</div>
+      <div style="color:var(--muted);font-size:12px">Status will change from Trial → Active (Paid)</div>
+    </div>`,
+    confirmLabel:'✅ Activate',
+    confirmColor:'var(--accent2)',
+    onConfirm:async()=>{
+      const error=await _saUpdate(bizId,{...(c?.settings||{}),status:'active'});
+      if(error){showToast('RLS blocked — run SA SQL in Supabase',true);_showSASqlInstructions();}
+      else{showToast('✅ Client activated!');loadSAClients();}
+    }
+  });
 }
 async function saExtendTrial(bizId){
   const c=_saClients.find(x=>x.id===bizId);
@@ -6354,31 +6402,31 @@ async function saExtendTrial(bizId){
   if(error){showToast('RLS blocked — run SA SQL in Supabase',true);_showSASqlInstructions();}
   else{showToast('✅ Trial extended 14 days!');loadSAClients();}
 }
-async function saDeleteClient(bizId,name,btn){
+function saDeleteClient(bizId,name){
   const c=_saClients.find(x=>x.id===bizId);
   const ownerEmail=c?.owner_email||'';
-  if(!confirm(`Delete "${name}"?\n\nThis removes the business record.\n\nTo also free the email for re-signup, you must delete the auth user in Supabase (a SQL prompt will appear).`)) return;
-  btn.disabled=true;btn.textContent='⏳';
-  let error=null;
-  const{error:rpcErr}=await sb.rpc('sa_delete_business',{biz_id:bizId});
-  if(rpcErr){
-    const res=await sb.from('businesses').delete().eq('id',bizId);
-    error=res.error;
-  }
-  if(error){showToast('RLS blocked — run SA SQL in Supabase',true);btn.disabled=false;btn.textContent='🗑 Delete';return;}
-  // Show SQL to delete auth user so email can be reused
-  if(ownerEmail){
-    const sql=`-- Run this in Supabase SQL Editor to fully free the email:\nDELETE FROM auth.users WHERE email = '${ownerEmail}';`;
-    const el=document.getElementById('sa-clients-list');
-    const box=document.createElement('div');
-    box.style.cssText='background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);border-radius:12px;padding:16px;margin-bottom:12px';
-    box.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:8px">⚠️ Business deleted. To free <strong>${ownerEmail}</strong> for re-signup, run this SQL in <a href="https://supabase.com/dashboard/project/hjygvfhxyonmizdleoqe/sql/new" target="_blank" style="color:#58a6ff">Supabase SQL Editor</a>:</div>
-    <pre style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:11px;color:var(--text);white-space:pre-wrap">${sql}</pre>
-    <button onclick="navigator.clipboard.writeText(\`${sql}\`).then(()=>showToast('SQL copied!'))" style="margin-top:8px;padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;cursor:pointer">📋 Copy SQL</button>`;
-    el.prepend(box);
-  }
-  showToast('✅ Business deleted');
-  loadSAClients();
+  const sql=`DELETE FROM businesses WHERE owner_id = (SELECT id FROM auth.users WHERE email = '${ownerEmail}');\nDELETE FROM auth.users WHERE email = '${ownerEmail}';`;
+  openSAModal({
+    title:'🗑 Delete Client',
+    subtitle:`This will permanently remove "${name}"`,
+    body:`<div style="background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);border-radius:10px;padding:14px;font-size:12px;margin-bottom:12px">
+      <div style="font-weight:700;color:var(--red);margin-bottom:4px">⚠️ This cannot be undone</div>
+      <div style="color:var(--muted)">${ownerEmail}</div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:6px">To fully free the email for re-signup, also run this SQL:</div>
+    <pre style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:10px;color:var(--text);white-space:pre-wrap;overflow-x:auto">${sql}</pre>
+    <button onclick="navigator.clipboard.writeText(\`${sql}\`).then(()=>showToast('SQL copied!'))" style="margin-top:8px;padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;cursor:pointer;width:100%">📋 Copy SQL</button>`,
+    confirmLabel:'🗑 Delete',
+    confirmColor:'var(--red)',
+    onConfirm:async()=>{
+      let error=null;
+      const{error:rpcErr}=await sb.rpc('sa_delete_business',{biz_id:bizId});
+      if(rpcErr){const res=await sb.from('businesses').delete().eq('id',bizId);error=res.error;}
+      if(error){showToast('RLS blocked — run SA SQL in Supabase',true);return;}
+      showToast('✅ Business deleted');
+      loadSAClients();
+    }
+  });
 }
 async function saCleanDuplicates(){
   if(!_saClients.length){await loadSAClients();}
@@ -6404,7 +6452,7 @@ async function saCleanDuplicates(){
     toDelete.push(...group.slice(1).map(c=>c.id));
   });
   if(!toDelete.length){showToast('No duplicates found ✅');return;}
-  if(!confirm(`Found ${toDelete.length} duplicate records to delete (keeping the best per user). Continue?`)) return;
+  if(!window.confirm(`Found ${toDelete.length} duplicate records to delete (keeping the best per user). Continue?`)) return;
   let deleted=0,blocked=0;
   for(const id of toDelete){
     const{error:rpcErr}=await sb.rpc('sa_delete_business',{biz_id:id});
@@ -6478,13 +6526,34 @@ function exportSAClientsCSV(){
   a.download=`saudipos-clients-${new Date().toISOString().slice(0,10)}.csv`;a.click();
   showToast('✅ CSV exported');
 }
-async function saChangePlan(bizId){
-  const plan=prompt('Enter plan (starter/growth/enterprise):');
-  if(!plan||!['starter','growth','enterprise'].includes(plan)){showToast('Invalid plan',true);return;}
+function saChangePlan(bizId){
   const c=_saClients.find(x=>x.id===bizId);
-  const error=await _saUpdate(bizId,{...(c?.settings||{}),plan});
-  if(error){showToast('RLS blocked — run SA SQL in Supabase',true);_showSASqlInstructions();}
-  else{showToast('✅ Plan updated!');loadSAClients();}
+  const current=c?.settings?.plan||'growth';
+  const name=c?.settings?.biz_name||c?.name||'this client';
+  openSAModal({
+    title:'📋 Change Plan',
+    subtitle:`Current plan: ${current.toUpperCase()}`,
+    body:`<div style="display:flex;flex-direction:column;gap:8px">
+      ${[['starter','99','1 branch · Up to 3 staff'],['growth','199','3 branches · Unlimited staff'],['enterprise','399','Unlimited branches & staff']].map(([p,price,desc])=>`
+      <label style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:${current===p?'rgba(0,165,80,.1)':'var(--bg3)'};border:2px solid ${current===p?'rgba(0,165,80,.5)':'var(--border)'};border-radius:10px;cursor:pointer">
+        <input type="radio" name="sa-plan" value="${p}" ${current===p?'checked':''} style="accent-color:var(--accent2)"/>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;text-transform:uppercase">${p}</div>
+          <div style="font-size:11px;color:var(--muted)">${desc}</div>
+        </div>
+        <div style="font-size:14px;font-weight:800;color:var(--accent2)">${price} SAR/mo</div>
+      </label>`).join('')}
+    </div>`,
+    confirmLabel:'💾 Save Plan',
+    confirmColor:'var(--accent2)',
+    onConfirm:async()=>{
+      const plan=document.querySelector('input[name="sa-plan"]:checked')?.value;
+      if(!plan){showToast('Select a plan',true);return false;}
+      const error=await _saUpdate(bizId,{...(c?.settings||{}),plan});
+      if(error){showToast('RLS blocked — run SA SQL in Supabase',true);_showSASqlInstructions();}
+      else{showToast('✅ Plan updated!');loadSAClients();}
+    }
+  });
 }
 
 // ── BRANCH REPORTS ────────────────────────────────────────────────────────────
