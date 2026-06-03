@@ -1036,7 +1036,7 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
       <button class="nav-tab" onclick="setScreen('kitchen')" data-screen="kitchen" id="nav-kitchen">👨‍🍳 Kitchen</button>
       <button class="nav-tab" onclick="setScreen('orders')" data-screen="orders" id="nav-orders">📋 Orders</button>
       <button class="nav-tab" onclick="setScreen('customers')" data-screen="customers" id="nav-customers">👥 Customers</button>
-      <button class="nav-tab" onclick="setScreen('menu')" data-screen="menu" id="nav-menu">🍽 Menu</button>
+      <button class="nav-tab" onclick="setScreen('menu')" data-screen="menu" id="nav-menu">🍽 Menu / Items</button>
       <button class="nav-tab" onclick="setScreen('inventory')" data-screen="inventory" id="nav-inventory">📦 Inventory</button>
       <button class="nav-tab" onclick="setScreen('staff')" data-screen="staff" id="nav-staff">👤 Staff</button>
       <button class="nav-tab" onclick="setScreen('promos')" data-screen="promos" id="nav-promos">🏷 Promos</button>
@@ -1110,7 +1110,7 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
         </div>
         <div class="total-row"><span data-i18n="subtotal">Subtotal</span><span id="subtotal-val">0.00 SAR</span></div>
         <div class="total-row"><span data-i18n="vat">VAT (15%)</span><span id="vat-val">0.00 SAR</span></div>
-        <div class="total-row"><span data-i18n="discount">Discount</span><span id="disc-val">0.00 SAR</span></div>
+        <div class="total-row" id="disc-row" style="display:none"><span data-i18n="discount">Discount</span><span id="disc-val">0.00 SAR</span></div>
         <div class="total-row grand"><span data-i18n="total">Total</span><span class="val" id="total-val">0.00 SAR</span></div>
       </div>
       <!-- Customer selector -->
@@ -2979,18 +2979,14 @@ function toggleMode(){
 function setModeFromSettings(v){_mode=v;applyMode();if(_bizId)sb.from('businesses').update({type:_mode}).eq('id',_bizId);}
 function applyMode(){
   const badge=document.getElementById('mode-badge');
-  const tablesNav=document.getElementById('nav-tables');
-  const kitchenNav=document.getElementById('nav-kitchen');
   const setMode=document.getElementById('set-mode');
   if(_mode==='restaurant'){
     badge.textContent='🍔 Restaurant';badge.className='mode-badge mode-restaurant';
-    tablesNav.style.display='';kitchenNav.style.display='';
     document.getElementById('btn-takeaway').style.display='';
     document.getElementById('btn-delivery').style.display='';
     document.getElementById('table-badge').style.display='';
   } else {
     badge.textContent='🛒 Retail';badge.className='mode-badge mode-retail';
-    tablesNav.style.display='none';kitchenNav.style.display='none';
     document.getElementById('btn-takeaway').style.display='none';
     document.getElementById('btn-delivery').style.display='none';
     document.getElementById('table-badge').style.display='none';
@@ -3002,6 +2998,11 @@ function applyMode(){
     barcodeInput.style.display=_mode==='retail'?'':'none';
     menuSearch.placeholder=_mode==='retail'?'Search by name…':'Search menu…';
   }
+  // Update nav labels for mode
+  const menuNav=document.getElementById('nav-menu');
+  if(menuNav) menuNav.textContent=_mode==='retail'?'📦 Products':'🍽 Menu';
+  const inventoryNav=document.getElementById('nav-inventory');
+  if(inventoryNav) inventoryNav.textContent=_mode==='retail'?'📊 Stock':'📦 Inventory';
   if(setMode) setMode.value=_mode;
   if(_role) applyRoleNav();
   renderCatBar();
@@ -3435,6 +3436,8 @@ function updateTotals(){
   document.getElementById('subtotal-val').textContent=`${sub.toFixed(2)} ${cur}`;
   document.getElementById('vat-val').textContent=`${vatAmt.toFixed(2)} ${cur}`;
   document.getElementById('disc-val').textContent=`-${discAmt.toFixed(2)} ${cur}`;
+  const discRow=document.getElementById('disc-row');
+  if(discRow) discRow.style.display=discAmt>0?'flex':'none';
   document.getElementById('total-val').textContent=`${total.toFixed(2)} ${cur}`;
   // Sync mobile cart bar
   const mbl=document.getElementById('mobile-cart-label');
@@ -5764,10 +5767,10 @@ let _role='manager'; // manager | cashier | kitchen
 
 // Nav tabs visible per role
 const ROLE_NAV={
-  manager:['pos','tables','kitchen','orders','customers','menu','inventory','staff','promos','reports','devices'],
-  cashier:['pos','tables','kitchen','orders','customers'],
-  kitchen:[],  // handled by KDS full-screen
-  admin:[]     // handled by admin screen
+  manager:{restaurant:['pos','tables','kitchen','orders','customers','menu','inventory','staff','promos','reports','devices'],retail:['pos','orders','customers','menu','inventory','staff','promos','reports','devices']},
+  cashier:{restaurant:['pos','tables','kitchen','orders','customers'],retail:['pos','orders','customers']},
+  kitchen:{restaurant:[],retail:[]},
+  admin:{restaurant:[],retail:[]}
 };
 
 const SUPER_ADMIN_EMAIL='md.nawas85@gmail.com';
@@ -6929,7 +6932,8 @@ async function renderAdminPanel(){
 }
 
 function applyRoleNav(){
-  const allowed=ROLE_NAV[_role]??ROLE_NAV.manager;
+  const roleEntry=ROLE_NAV[_role]??ROLE_NAV.manager;
+  const allowed=(roleEntry[_mode]??roleEntry.restaurant)??[];
   document.querySelectorAll('.nav-tab').forEach(btn=>{
     const screen=btn.dataset.screen;
     btn.style.display=allowed.includes(screen)?'':'none';
