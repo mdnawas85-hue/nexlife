@@ -918,6 +918,7 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
         <option value="month" selected>This Month</option>
         <option value="all">All Time</option>
       </select>
+      <button onclick="clearAllBranchOrders()" style="padding:7px 16px;border-radius:8px;border:1px solid rgba(248,81,73,.4);background:rgba(248,81,73,.08);color:var(--red);font-size:12px;font-weight:600;cursor:pointer">🗑 Clear All Orders</button>
       <button onclick="closeOwnerDashboard()" style="padding:7px 16px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;font-weight:600;cursor:pointer">← Back</button>
     </div>
   </div>
@@ -7255,6 +7256,28 @@ async function openOwnerDashboard(){
   document.getElementById('role-screen').style.display='none';
   document.getElementById('owner-dashboard').style.display='flex';
   await loadDashboard();
+}
+async function clearAllBranchOrders(){
+  const allIds=[_businessId,..._branches.map(b=>b.id)].filter(Boolean);
+  openSAModal({
+    title:'🗑 Clear ALL Orders',
+    subtitle:'Delete all orders across ALL branches?',
+    body:`<div style="background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);border-radius:10px;padding:14px;font-size:12px">
+      <div style="font-weight:700;color:var(--red);margin-bottom:6px">⚠️ This cannot be undone</div>
+      <div style="color:var(--muted)">Deletes all orders from: ${_branches.map(b=>b.name).join(', ')}</div>
+    </div>`,
+    confirmLabel:'🗑 Clear All Orders',
+    confirmColor:'var(--red)',
+    onConfirm:async()=>{
+      showToast('⏳ Clearing all orders...');
+      for(const id of allIds){
+        await sb.from('orders').delete().eq('biz_id',id);
+      }
+      _orders=[];_orderNum=1;
+      await loadDashboard();
+      showToast('✅ All orders cleared across all branches');
+    }
+  });
 }
 function closeOwnerDashboard(){
   document.getElementById('owner-dashboard').style.display='none';
