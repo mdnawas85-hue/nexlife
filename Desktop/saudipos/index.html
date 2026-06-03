@@ -6495,6 +6495,37 @@ async function saExtendTrial(bizId){
   else{showToast('✅ Trial extended 14 days!');loadSAClients();}
 }
 
+async function saBackupClient(bizId){
+  const c=_saClients.find(x=>x.id===bizId);
+  if(!c){showToast('Client not found',true);return;}
+  showToast('📦 Preparing backup…');
+  const[ordersRes,productsRes,catsRes,staffRes,customersRes,promosRes]=await Promise.all([
+    sb.from('orders').select('*').eq('biz_id',bizId),
+    sb.from('products').select('*').eq('biz_id',bizId),
+    sb.from('categories').select('*').eq('biz_id',bizId),
+    sb.from('staff').select('*').eq('biz_id',bizId),
+    sb.from('customers').select('*').eq('biz_id',bizId),
+    sb.from('promos').select('*').eq('biz_id',bizId),
+  ]);
+  const backup={
+    exported_at:new Date().toISOString(),
+    business:{id:c.id,name:c.settings?.biz_name||c.name||'',email:c.owner_email||'',type:c.type||'restaurant',plan:c.settings?.plan||'',status:c.settings?.status||'',branches:c.settings?.branches||[],joined:c.created_at},
+    orders:ordersRes.data||[],
+    products:productsRes.data||[],
+    categories:catsRes.data||[],
+    staff:(staffRes.data||[]).map(({pin,...s})=>s),
+    customers:customersRes.data||[],
+    promos:promosRes.data||[],
+  };
+  const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const safeName=(backup.business.name||bizId).replace(/[^a-z0-9]/gi,'-').toLowerCase();
+  a.href=url;a.download=`backup-${safeName}-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();URL.revokeObjectURL(url);
+  showToast('✅ Backup downloaded!');
+}
+
 function saDeleteClient(bizId,name){
   const c=_saClients.find(x=>x.id===bizId);
   const ownerEmail=c?.owner_email||'';
@@ -6508,7 +6539,8 @@ function saDeleteClient(bizId,name){
     </div>
     <div style="font-size:12px;color:var(--muted);margin-bottom:6px">To free the email for re-signup, run this SQL in Supabase:</div>
     <pre style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:10px;color:var(--text);white-space:pre-wrap;overflow-x:auto">${sql}</pre>
-    <button onclick="navigator.clipboard.writeText(\`${sql}\`).then(()=>showToast('SQL copied!'))" style="margin-top:8px;padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;cursor:pointer;width:100%">📋 Copy SQL</button>`,
+    <button onclick="navigator.clipboard.writeText(\`${sql}\`).then(()=>showToast('SQL copied!'))" style="margin-top:8px;padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;cursor:pointer;width:100%">📋 Copy SQL</button>
+    <button onclick="saBackupClient('${bizId}')" style="margin-top:6px;padding:6px 14px;border-radius:8px;border:1px solid rgba(0,165,80,.4);background:rgba(0,165,80,.08);color:var(--accent2);font-size:12px;cursor:pointer;width:100%">📦 Download Backup (optional)</button>`,
     confirmLabel:'🗑 Delete',
     confirmColor:'var(--red)',
     onConfirm:async()=>{
