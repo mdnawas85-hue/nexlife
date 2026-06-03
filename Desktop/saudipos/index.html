@@ -876,8 +876,10 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
     <div style="font-size:12px;color:var(--muted);margin-top:2px" id="branch-biz-sub">Choose a branch to continue</div>
   </div>
   <div id="branch-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;width:100%;max-width:700px"></div>
-  <div id="branch-add-btn-wrap" style="display:none">
-    <button onclick="openAddBranchModal()" class="btn btn-primary">+ Add Branch</button>
+  <div id="branch-admin-btn-wrap" style="display:none;flex-direction:column;align-items:center;gap:10px;margin-top:4px">
+    <button onclick="openITAdminPortal()" style="display:flex;align-items:center;gap:8px;padding:10px 24px;border-radius:12px;border:1.5px solid rgba(88,166,255,.4);background:rgba(88,166,255,.08);color:#58a6ff;font-size:13px;font-weight:700;cursor:pointer">
+      ⚙️ IT Admin / Owner Portal
+    </button>
   </div>
   <button onclick="doLogout()" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;margin-top:4px">⎋ Logout</button>
 </div>
@@ -968,6 +970,80 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
         <button onclick="adminFullReset()" style="padding:10px 16px;border-radius:10px;border:2px solid rgba(248,81,73,.6);background:rgba(248,81,73,.15);color:var(--red);font-size:12px;font-weight:800;cursor:pointer">⚠️ Full Test Reset (Orders + Audit + Counter)</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- IT ADMIN PORTAL -->
+<div id="it-admin-portal" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:880;flex-direction:column;overflow:hidden">
+  <!-- Header -->
+  <div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:18px;font-weight:900">Saudi<span style="color:var(--accent2)">POS</span></span>
+      <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(88,166,255,.15);color:#58a6ff;border:1px solid rgba(88,166,255,.3)">⚙️ IT Admin</span>
+    </div>
+    <button onclick="closeITAdminPortal()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:6px 12px;border-radius:8px;border:1px solid var(--border)">← Back to Branches</button>
+  </div>
+  <!-- Tab bar -->
+  <div style="display:flex;gap:4px;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0">
+    <button class="ita-tab active" id="ita-tab-branches" onclick="setITATab('branches')" style="padding:8px 16px;border-radius:10px;border:none;background:var(--accent2);color:#fff;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">🏪 Branches</button>
+    <button class="ita-tab" id="ita-tab-visibility" onclick="setITATab('visibility')" style="padding:8px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">👁 Menu Visibility</button>
+    <button class="ita-tab" id="ita-tab-dashboard" onclick="setITATab('dashboard')" style="padding:8px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">📊 Owner Dashboard</button>
+    <button class="ita-tab" id="ita-tab-settings" onclick="setITATab('settings')" style="padding:8px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">⚙️ Settings</button>
+    <button class="ita-tab" id="ita-tab-superadmin" onclick="setITATab('superadmin')" style="display:none;padding:8px 16px;border-radius:10px;border:1px solid rgba(248,81,73,.4);background:rgba(248,81,73,.08);color:var(--red);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">🛡 Super Admin</button>
+  </div>
+  <!-- Body -->
+  <div style="flex:1;overflow-y:auto" id="ita-body">
+    <!-- Branches tab -->
+    <div id="ita-branches" style="padding:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:15px;font-weight:800">🏪 Branch Management</div>
+        <button onclick="openAddBranchModal()" class="btn btn-primary">+ Add Branch</button>
+      </div>
+      <div id="ita-branch-list" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+    <!-- Visibility tab -->
+    <div id="ita-visibility" style="display:none;padding:20px">
+      <div style="font-size:15px;font-weight:800;margin-bottom:16px">👁 Menu Visibility per Branch</div>
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button onclick="setITABCView('item')" id="ita-bc-item-btn" style="padding:7px 16px;border-radius:10px;border:1.5px solid var(--accent);background:rgba(255,184,0,.1);color:var(--accent);font-size:12px;font-weight:700;cursor:pointer">By Item</button>
+        <button onclick="setITABCView('branch')" id="ita-bc-branch-btn" style="padding:7px 16px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;font-weight:700;cursor:pointer">By Branch</button>
+      </div>
+      <div id="ita-bc-body"></div>
+    </div>
+    <!-- Dashboard tab -->
+    <div id="ita-dashboard" style="display:none;padding:20px">
+      <div style="font-size:15px;font-weight:800;margin-bottom:16px">📊 Owner Dashboard</div>
+      <div id="ita-dashboard-body"></div>
+    </div>
+    <!-- Settings tab -->
+    <div id="ita-settings" style="display:none;padding:20px">
+      <div style="font-size:15px;font-weight:800;margin-bottom:16px">⚙️ Business Settings</div>
+      <div id="ita-settings-body"></div>
+    </div>
+    <!-- Super Admin tab -->
+    <div id="ita-superadmin" style="display:none;padding:0">
+      <div id="ita-sa-body"></div>
+    </div>
+  </div>
+</div>
+
+<!-- IT ADMIN PIN MODAL -->
+<div id="ita-pin-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:890;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:28px 24px;width:100%;max-width:340px;text-align:center">
+    <div style="font-size:28px;margin-bottom:8px">🔐</div>
+    <div style="font-size:15px;font-weight:800;margin-bottom:4px">IT Admin Access</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:20px">Enter your IT Admin PIN to continue</div>
+    <div style="display:flex;justify-content:center;gap:10px;margin-bottom:20px">
+      <div id="ita-pin-d1" style="width:44px;height:52px;border-radius:10px;border:2px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800">—</div>
+      <div id="ita-pin-d2" style="width:44px;height:52px;border-radius:10px;border:2px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800">—</div>
+      <div id="ita-pin-d3" style="width:44px;height:52px;border-radius:10px;border:2px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800">—</div>
+      <div id="ita-pin-d4" style="width:44px;height:52px;border-radius:10px;border:2px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800">—</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:220px;margin:0 auto">
+      ${[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>`<button onclick="itaPinKey('${k}')" style="padding:14px;border-radius:12px;border:1px solid var(--border);background:${k===''?'transparent':'var(--bg3)'};color:var(--text);font-size:18px;font-weight:700;cursor:pointer;${k===''?'cursor:default;pointer-events:none':''}">${k}</button>`).join('')}
+    </div>
+    <div id="ita-pin-error" style="color:var(--red);font-size:12px;margin-top:12px;min-height:18px"></div>
+    <button onclick="closeITAPinModal()" style="margin-top:10px;background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer">Cancel</button>
   </div>
 </div>
 
@@ -2786,6 +2862,9 @@ function showBranchScreen(){
   const bizName=meta.biz_name||_user?.email?.split('@')[0]||'Business';
   document.getElementById('branch-biz-title').textContent=bizName;
   document.getElementById('branch-biz-sub').textContent='Select a branch to continue';
+  // Show IT Admin button for owners
+  const adminWrap=document.getElementById('branch-admin-btn-wrap');
+  if(adminWrap) adminWrap.style.display=_businessId?'flex':'none';
   // Render branch cards
   const container=document.getElementById('branch-cards');
   container.innerHTML='';
@@ -2802,9 +2881,9 @@ function showBranchScreen(){
     card.onclick=()=>selectBranch(b);
     container.appendChild(card);
   });
-  // Show add branch button only for owner (they have _businessId)
+  // Hide old add branch button (now inside IT Admin portal)
   const addWrap=document.getElementById('branch-add-btn-wrap');
-  if(addWrap) addWrap.style.display=_businessId?'block':'none';
+  if(addWrap) addWrap.style.display='none';
   // Show branch screen
   document.getElementById('role-screen').style.display='none';
   document.getElementById('branch-screen').style.display='flex';
@@ -6568,6 +6647,270 @@ function populateReportBranchFilter(){
     if(b.id===_bizId) opt.selected=true;
     sel.appendChild(opt);
   });
+}
+
+// ── IT ADMIN PORTAL ──────────────────────────────────────────────────────────
+let _itaPinVal='';
+let _itaView='item';
+
+function openITAdminPortal(){
+  _itaPinVal='';
+  _itaUpdatePinDisplay();
+  document.getElementById('ita-pin-error').textContent='';
+  document.getElementById('ita-pin-modal').style.display='flex';
+}
+function closeITAPinModal(){
+  document.getElementById('ita-pin-modal').style.display='none';
+  _itaPinVal='';
+}
+function itaPinKey(k){
+  if(k==='⌫'){_itaPinVal=_itaPinVal.slice(0,-1);}
+  else if(k===''){ return; }
+  else if(_itaPinVal.length<4){_itaPinVal+=String(k);}
+  _itaUpdatePinDisplay();
+  if(_itaPinVal.length===4) setTimeout(_itaVerifyPin,120);
+}
+function _itaUpdatePinDisplay(){
+  for(let i=1;i<=4;i++){
+    const el=document.getElementById('ita-pin-d'+i);
+    el.textContent=_itaPinVal.length>=i?'●':'—';
+    el.style.borderColor=_itaPinVal.length>=i?'var(--accent2)':'var(--border)';
+  }
+}
+function _itaVerifyPin(){
+  const correct=_settings.admin_pin||'0000';
+  if(_itaPinVal===correct){
+    closeITAPinModal();
+    _launchITAdminPortal();
+  } else {
+    document.getElementById('ita-pin-error').textContent='❌ Wrong PIN';
+    _itaPinVal='';
+    _itaUpdatePinDisplay();
+  }
+}
+function _launchITAdminPortal(){
+  // Show/hide super admin tab
+  const saTab=document.getElementById('ita-tab-superadmin');
+  if(saTab) saTab.style.display=_isSuperAdmin()?'block':'none';
+  document.getElementById('branch-screen').style.display='none';
+  document.getElementById('it-admin-portal').style.display='flex';
+  setITATab('branches');
+}
+function closeITAdminPortal(){
+  document.getElementById('it-admin-portal').style.display='none';
+  showBranchScreen();
+}
+function setITATab(tab){
+  ['branches','visibility','dashboard','settings','superadmin'].forEach(t=>{
+    const body=document.getElementById('ita-'+t);
+    const btn=document.getElementById('ita-tab-'+t);
+    if(body) body.style.display=t===tab?'block':'none';
+    if(btn){
+      const isActive=t===tab;
+      if(t==='superadmin'){
+        btn.style.background=isActive?'rgba(248,81,73,.3)':'rgba(248,81,73,.08)';
+        btn.style.borderColor=isActive?'var(--red)':'rgba(248,81,73,.4)';
+      } else {
+        btn.style.background=isActive?'var(--accent2)':'var(--bg3)';
+        btn.style.color=isActive?'#fff':'var(--text)';
+        btn.style.borderColor=isActive?'transparent':'var(--border)';
+      }
+    }
+  });
+  if(tab==='branches') _renderITABranches();
+  if(tab==='visibility') _renderITAVisibility();
+  if(tab==='dashboard') _renderITADashboard();
+  if(tab==='settings') _renderITASettings();
+  if(tab==='superadmin') _renderITASuperAdmin();
+}
+
+// ── ITA: BRANCHES ─────────────────────────────────────────────────────────────
+function _renderITABranches(){
+  const el=document.getElementById('ita-branch-list');
+  if(!_branches.length){
+    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">No branches yet. Add your first branch.</div>';
+    return;
+  }
+  el.innerHTML=_branches.map((b,i)=>`
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px">
+      <div style="font-size:28px">🏪</div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:800">${b.name}</div>
+        ${b.address?`<div style="font-size:11px;color:var(--muted);margin-top:2px">📍 ${b.address}</div>`:''}
+        ${b.phone?`<div style="font-size:11px;color:var(--muted)">📞 ${b.phone}</div>`:''}
+        <div style="font-size:10px;color:var(--muted);margin-top:4px">ID: ${b.id.slice(0,12)}…</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+        <span style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;background:rgba(0,165,80,.15);color:var(--accent2)">● Active</span>
+        <button onclick="editITABranch('${b.id}')" style="padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:11px;cursor:pointer">✏️ Edit</button>
+        ${i>0?`<button onclick="deleteITABranch('${b.id}','${b.name.replace(/'/g,"\\'")}' )" style="padding:5px 12px;border-radius:8px;border:1px solid rgba(248,81,73,.4);background:rgba(248,81,73,.08);color:var(--red);font-size:11px;cursor:pointer">🗑 Delete</button>`:'<span style="font-size:10px;color:var(--muted);padding:5px 0">Main Branch</span>'}
+      </div>
+    </div>`).join('');
+}
+function editITABranch(branchId){
+  const b=_branches.find(x=>x.id===branchId);
+  if(!b) return;
+  document.getElementById('branch-name-input').value=b.name;
+  document.getElementById('branch-addr-input').value=b.address||'';
+  document.getElementById('branch-phone-input').value=b.phone||'';
+  // Repurpose add modal as edit
+  const modal=document.getElementById('add-branch-modal');
+  modal.querySelector('div > div:first-child').textContent='✏️ Edit Branch';
+  const saveBtn=modal.querySelector('button.btn-primary');
+  saveBtn.textContent='Save Changes';
+  saveBtn.onclick=async()=>{
+    const name=document.getElementById('branch-name-input').value.trim();
+    if(!name){showToast('Name required',true);return;}
+    b.name=name;b.address=document.getElementById('branch-addr-input').value.trim()||null;
+    b.phone=document.getElementById('branch-phone-input').value.trim()||null;
+    await _saveBranchesToDB();
+    closeAddBranchModal();
+    _renderITABranches();
+    showToast('Branch updated ✅');
+    // Reset modal back to Add mode
+    modal.querySelector('div > div:first-child').textContent='🏪 Add Branch';
+    saveBtn.textContent='Save Branch';saveBtn.onclick=saveBranch;
+  };
+  modal.style.display='flex';
+}
+async function deleteITABranch(branchId,name){
+  openSAModal({
+    title:'🗑 Delete Branch',
+    subtitle:`Remove "${name}" from your account?`,
+    body:`<div style="background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);border-radius:10px;padding:14px;font-size:12px">
+      <div style="font-weight:700;color:var(--red);margin-bottom:4px">⚠️ This cannot be undone</div>
+      <div style="color:var(--muted)">All orders associated with this branch will remain in the database.</div>
+    </div>`,
+    confirmLabel:'🗑 Delete Branch',
+    confirmColor:'var(--red)',
+    onConfirm:async()=>{
+      _branches=_branches.filter(b=>b.id!==branchId);
+      await _saveBranchesToDB();
+      _renderITABranches();
+      showToast('Branch deleted');
+    }
+  });
+}
+
+// ── ITA: VISIBILITY ───────────────────────────────────────────────────────────
+function setITABCView(v){
+  _itaView=v;
+  ['item','branch'].forEach(x=>{
+    const btn=document.getElementById('ita-bc-'+x+'-btn');
+    if(btn){btn.style.background=v===x?'rgba(255,184,0,.1)':'var(--bg3)';btn.style.borderColor=v===x?'var(--accent)':'var(--border)';btn.style.color=v===x?'var(--accent)':'var(--text)';}
+  });
+  _renderITAVisibilityBody();
+}
+function _renderITAVisibility(){
+  _itaView='item';
+  setITABCView('item');
+}
+function _renderITAVisibilityBody(){
+  const prev=_bcView;
+  _bcView=_itaView;
+  renderBranchControl();
+  // Move the rendered HTML into ita-bc-body
+  const src=document.getElementById('branch-control-body');
+  const dst=document.getElementById('ita-bc-body');
+  if(src&&dst) dst.innerHTML=src.innerHTML;
+  _bcView=prev;
+}
+
+// ── ITA: DASHBOARD ────────────────────────────────────────────────────────────
+async function _renderITADashboard(){
+  // Show owner dashboard panel on top of ITA portal
+  document.getElementById('owner-dashboard').style.display='flex';
+  await loadDashboard();
+  // Override close button to return to ITA
+  const closeBtn=document.querySelector('#owner-dashboard button[onclick="closeOwnerDashboard()"]');
+  if(closeBtn){
+    closeBtn.setAttribute('onclick','closeOwnerDashboardToITA()');
+    closeBtn.textContent='← IT Admin';
+  }
+}
+function closeOwnerDashboardToITA(){
+  document.getElementById('owner-dashboard').style.display='none';
+  // Reset close button
+  const closeBtn=document.querySelector('#owner-dashboard button');
+  if(closeBtn){closeBtn.setAttribute('onclick','closeOwnerDashboard()');closeBtn.textContent='← Back';}
+  setITATab('branches');
+}
+
+// ── ITA: SETTINGS ─────────────────────────────────────────────────────────────
+function _renderITASettings(){
+  const el=document.getElementById('ita-settings-body');
+  // Render key settings inline
+  const cur=_settings.currency||'SAR';
+  const vat=_settings.vat_rate??15;
+  const pin=_settings.admin_pin||'0000';
+  const bizName=_settings.biz_name||'';
+  const footer=_settings.receipt_footer||'';
+  const mode=_mode;
+  el.innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:14px;max-width:500px">
+      <div class="form-group"><label class="form-label">Business Name</label>
+        <input class="form-input" id="ita-set-bizname" value="${bizName}" placeholder="Business Name"/>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group"><label class="form-label">Currency</label>
+          <select class="form-input" id="ita-set-currency">
+            <option value="SAR" ${cur==='SAR'?'selected':''}>SAR</option>
+            <option value="USD" ${cur==='USD'?'selected':''}>USD</option>
+            <option value="AED" ${cur==='AED'?'selected':''}>AED</option>
+            <option value="KWD" ${cur==='KWD'?'selected':''}>KWD</option>
+            <option value="BHD" ${cur==='BHD'?'selected':''}>BHD</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">VAT %</label>
+          <input class="form-input" id="ita-set-vat" type="number" value="${vat}" min="0" max="30"/>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">IT Admin PIN</label>
+        <input class="form-input" id="ita-set-pin" type="password" maxlength="4" value="${pin}" placeholder="4 digits"/>
+      </div>
+      <div class="form-group"><label class="form-label">Receipt Footer</label>
+        <input class="form-input" id="ita-set-footer" value="${footer}" placeholder="Thank you!"/>
+      </div>
+      <div class="form-group"><label class="form-label">Business Mode</label>
+        <select class="form-input" id="ita-set-mode" onchange="setModeFromSettings(this.value)">
+          <option value="restaurant" ${mode==='restaurant'?'selected':''}>🍔 Restaurant / Cafe</option>
+          <option value="retail" ${mode==='retail'?'selected':''}>🛒 Retail Shop</option>
+        </select>
+      </div>
+      <button onclick="saveITASettings()" class="btn btn-primary" style="align-self:flex-start;padding:10px 28px">💾 Save Settings</button>
+    </div>`;
+}
+async function saveITASettings(){
+  const bizName=document.getElementById('ita-set-bizname').value.trim();
+  const currency=document.getElementById('ita-set-currency').value;
+  const vat=+document.getElementById('ita-set-vat').value||15;
+  const pin=document.getElementById('ita-set-pin').value.trim();
+  const footer=document.getElementById('ita-set-footer').value.trim();
+  if(!bizName){showToast('Business name required',true);return;}
+  if(pin&&!/^\d{4}$/.test(pin)){showToast('PIN must be 4 digits',true);return;}
+  _settings.biz_name=bizName;_settings.currency=currency;_settings.vat_rate=vat;
+  if(pin) _settings.admin_pin=pin;
+  _settings.receipt_footer=footer;
+  const{error}=await sb.from('businesses').update({settings:_settings}).eq('id',_businessId);
+  if(error){showToast('Save failed: '+error.message,true);return;}
+  showToast('✅ Settings saved');
+}
+
+// ── ITA: SUPER ADMIN ──────────────────────────────────────────────────────────
+function _renderITASuperAdmin(){
+  // Open SA panel on top, override back button to return to ITA
+  openSuperAdmin();
+  setTimeout(()=>{
+    const backBtn=document.querySelector('#super-admin-panel button[onclick="closeSuperAdmin()"]');
+    if(backBtn){backBtn.setAttribute('onclick','closeSuperAdminToITA()');backBtn.textContent='← IT Admin';}
+  },100);
+}
+function closeSuperAdminToITA(){
+  const panel=document.getElementById('super-admin-panel');
+  if(panel) panel.style.display='none';
+  const backBtn=document.querySelector('#super-admin-panel button');
+  if(backBtn){backBtn.setAttribute('onclick','closeSuperAdmin()');backBtn.textContent='← Back';}
+  setITATab('branches');
 }
 
 // ── TRIAL & SUBSCRIPTION ─────────────────────────────────────────────────────
