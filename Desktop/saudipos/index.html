@@ -6748,12 +6748,23 @@ function _itaVerifyPin(){
     _itaUpdatePinDisplay();
   }
 }
-function _launchITAdminPortal(){
-  // Show/hide super admin tab
+async function _launchITAdminPortal(){
   const saTab=document.getElementById('ita-tab-superadmin');
   if(saTab) saTab.style.display=_isSuperAdmin()?'block':'none';
   document.getElementById('branch-screen').style.display='none';
   document.getElementById('it-admin-portal').style.display='flex';
+  // Load products/cats from main DB so Menu Visibility works
+  if(!_products.length||!_cats.length){
+    const mainId=_businessId||_bizId;
+    if(mainId){
+      const[pr,cr]=await Promise.all([
+        sb.from('products').select('*').eq('biz_id',mainId).order('sort_order'),
+        sb.from('categories').select('*').eq('biz_id',mainId).order('sort_order'),
+      ]);
+      if(pr.data?.length) _products=pr.data;
+      if(cr.data?.length) _cats=cr.data;
+    }
+  }
   setITATab('branches');
 }
 function closeITAdminPortal(){
