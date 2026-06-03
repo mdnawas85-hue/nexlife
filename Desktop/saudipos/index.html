@@ -807,7 +807,7 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
       <div style="font-size:13px;font-weight:800">Cashier</div>
       <div style="font-size:10px;color:var(--muted);margin-top:3px">POS & Orders</div>
     </div>
-    <div onclick="roleCardClick('kitchen')" style="background:var(--bg2);border:2px solid rgba(210,153,34,.3);border-radius:16px;padding:22px 14px;text-align:center;cursor:pointer;transition:all .15s">
+    <div id="rs-kitchen-card" onclick="roleCardClick('kitchen')" style="background:var(--bg2);border:2px solid rgba(210,153,34,.3);border-radius:16px;padding:22px 14px;text-align:center;cursor:pointer;transition:all .15s">
       <div style="font-size:38px;margin-bottom:8px">👨‍🍳</div>
       <div style="font-size:13px;font-weight:800">Kitchen</div>
       <div style="font-size:10px;color:var(--muted);margin-top:3px">KDS display</div>
@@ -5796,6 +5796,9 @@ function showRoleScreen(){
   document.getElementById('app').style.display='none';
   document.getElementById('kds-screen').style.display='none';
   document.getElementById('role-screen').style.display='flex';
+  // Hide Kitchen card for retail mode
+  const kc=document.getElementById('rs-kitchen-card');
+  if(kc) kc.style.display=_mode==='retail'?'none':'';
   // Owner Dashboard: only at main business level (not inside a branch), and only if 2+ branches
   const dc=document.getElementById('rs-dashboard-card');
   if(dc) dc.style.display=(_branches.length>1&&!_isBranchMode())?'block':'none';
