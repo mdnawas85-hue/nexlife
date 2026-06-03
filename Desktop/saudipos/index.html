@@ -2703,6 +2703,7 @@ async function onSignedIn(user){
     _currentBranch=null;
     updateBranchIndicator();
     await loadAll();
+    applyMode();
     const savedRole=sessionStorage.getItem('posRole');
     if(savedRole){selectRole(savedRole);}else{showRoleScreen();}
     renderPOS();
@@ -2923,7 +2924,19 @@ async function loadCats(){
   // Always read from main DB (branches share the same catalogue)
   const mainId=_businessId||_bizId;
   const{data}=await sb.from('categories').select('*').eq('biz_id',mainId).order('sort_order');
-  if(data?.length){_cats=data;return;}
+  if(data?.length){
+    // Auto-migrate: if retail shop still has old 3-item placeholder categories, replace them
+    const oldRetailNames=['Electronics','Clothing','Food'];
+    const isOldRetail=_mode==='retail'&&data.length===3&&oldRetailNames.every(n=>data.find(c=>c.name===n));
+    if(isOldRetail&&!_isBranchMode()){
+      await sb.from('categories').delete().eq('biz_id',mainId);
+      const newDefs=defaultCats().map(({id,...c})=>({...c,biz_id:mainId}));
+      const{data:saved}=await sb.from('categories').insert(newDefs).select();
+      _cats=saved||defaultCats();
+      return;
+    }
+    _cats=data;return;
+  }
   if(_isBranchMode()){_cats=[];return;} // branch: empty until main has items
   const defaults=defaultCats().map(({id,...c})=>({...c,biz_id:mainId}));
   const{data:saved}=await sb.from('categories').insert(defaults).select();
@@ -3440,7 +3453,7 @@ function updateTotals(){
   document.getElementById('vat-val').textContent=`${vatAmt.toFixed(2)} ${cur}`;
   document.getElementById('disc-val').textContent=`-${discAmt.toFixed(2)} ${cur}`;
   const discRow=document.getElementById('disc-row');
-  if(discRow) discRow.style.display=discAmt>0?'flex':'none';
+  if(discRow) discRow.style.display=discAmt>=0.01?'flex':'none';
   document.getElementById('total-val').textContent=`${total.toFixed(2)} ${cur}`;
   // Sync mobile cart bar
   const mbl=document.getElementById('mobile-cart-label');
@@ -6935,21 +6948,41 @@ async function renderAdminPanel(){
 }
 
 function applyRoleNav(){
-  const roleEntry=ROLE_NAV[_role]??ROLE_NAV.manager;
-  const allowed=(roleEntry[_mode]??roleEntry.restaurant)??[];
+  const isRetail=_mode==='retail';
+  // Build allowed screens from scratch based on role + mode
+  let allowed=[];
+  const role=_role||'manager';
+  if(role==='manager'||role==='owner'){
+    allowed=isRetail
+      ?['pos','orders','customers','menu','inventory','staff','promos','reports','devices']
+      :['pos','tables','kitchen','orders','customers','menu','inventory','staff','promos','reports','devices'];
+  } else if(role==='cashier'){
+    allowed=isRetail
+      ?['pos','orders','customers']
+      :['pos','tables','kitchen','orders','customers'];
+  }
+  // Apply visibility to all nav tabs
   document.querySelectorAll('.nav-tab').forEach(btn=>{
     const screen=btn.dataset.screen;
+    if(!screen) return;
     btn.style.display=allowed.includes(screen)?'':'none';
   });
+  // Force hide tables/kitchen in retail regardless
+  if(isRetail){
+    const t=document.getElementById('nav-tables');
+    const k=document.getElementById('nav-kitchen');
+    if(t) t.style.display='none';
+    if(k) k.style.display='none';
+  }
   // If current screen not allowed, go to POS
   const activeScreen=document.querySelector('.screen.active');
   if(activeScreen){
     const id=activeScreen.id.replace('-screen','');
-    if(!allowed.includes(id)) setScreen('pos');
+    if(allowed.length&&!allowed.includes(id)) setScreen('pos');
   }
-  // Hide shift btn & mode badge from cashier
+  // Hide shift btn from cashier
   const shiftBtn=document.getElementById('shift-btn');
-  if(shiftBtn) shiftBtn.style.display=_role==='manager'?'flex':'none';
+  if(shiftBtn) shiftBtn.style.display=(role==='manager'||role==='owner')?'flex':'none';
 }
 
 function switchRole(){
