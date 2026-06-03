@@ -895,18 +895,6 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
   </div>
 </div>
 
-<!-- PUSH MENU MODAL -->
-<div id="push-menu-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1100;align-items:center;justify-content:center">
-  <div style="background:var(--bg2);border-radius:16px;padding:24px;width:100%;max-width:460px;border:1px solid var(--border)">
-    <div style="font-size:15px;font-weight:800;margin-bottom:4px">🔄 Push Menu to Branch</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Select branches to copy the current menu to</div>
-    <div id="push-branch-list" style="display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto;margin-bottom:16px"></div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-primary" onclick="confirmPushMenu()" style="flex:1">🔄 Push Menu</button>
-      <button class="btn btn-secondary" onclick="closePushMenuModal()">Cancel</button>
-    </div>
-  </div>
-</div>
 
 <!-- OWNER DASHBOARD -->
 <div id="owner-dashboard" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:870;flex-direction:column;overflow:hidden">
@@ -1227,7 +1215,6 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
           <button id="menu-tab-items-btn" onclick="setMenuTab('items')" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--accent);color:#000;font-size:12px;font-weight:700;cursor:pointer">🍽 Items</button>
           <button id="menu-tab-control-btn" onclick="setMenuTab('control')" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;font-weight:700;cursor:pointer">🌿 Branch Control</button>
         </div>
-        <button class="btn btn-secondary" id="push-menu-btn" onclick="openPushMenuModal()" style="display:none">🔄 Push Menu to Branch</button>
         <button class="btn btn-secondary" id="menu-add-cat-btn" onclick="openCatModal()">+ Category</button>
         <button class="btn btn-primary" id="menu-add-product-btn" onclick="openProductModal()">+ Product</button>
       </div>
@@ -2735,9 +2722,7 @@ function updateBranchIndicator(){
   // Show/hide switch branch button on role screen
   const sw=document.getElementById('switch-branch-wrap');
   if(sw) sw.style.display=_branches.length>1?'block':'none';
-  // Show push menu button only when this branch has products AND there are other branches
-  const pb=document.getElementById('push-menu-btn');
-  if(pb) pb.style.display=(_branches.length>1&&_products.length>0)?'inline-flex':'none';
+
   // Show Branch Control tab only for owner with 2+ branches
   const mt=document.getElementById('menu-tabs');
   if(mt) mt.style.display=(_branches.length>1&&!_isBranchMode())?'flex':'none';
@@ -2752,7 +2737,7 @@ async function selectBranch(branch, skipScreen=false){
   document.getElementById('branch-screen').style.display='none';
   document.getElementById('loading').style.display='flex';
   document.getElementById('loading-text').textContent='Loading branch data...';
-  // Always re-fetch fresh settings so branch_menus reflects latest pushes
+  // Re-fetch settings so visibility rules are current
   const{data:freshBiz}=await sb.from('businesses').select('settings').eq('id',_businessId).single();
   if(freshBiz?.settings) _settings={..._settings,...freshBiz.settings};
   await loadAll();
@@ -2868,51 +2853,6 @@ function renderBranchesSettings(){
     </div>`).join('');
 }
 
-// Push Menu
-function openPushMenuModal(){
-  const otherBranches=_branches.filter(b=>b.id!==_bizId&&b.is_active);
-  const list=document.getElementById('push-branch-list');
-  if(otherBranches.length===0){
-    list.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px">No other branches available.</div>';
-  } else {
-    list.innerHTML=otherBranches.map(b=>`
-      <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);cursor:pointer">
-        <input type="checkbox" value="${b.id}" style="width:16px;height:16px">
-        <div>
-          <div style="font-size:13px;font-weight:700">${b.name}</div>
-          ${b.address?`<div style="font-size:11px;color:var(--muted)">${b.address}</div>`:''}
-        </div>
-      </label>`).join('');
-  }
-  document.getElementById('push-menu-modal').style.display='flex';
-}
-function closePushMenuModal(){
-  document.getElementById('push-menu-modal').style.display='none';
-}
-
-async function confirmPushMenu(){
-  const checked=[...document.querySelectorAll('#push-branch-list input[type=checkbox]:checked')].map(c=>c.value);
-  if(!checked.length){showToast('Select at least one branch',true);return;}
-  const btn=document.querySelector('#push-menu-modal .btn-primary');
-  if(btn){btn.disabled=true;btn.textContent='⏳ Pushing...';}
-  // Re-fetch fresh settings from DB to avoid overwriting other branches with stale data
-  const{data:freshBiz}=await sb.from('businesses').select('settings').eq('id',_businessId).single();
-  const freshSettings=freshBiz?.settings||{};
-  const branch_menus={...(freshSettings.branch_menus||{})};
-  for(const targetId of checked){
-    branch_menus[targetId]={
-      cats:_cats,
-      products:_products,
-      pushed_at:new Date().toISOString()
-    };
-  }
-  _settings={..._settings,...freshSettings,branch_menus};
-  const{error}=await sb.from('businesses').update({settings:{..._settings}}).eq('id',_businessId);
-  closePushMenuModal();
-  if(btn){btn.disabled=false;btn.textContent='🔄 Push Menu';}
-  if(error) showToast('Push failed: '+error.message,true);
-  else showToast(`✅ Menu pushed to ${checked.length} branch${checked.length>1?'es':''}!`);
-}
 
 // ── LOAD ALL DATA ─────────────────────────────────────────────────────────────
 async function loadAll(){
@@ -2970,32 +2910,20 @@ function subscribeKitchenRealtime(){
 }
 async function loadCats(){
   if(!_bizId){_cats=defaultCats();return;}
-  const isBranch=_businessId&&_bizId!==_businessId;
-  if(isBranch){
-    // Branch: ONLY use its own snapshot — never fall back to main DB
-    const branchMenu=_settings.branch_menus?.[_bizId];
-    _cats=branchMenu?.cats||[];
-    return;
-  }
-  // Main branch: read from DB
-  const{data}=await sb.from('categories').select('*').eq('biz_id',_bizId).order('sort_order');
+  // Always read from main DB (branches share the same catalogue)
+  const mainId=_businessId||_bizId;
+  const{data}=await sb.from('categories').select('*').eq('biz_id',mainId).order('sort_order');
   if(data?.length){_cats=data;return;}
-  const defaults=defaultCats().map(({id,...c})=>({...c,biz_id:_bizId}));
+  if(_isBranchMode()){_cats=[];return;} // branch: empty until main has items
+  const defaults=defaultCats().map(({id,...c})=>({...c,biz_id:mainId}));
   const{data:saved}=await sb.from('categories').insert(defaults).select();
   _cats=saved||defaultCats();
 }
 async function loadProducts(){
   if(!_bizId){_products=[];return;}
-  const isBranch=_businessId&&_bizId!==_businessId;
-  if(isBranch){
-    // Branch: ONLY use its own snapshot — never fall back to main DB
-    const branchMenu=_settings.branch_menus?.[_bizId];
-    _products=branchMenu?.products||[];
-    updateBranchIndicator();
-    return;
-  }
-  // Main branch: read from DB
-  const{data}=await sb.from('products').select('*').eq('biz_id',_bizId).order('sort_order');
+  // Always read from main DB (branches share the same catalogue)
+  const mainId=_businessId||_bizId;
+  const{data}=await sb.from('products').select('*').eq('biz_id',mainId).order('sort_order');
   _products=data||[];
   updateBranchIndicator();
 }
@@ -4911,28 +4839,22 @@ async function saveProduct(){
     is_combo:isCombo,combo_items:comboItems.length?comboItems:null,
     image_url:imageUrl
   };
-  const isBranchMenu=_isBranchMode();
+  const mainId=_businessId||_bizId;
+  product.biz_id=mainId;
   if(_editProduct){
     Object.assign(_editProduct,product);
-    if(_bizId&&!isBranchMenu){
+    if(mainId){
       const{error}=await sb.from('products').update(product).eq('id',_editProduct.id);
       if(error){showToast('Save failed: '+error.message,true);btn.disabled=false;btn.textContent='Save Product';return;}
     }
   } else {
     product.id=crypto.randomUUID();
-    if(_bizId&&!isBranchMenu){
+    if(mainId){
       const{data,error}=await sb.from('products').insert(product).select().single();
       if(error){showToast('Save failed: '+error.message,true);btn.disabled=false;btn.textContent='Save Product';return;}
       if(data) product.id=data.id;
     }
     _products.push(product);
-  }
-  // Save to branch menu settings if on a branch
-  if(isBranchMenu){
-    const bm=_settings.branch_menus||{};
-    bm[_bizId]={...(bm[_bizId]||{}),cats:_cats,products:_products,pushed_at:new Date().toISOString()};
-    _settings.branch_menus=bm;
-    await sb.from('businesses').update({settings:{..._settings}}).eq('id',_businessId);
   }
   btn.disabled=false;btn.textContent='Save Product';
   closeProductModal();renderProductsList();renderProducts();
@@ -4942,8 +4864,8 @@ async function deleteProduct(id){
   const p=_products.find(x=>x.id===id);
   confirmDelete({icon:'🍽',title:'Delete Product?',name:p?.name||'this product'},async()=>{
     _products=_products.filter(x=>x.id!==id);
-    if(!_isBranchMode()&&_bizId) await sb.from('products').delete().eq('id',id);
-    await _saveBranchMenuSnapshot();
+    const mainId=_businessId||_bizId;
+    if(mainId) await sb.from('products').delete().eq('id',id);
     await auditLog('DELETE_PRODUCT',{name:p?.name,id});
     renderProductsList();renderProducts();showToast('Product deleted');
   });
@@ -4952,11 +4874,11 @@ async function toggleProduct(id,active){
   const p=_products.find(x=>x.id===id);
   if(!p) return;
   p.is_active=active;
-  if(!_isBranchMode()&&_bizId){
+  const mainId=_businessId||_bizId;
+  if(mainId){
     const{error}=await sb.from('products').update({is_active:active}).eq('id',id);
     if(error){showToast('Save failed: '+error.message,true);p.is_active=!active;renderProductsList();return;}
   }
-  await _saveBranchMenuSnapshot();
   showToast(active?`${p.name} enabled`:`${p.name} hidden from POS`);
   renderProducts();
   renderProductsList();
@@ -4973,26 +4895,19 @@ function openCatModal(id){
 }
 function closeCatModal(){document.getElementById('cat-modal').style.display='none';}
 function _isBranchMode(){return _businessId&&_bizId!==_businessId;}
-async function _saveBranchMenuSnapshot(){
-  if(!_isBranchMode()) return;
-  const bm=_settings.branch_menus||{};
-  bm[_bizId]={...(bm[_bizId]||{}),cats:_cats,products:_products,pushed_at:new Date().toISOString()};
-  _settings.branch_menus=bm;
-  await sb.from('businesses').update({settings:{..._settings}}).eq('id',_businessId);
-}
 async function saveCat(){
   const name=document.getElementById('c-name').value.trim();
   if(!name){showToast('Category name required',true);return;}
-  const cat={biz_id:_bizId,name,name_ar:document.getElementById('c-name-ar').value.trim(),emoji:document.getElementById('c-emoji').value||'📁',sort_order:_cats.length};
+  const mainId=_businessId||_bizId;
+  const cat={biz_id:mainId,name,name_ar:document.getElementById('c-name-ar').value.trim(),emoji:document.getElementById('c-emoji').value||'📁',sort_order:_cats.length};
   if(_editingCat){
     Object.assign(_editingCat,cat);
-    if(!_isBranchMode()&&_bizId) await sb.from('categories').update(cat).eq('id',_editingCat.id);
+    if(mainId) await sb.from('categories').update(cat).eq('id',_editingCat.id);
   } else {
     cat.id=crypto.randomUUID();
-    if(!_isBranchMode()&&_bizId){const{data}=await sb.from('categories').insert(cat).select().single();if(data)cat.id=data.id;}
+    if(mainId){const{data}=await sb.from('categories').insert(cat).select().single();if(data)cat.id=data.id;}
     _cats.push(cat);
   }
-  await _saveBranchMenuSnapshot();
   closeCatModal();renderCatList();renderCatBar();
   showToast('Category saved');
 }
@@ -5000,8 +4915,8 @@ async function deleteCat(id){
   const c=_cats.find(x=>x.id===id);
   confirmDelete({icon:'📁',title:'Delete Category?',name:(c?.name||'this category'),warn:'Products in this category will become uncategorized.'},async()=>{
     _cats=_cats.filter(x=>x.id!==id);
-    if(!_isBranchMode()&&_bizId) await sb.from('categories').delete().eq('id',id);
-    await _saveBranchMenuSnapshot();
+    const mainId=_businessId||_bizId;
+    if(mainId) await sb.from('categories').delete().eq('id',id);
     await auditLog('DELETE_CATEGORY',{name:c?.name,id});
     renderCatList();renderCatBar();showToast('Category deleted');
   });
@@ -5840,7 +5755,7 @@ function setMenuTab(tab){
   document.getElementById('menu-tab-control-body').style.display=tab==='control'?'flex':'none';
   document.getElementById('menu-add-cat-btn').style.display=tab==='items'?'':'none';
   document.getElementById('menu-add-product-btn').style.display=tab==='items'?'':'none';
-  document.getElementById('push-menu-btn').style.display=tab==='items'&&_branches.length>1&&_products.length>0?'inline-flex':'none';
+
   document.getElementById('menu-tab-items-btn').style.background=tab==='items'?'var(--accent)':'var(--bg3)';
   document.getElementById('menu-tab-items-btn').style.color=tab==='items'?'#000':'var(--text)';
   document.getElementById('menu-tab-control-btn').style.background=tab==='control'?'var(--accent)':'var(--bg3)';
