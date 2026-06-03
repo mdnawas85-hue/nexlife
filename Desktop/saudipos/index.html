@@ -4952,7 +4952,13 @@ function openProductModal(id){
   document.getElementById('p-desc').value=_editProduct?.description||'';
   const barcodeGroup=document.getElementById('p-barcode-group');
   if(barcodeGroup) barcodeGroup.style.display=_mode==='retail'?'block':'none';
-  document.getElementById('p-barcode').value=_editProduct?.barcode||'';
+  // Auto-generate barcode for new products in retail mode
+  if(_mode==='retail'&&!_editProduct){
+    const auto='SKU-'+Date.now().toString().slice(-6)+'-'+Math.floor(Math.random()*1000).toString().padStart(3,'0');
+    document.getElementById('p-barcode').value=auto;
+  } else {
+    document.getElementById('p-barcode').value=_editProduct?.barcode||'';
+  }
   const comboGroup=document.getElementById('combo-toggle-group');
   if(comboGroup) comboGroup.style.display=_mode==='retail'?'none':'block';
   document.getElementById('p-emoji').value=_editProduct?.emoji||'';
@@ -6573,12 +6579,21 @@ function saDeleteClient(bizId,name){
     confirmLabel:'🗑 Delete',
     confirmColor:'var(--red)',
     onConfirm:async()=>{
-      let error=null;
+      // Try RPC first
       const{error:rpcErr}=await sb.rpc('sa_delete_business',{biz_id:bizId});
-      if(rpcErr){const res=await sb.from('businesses').delete().eq('id',bizId);error=res.error;}
-      if(error){showToast('RLS blocked — run SA SQL in Supabase',true);return;}
-      showToast('✅ Business deleted');
-      loadSAClients();
+      if(!rpcErr){showToast('✅ Business deleted');loadSAClients();return;}
+      // Try direct delete
+      const{error:directErr}=await sb.from('businesses').delete().eq('id',bizId);
+      if(!directErr){showToast('✅ Business deleted');loadSAClients();return;}
+      // Both failed — RLS is blocking. Show SQL to run manually
+      showToast('RLS blocked — use the SQL below in Supabase',true);
+      const manualSql=`DELETE FROM businesses WHERE id = '${bizId}';\nDELETE FROM auth.users WHERE email = '${ownerEmail}';`;
+      const box=document.createElement('div');
+      box.style.cssText='background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);border-radius:12px;padding:16px;margin-bottom:12px';
+      box.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:8px">❌ RLS blocked — run this SQL manually in <a href="https://supabase.com/dashboard/project/hjygvfhxyonmizdleoqe/sql/new" target="_blank" style="color:#58a6ff">Supabase SQL Editor</a>:</div>
+        <pre style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:11px;color:var(--text);white-space:pre-wrap">${manualSql}</pre>
+        <button onclick="navigator.clipboard.writeText(\`${manualSql}\`).then(()=>showToast('SQL copied!'))" style="margin-top:8px;padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;cursor:pointer;width:100%">📋 Copy SQL</button>`;
+      document.getElementById('sa-clients-list').prepend(box);
     }
   });
 }
