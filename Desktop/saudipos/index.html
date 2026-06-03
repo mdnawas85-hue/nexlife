@@ -7541,61 +7541,70 @@ async function adminClearKitchen(){
   });
 }
 
+function _adminTargetBranchId(){
+  // Use current branch if inside a branch, otherwise ask user to pick
+  return _bizId||_businessId;
+}
+function _adminBranchName(){
+  const b=_branches.find(x=>x.id===_bizId);
+  return b?b.name:'This Branch';
+}
 async function adminClearAllOrders(){
+  const targetId=_adminTargetBranchId();
+  const branchName=_adminBranchName();
+  if(!targetId){showToast('No branch selected',true);return;}
   confirmDelete({
     icon:'🗑',
-    title:'Clear ALL Orders — Fresh Start?',
-    name:'This permanently deletes every order from the database and resets order numbering to #001. This cannot be undone.'
+    title:'Clear Orders — '+branchName,
+    name:`Permanently deletes ALL orders for "${branchName}" only. Other branches are NOT affected. Resets order numbering to #001.`
   },async()=>{
-    if(!_bizId){showToast('No business found',true);return;}
-    showToast('⏳ Deleting all orders...');
-    const{error}=await sb.from('orders').delete().eq('biz_id',_bizId);
+    showToast('⏳ Deleting orders for '+branchName+'...');
+    const{error}=await sb.from('orders').delete().eq('biz_id',targetId);
     if(error){showToast('Error: '+error.message,true);return;}
-    // Reset order counter in settings
-    await sb.from('settings').upsert({biz_id:_bizId,key:'order_counter',value:'0'},{onConflict:'biz_id,key'});
-    _orders=[];
-    _orderNum=1;
-    newOrder();
+    await sb.from('settings').upsert({biz_id:targetId,key:'order_counter',value:'0'},{onConflict:'biz_id,key'});
+    if(targetId===_bizId){_orders=[];_orderNum=1;newOrder();}
     await renderAdminPanel();
-    showToast('✅ All orders cleared — starting from #001');
-    await auditLog('CLEAR_ALL_ORDERS',{by:_pinStaff?.name||'IT Admin',at:new Date().toISOString()});
+    showToast(`✅ Orders cleared for ${branchName} — starting from #001`);
+    await auditLog('CLEAR_ALL_ORDERS',{branch:branchName,by:_pinStaff?.name||'IT Admin'});
   });
 }
 
 async function adminClearAuditLog(){
+  const targetId=_adminTargetBranchId();
+  const branchName=_adminBranchName();
+  if(!targetId){showToast('No branch selected',true);return;}
   confirmDelete({
     icon:'📋',
-    title:'Clear Audit Log?',
-    name:'All audit log entries will be permanently deleted.',
+    title:'Clear Audit Log — '+branchName,
+    name:`Clears audit log for "${branchName}" only. Other branches are NOT affected.`,
     confirmLabel:'Clear Log',
     confirmColor:'var(--red)'
   },async()=>{
-    if(!_bizId){showToast('No business found',true);return;}
-    const{error}=await sb.from('audit_logs').delete().eq('biz_id',_bizId);
+    const{error}=await sb.from('audit_logs').delete().eq('biz_id',targetId);
     if(error){showToast('Error: '+error.message,true);return;}
-    showToast('✅ Audit log cleared');
+    showToast(`✅ Audit log cleared for ${branchName}`);
     loadAuditLogs();
   });
 }
 
 async function adminFullReset(){
+  const targetId=_adminTargetBranchId();
+  const branchName=_adminBranchName();
+  if(!targetId){showToast('No branch selected',true);return;}
   confirmDelete({
     icon:'⚠️',
-    title:'Full Test Reset?',
-    name:'Clears ALL orders, ALL audit logs, and resets order counter to #001. Use only during testing.',
+    title:'Full Reset — '+branchName+' only',
+    name:`Clears ALL orders and audit logs for "${branchName}" only. Other branches are NOT affected.`,
     confirmLabel:'Full Reset',
     confirmColor:'var(--red)'
   },async()=>{
-    if(!_bizId){showToast('No business found',true);return;}
-    showToast('⏳ Running full reset...');
-    await sb.from('orders').delete().eq('biz_id',_bizId);
-    await sb.from('audit_logs').delete().eq('biz_id',_bizId);
-    await sb.from('settings').upsert({biz_id:_bizId,key:'order_counter',value:'0'},{onConflict:'biz_id,key'});
-    _orders=[];
-    _orderNum=1;
-    newOrder();
+    showToast('⏳ Running full reset for '+branchName+'...');
+    await sb.from('orders').delete().eq('biz_id',targetId);
+    await sb.from('audit_logs').delete().eq('biz_id',targetId);
+    await sb.from('settings').upsert({biz_id:targetId,key:'order_counter',value:'0'},{onConflict:'biz_id,key'});
+    if(targetId===_bizId){_orders=[];_orderNum=1;newOrder();}
     await renderAdminPanel();
-    showToast('✅ Full reset complete — fresh start from #001');
+    showToast(`✅ Full reset complete for ${branchName}`);
   });
 }
 
