@@ -6798,7 +6798,15 @@ function setITATab(tab){
 // ── ITA: BRANCHES ─────────────────────────────────────────────────────────────
 function _renderITABranches(){
   const el=document.getElementById('ita-branch-list');
-  if(!_branches.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">No branches yet.</div>';return;}
+  if(!_branches.length){
+    el.innerHTML=`<div style="text-align:center;padding:40px">
+      <div style="font-size:40px;margin-bottom:12px">⚠️</div>
+      <div style="font-size:15px;font-weight:700;margin-bottom:8px">No branches found</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Your main branch was deleted. Restore it to continue.</div>
+      <button onclick="restoreMainBranch()" style="padding:12px 28px;border-radius:12px;border:none;background:var(--accent2);color:#fff;font-size:14px;font-weight:700;cursor:pointer">🔄 Restore Main Branch</button>
+    </div>`;
+    return;
+  }
   el.innerHTML=_branches.map((b,i)=>{
     const isMain=i===0;
     const isActive=b.is_active!==false;
@@ -6827,6 +6835,21 @@ function _renderITABranches(){
       </div>
     </div>`;
   }).join('');
+}
+async function restoreMainBranch(){
+  const name=prompt('Enter Main Branch name:') || 'Main Branch';
+  const branch={
+    id:_businessId,
+    name,
+    address:null,
+    phone:null,
+    is_active:true,
+    created_at:new Date().toISOString()
+  };
+  _branches=[branch];
+  await _saveBranchesToDB();
+  _renderITABranches();
+  showToast('✅ Main Branch restored! You can now enter and add data.');
 }
 async function toggleITABranchActive(branchId,setActive){
   const b=_branches.find(x=>x.id===branchId);
