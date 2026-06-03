@@ -1006,15 +1006,24 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
     </div>
     <!-- Products tab -->
     <div id="ita-products" style="display:none;padding:20px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
         <div style="font-size:15px;font-weight:800">📦 Products & Categories</div>
         <div style="display:flex;gap:8px">
           <button onclick="itaOpenCatModal()" style="padding:8px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;font-weight:700;cursor:pointer">+ Category</button>
           <button onclick="itaOpenProductModal()" class="btn btn-primary">+ Product</button>
         </div>
       </div>
+      <!-- Search & Branch filter row -->
+      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+        <input id="ita-search" class="form-input" placeholder="🔍 Search by name, Arabic name, barcode…" oninput="_renderITAProductList()" style="flex:1;min-width:200px;font-size:13px"/>
+        <select id="ita-branch-filter" class="form-input" onchange="_renderITAProductList()" style="min-width:160px;font-size:13px">
+          <option value="all">All Branches</option>
+        </select>
+      </div>
       <!-- Category filter bar -->
-      <div id="ita-cat-bar" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px"></div>
+      <div id="ita-cat-bar" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px"></div>
+      <!-- Results count -->
+      <div id="ita-results-count" style="font-size:11px;color:var(--muted);margin-bottom:8px"></div>
       <!-- Product list -->
       <div id="ita-product-list" style="display:flex;flex-direction:column;gap:8px"></div>
     </div>
@@ -6817,6 +6826,13 @@ function setITATab(tab){
 let _itaActiveCat='all';
 
 function _renderITAProducts(){
+  // Populate branch filter
+  const sel=document.getElementById('ita-branch-filter');
+  if(sel){
+    const cur=sel.value||'all';
+    sel.innerHTML='<option value="all">👁 All Branches</option>'+
+      _branches.map(b=>`<option value="${b.id}" ${cur===b.id?'selected':''}>${b.name}</option>`).join('');
+  }
   _renderITACatBar();
   _renderITAProductList();
 }
@@ -6831,7 +6847,24 @@ function _renderITACatBar(){
 function itaFilterCat(catId){_itaActiveCat=catId;_renderITAProducts();}
 function _renderITAProductList(){
   const el=document.getElementById('ita-product-list');
-  const prods=_itaActiveCat==='all'?_products:_products.filter(p=>p.cat_id===_itaActiveCat);
+  const q=(document.getElementById('ita-search')?.value||'').toLowerCase().trim();
+  const branchFilter=document.getElementById('ita-branch-filter')?.value||'all';
+  let prods=_itaActiveCat==='all'?[..._products]:_products.filter(p=>p.cat_id===_itaActiveCat);
+  // Search filter
+  if(q) prods=prods.filter(p=>
+    p.name?.toLowerCase().includes(q)||
+    (p.name_ar||'').toLowerCase().includes(q)||
+    (p.barcode||'').toLowerCase().includes(q)||
+    (p.description||'').toLowerCase().includes(q)
+  );
+  // Branch visibility filter
+  if(branchFilter!=='all') prods=prods.filter(p=>_isVisibleOnBranch(p.id,branchFilter));
+  // Update results count
+  const countEl=document.getElementById('ita-results-count');
+  if(countEl){
+    const total=_products.length;
+    countEl.textContent=prods.length===total?`${total} products`:`${prods.length} of ${total} products${q?' matching "'+q+'"':''}${branchFilter!=='all'?' visible on '+(_branches.find(b=>b.id===branchFilter)?.name||branchFilter):''}`;
+  }
   if(!prods.length){
     el.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)">No products${_itaActiveCat!=='all'?' in this category':' yet'}.</div>`;
     return;
