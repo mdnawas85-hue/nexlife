@@ -1144,6 +1144,7 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
     <div class="pos-menu">
       <div class="pos-menu-top">
         <input class="menu-search" id="menu-search" placeholder="Search menu..." oninput="filterProducts()" data-i18n-placeholder="search-menu"/>
+        <input class="menu-search" id="barcode-input" placeholder="📷 Scan barcode…" style="display:none;max-width:180px" onkeydown="handleBarcodeKey(event)" autocomplete="off" autocorrect="off"/>
         <button class="btn btn-secondary" onclick="openDiscountModal()" style="white-space:nowrap;font-size:12px">🏷 Disc</button>
         <button class="btn btn-secondary" onclick="togglePromosView()" id="btn-promos" style="white-space:nowrap;font-size:12px">🎯 Promos</button>
         <button class="btn btn-secondary" onclick="setOrderType('takeaway')" id="btn-takeaway" style="font-size:11px;white-space:nowrap">🛍 Takeaway</button>
@@ -1152,6 +1153,7 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
       <div class="cat-bar" id="cat-bar">
         <button class="cat-btn active" onclick="filterCat('all')">All</button>
       </div>
+      <div id="low-stock-banner" style="display:none;background:rgba(255,140,0,.12);border:1px solid rgba(255,140,0,.4);border-radius:10px;padding:8px 14px;margin:0 0 8px;font-size:12px;color:#ff8c00;cursor:pointer" onclick="setScreen('menu')">⚠️ <span id="low-stock-text"></span> — tap to manage</div>
       <div class="products-grid" id="products-grid">
         <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted)">Loading menu...</div>
       </div>
@@ -2267,6 +2269,11 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
         <input class="form-input" id="p-stock" type="number" placeholder="∞"/>
       </div>
     </div>
+    <!-- Barcode / SKU (retail only) -->
+    <div class="form-group" id="p-barcode-group" style="display:none">
+      <label class="form-label">Barcode / SKU</label>
+      <input class="form-input" id="p-barcode" placeholder="Scan or type barcode…" autocomplete="off"/>
+    </div>
 
     <!-- Category -->
     <div class="form-group">
@@ -2953,7 +2960,10 @@ function defaultCats(){
   return[
     {id:'cat-1',name:'Electronics',name_ar:'إلكترونيات',emoji:'📱',biz_id:_bizId},
     {id:'cat-2',name:'Clothing',name_ar:'ملابس',emoji:'👕',biz_id:_bizId},
-    {id:'cat-3',name:'Food',name_ar:'طعام',emoji:'🥫',biz_id:_bizId},
+    {id:'cat-3',name:'Groceries',name_ar:'بقالة',emoji:'🛒',biz_id:_bizId},
+    {id:'cat-4',name:'Health & Beauty',name_ar:'صحة وجمال',emoji:'🧴',biz_id:_bizId},
+    {id:'cat-5',name:'Accessories',name_ar:'إكسسوارات',emoji:'⌚',biz_id:_bizId},
+    {id:'cat-6',name:'Other',name_ar:'أخرى',emoji:'📦',biz_id:_bizId},
   ];
 }
 function defaultTables(){
@@ -2985,6 +2995,12 @@ function applyMode(){
     document.getElementById('btn-delivery').style.display='none';
     document.getElementById('table-badge').style.display='none';
     setOrderType('retail');
+  }
+  const barcodeInput=document.getElementById('barcode-input');
+  const menuSearch=document.getElementById('menu-search');
+  if(barcodeInput&&menuSearch){
+    barcodeInput.style.display=_mode==='retail'?'':'none';
+    menuSearch.placeholder=_mode==='retail'?'Search by name…':'Search menu…';
   }
   if(setMode) setMode.value=_mode;
   if(_role) applyRoleNav();
@@ -3036,6 +3052,35 @@ function filterCat(catId){
 
 function filterProducts(){
   renderProducts();
+}
+
+function updateLowStockBanner(){
+  const banner=document.getElementById('low-stock-banner');
+  const txt=document.getElementById('low-stock-text');
+  if(!banner||_mode!=='retail'){if(banner)banner.style.display='none';return;}
+  const low=_products.filter(p=>p.is_active!==false&&p.stock!=null&&p.stock>0&&p.stock<=5);
+  const out=_products.filter(p=>p.is_active!==false&&p.stock!=null&&p.stock<=0);
+  if(!low.length&&!out.length){banner.style.display='none';return;}
+  const parts=[];
+  if(out.length) parts.push(`${out.length} item${out.length>1?'s':''} out of stock`);
+  if(low.length) parts.push(`${low.length} item${low.length>1?'s':''} low stock`);
+  txt.textContent=parts.join(' · ');
+  banner.style.display='block';
+}
+
+// ── BARCODE SCANNER (retail) ──────────────────────────────────────────────────
+function handleBarcodeKey(e){
+  if(e.key!=='Enter') return;
+  const code=(e.target.value||'').trim();
+  e.target.value='';
+  if(!code) return;
+  const p=_products.find(x=>x.barcode===code&&x.is_active!==false);
+  if(p){
+    addToCart(p.id);
+    showToast(`✅ ${p.name} added`);
+  } else {
+    showToast(`❌ No product found for: ${code}`,true);
+  }
 }
 
 function renderProducts(){
@@ -3093,15 +3138,19 @@ function renderProducts(){
   }
 
   grid.innerHTML=prods.map(p=>renderProductCard(p)).join('');
+  updateLowStockBanner();
 }
 
 function renderProductCard(p){
   const outOfStock=p.stock!==null&&p.stock!==undefined&&p.stock<=0;
+  const lowStock=_mode==='retail'&&p.stock!=null&&p.stock>0&&p.stock<=5;
   const visual=p.image_url
-    ?`<div class="product-img-wrap"><img class="product-img" src="${p.image_url}" alt="${p.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'product-emoji\'>${p.emoji||'🍽'}</div>'"/></div>`
-    :`<div class="product-emoji">${p.emoji||'🍽'}</div>`;
+    ?`<div class="product-img-wrap"><img class="product-img" src="${p.image_url}" alt="${p.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'product-emoji\'>${p.emoji||(_mode==='retail'?'📦':'🍽')}</div>'"/></div>`
+    :`<div class="product-emoji">${p.emoji||(_mode==='retail'?'📦':'🍽')}</div>`;
   const badge=outOfStock
     ?`<span class="product-badge badge-out" style="background:rgba(248,81,73,.75);color:#fff">Out of Stock</span>`
+    :lowStock
+    ?`<span class="product-badge" style="background:rgba(255,140,0,.85);color:#fff">Low: ${p.stock}</span>`
     :p.is_combo
     ?`<span class="product-badge" style="background:rgba(88,166,255,.8);color:#fff">🔀 Combo</span>`:'';
   const comboStyle=p.is_combo?'border-color:rgba(88,166,255,.4);':'';
@@ -3111,7 +3160,8 @@ function renderProductCard(p){
     <div class="product-info">
       <div class="product-name">${_lang==='ar'&&p.name_ar?p.name_ar:p.name}</div>
       <div class="product-price">${fmtPrice(p.price)}</div>
-      ${p.stock!=null?`<div class="product-stock">Stock: ${p.stock}</div>`:''}
+      ${p.stock!=null?`<div class="product-stock">${_mode==='retail'?'Stock:':''} ${p.stock}</div>`:''}
+      ${_mode==='retail'&&p.barcode?`<div style="font-size:9px;color:var(--muted);font-family:monospace">${p.barcode}</div>`:''}
     </div>
   </div>`;
 }
@@ -3815,7 +3865,7 @@ function showReceipt(order){
   let html=statusBadge+`<div class="receipt-paper">
     <div class="receipt-title">${biz}</div>
     <div style="font-size:10px;color:#666">${date}</div>
-    <div style="font-size:10px">Order #${String(order.order_num).padStart(3,'0')} · ${order.type||''}${order.table_num?' · Table '+order.table_num:''}</div>
+    <div style="font-size:10px">${_mode==='retail'?'Sale':'Order'} #${String(order.order_num).padStart(3,'0')}${order.type&&_mode!=='retail'?' · '+order.type:''}${order.table_num?' · Table '+order.table_num:''}</div>
     <hr class="receipt-hr"/>
     ${(order.items||[]).map(i=>`<div class="receipt-item-row"><span>${i.qty}x ${i.name}</span><span>${(i.price*i.qty).toFixed(2)}</span></div>`).join('')}
     <hr class="receipt-hr"/>
@@ -4699,7 +4749,7 @@ function renderProductsList(){
         :`<div class="product-row-emoji">${p.emoji||'🍽'}</div>`}
       <div class="product-row-info">
         <div class="product-row-name">${p.name}${p.name_ar?` / ${p.name_ar}`:''}${p.is_combo?' <span style="font-size:9px;background:rgba(88,166,255,.2);color:var(--blue);border-radius:8px;padding:1px 6px;font-weight:700">COMBO</span>':''}</div>
-        <div class="product-row-meta">${_cats.find(c=>c.id===p.cat_id)?.name||'Uncategorized'}${p.stock!=null?' · Stock: '+p.stock:''}</div>
+        <div class="product-row-meta">${_cats.find(c=>c.id===p.cat_id)?.name||'Uncategorized'}${p.stock!=null?' · Stock: '+p.stock:''}${_mode==='retail'&&p.barcode?' · '+p.barcode:''}</div>
       </div>
       <div class="product-row-price">${fmtPrice(p.price)}</div>
       <label class="toggle-switch">
@@ -4729,6 +4779,9 @@ function openProductModal(id){
   document.getElementById('p-cost').value=_editProduct?.cost_price||'';
   document.getElementById('p-stock').value=_editProduct?.stock??'';
   document.getElementById('p-desc').value=_editProduct?.description||'';
+  const barcodeGroup=document.getElementById('p-barcode-group');
+  if(barcodeGroup) barcodeGroup.style.display=_mode==='retail'?'block':'none';
+  document.getElementById('p-barcode').value=_editProduct?.barcode||'';
   document.getElementById('p-emoji').value=_editProduct?.emoji||'';
   document.getElementById('p-img-file').value='';
   // Image preview
@@ -4833,6 +4886,7 @@ async function saveProduct(){
     biz_id:_bizId,name,name_ar:document.getElementById('p-name-ar').value.trim(),
     price,cost_price:+document.getElementById('p-cost').value||null,
     stock:stockVal!==''?+stockVal:null,
+    barcode:_mode==='retail'?(document.getElementById('p-barcode').value.trim()||null):null,
     emoji:document.getElementById('p-emoji').value||(imageUrl?'':'🍽'),
     description:document.getElementById('p-desc').value.trim(),
     cat_id:cat,is_active:true,sort_order:_products.length,
