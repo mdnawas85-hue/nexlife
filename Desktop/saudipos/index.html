@@ -1507,7 +1507,7 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
   <!-- ── INVENTORY SCREEN ── -->
   <div class="screen" id="inventory-screen">
     <div class="screen-header">
-      <span class="screen-title">📦 Inventory</span>
+      <span class="screen-title" id="inventory-title">📦 Inventory</span>
       <div style="display:flex;gap:8px;align-items:center">
         <span id="low-stock-badge" style="display:none;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(248,81,73,.12);color:var(--red);border:1px solid rgba(248,81,73,.3)"></span>
         <button class="btn btn-secondary" onclick="exportInventoryCSV()" style="font-size:11px">⬇ Export</button>
@@ -1523,6 +1523,7 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
               <th style="padding:10px 16px;text-align:center">Category</th>
               <th style="padding:10px 16px;text-align:center">Stock</th>
               <th style="padding:10px 16px;text-align:center">Low Alert</th>
+              <th id="inv-barcode-th" style="padding:10px 16px;text-align:center;display:none">Barcode</th>
               <th style="padding:10px 16px;text-align:center">Cost Price</th>
               <th style="padding:10px 16px;text-align:center">Value</th>
               <th style="padding:10px 16px;text-align:center">Action</th>
@@ -2284,8 +2285,8 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
       <select class="form-input" id="p-cat"></select>
     </div>
 
-    <!-- Combo toggle -->
-    <div class="form-group">
+    <!-- Combo toggle (restaurant only) -->
+    <div class="form-group" id="combo-toggle-group">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:rgba(88,166,255,.07);border:1px solid rgba(88,166,255,.2);border-radius:10px">
         <div>
           <div style="font-size:13px;font-weight:700">🔀 Combo / Bundle</div>
@@ -3019,6 +3020,8 @@ function applyMode(){
   if(menuNav) menuNav.textContent=_mode==='retail'?'📦 Products':'🍽 Menu';
   const inventoryNav=document.getElementById('nav-inventory');
   if(inventoryNav) inventoryNav.textContent=_mode==='retail'?'📊 Stock':'📦 Inventory';
+  const inventoryTitle=document.getElementById('inventory-title');
+  if(inventoryTitle) inventoryTitle.textContent=_mode==='retail'?'📊 Stock Management':'📦 Inventory';
   if(setMode) setMode.value=_mode;
   if(_role) applyRoleNav();
   renderCatBar();
@@ -3886,7 +3889,10 @@ function showReceipt(order){
     <div style="font-size:10px;color:#666">${date}</div>
     <div style="font-size:10px">${_mode==='retail'?'Sale':'Order'} #${String(order.order_num).padStart(3,'0')}${order.type&&_mode!=='retail'?' · '+order.type:''}${order.table_num?' · Table '+order.table_num:''}</div>
     <hr class="receipt-hr"/>
-    ${(order.items||[]).map(i=>`<div class="receipt-item-row"><span>${i.qty}x ${i.name}</span><span>${(i.price*i.qty).toFixed(2)}</span></div>`).join('')}
+    ${(order.items||[]).map(i=>{
+      const prod=_products.find(x=>x.id===i.id);
+      return`<div class="receipt-item-row"><span>${i.qty}x ${i.name}${_mode==='retail'&&prod?.barcode?`<br><span style="font-size:9px;color:#999;font-family:monospace">${prod.barcode}</span>`:''}</span><span>${(i.price*i.qty).toFixed(2)}</span></div>`;
+    }).join('')}
     <hr class="receipt-hr"/>
     <div class="receipt-item-row"><span>Subtotal</span><span>${order.subtotal?.toFixed(2)}</span></div>
     ${_settings.show_vat?`<div class="receipt-item-row"><span>VAT (${_getEffectiveSetting('vat_rate')||15}%)</span><span>${order.vat?.toFixed(2)}</span></div>`:''}
@@ -4771,6 +4777,11 @@ function renderProductsList(){
         <div class="product-row-meta">${_cats.find(c=>c.id===p.cat_id)?.name||'Uncategorized'}${p.stock!=null?' · Stock: '+p.stock:''}${_mode==='retail'&&p.barcode?' · '+p.barcode:''}</div>
       </div>
       <div class="product-row-price">${fmtPrice(p.price)}</div>
+      ${_mode==='retail'?`<div style="display:flex;align-items:center;gap:4px">
+        <button onclick="quickStockAdj('${p.id}',-1)" style="width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--red);font-size:14px;font-weight:700;cursor:pointer;line-height:1">−</button>
+        <span style="min-width:28px;text-align:center;font-size:12px;font-weight:700">${p.stock??'∞'}</span>
+        <button onclick="quickStockAdj('${p.id}',1)" style="width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--accent2);font-size:14px;font-weight:700;cursor:pointer;line-height:1">+</button>
+      </div>`:''}
       <label class="toggle-switch">
         <input type="checkbox" ${p.is_active!==false?'checked':''} onchange="toggleProduct('${p.id}',this.checked)"/>
         <span class="toggle-slider"></span>
@@ -4801,6 +4812,8 @@ function openProductModal(id){
   const barcodeGroup=document.getElementById('p-barcode-group');
   if(barcodeGroup) barcodeGroup.style.display=_mode==='retail'?'block':'none';
   document.getElementById('p-barcode').value=_editProduct?.barcode||'';
+  const comboGroup=document.getElementById('combo-toggle-group');
+  if(comboGroup) comboGroup.style.display=_mode==='retail'?'none':'block';
   document.getElementById('p-emoji').value=_editProduct?.emoji||'';
   document.getElementById('p-img-file').value='';
   // Image preview
@@ -5212,6 +5225,9 @@ async function deleteCustomer(id){
 // ── INVENTORY ────────────────────────────────────────────────────────────────
 function renderInventory(){
   const body=document.getElementById('inventory-body');
+  // Show barcode column header for retail
+  const bth=document.getElementById('inv-barcode-th');
+  if(bth) bth.style.display=_mode==='retail'?'':'none';
   const lowItems=_products.filter(p=>p.stock!=null&&p.low_alert&&p.stock<=p.low_alert);
   const badge=document.getElementById('low-stock-badge');
   if(lowItems.length){badge.textContent=`⚠️ ${lowItems.length} low stock`;badge.style.display='';}
@@ -5285,10 +5301,15 @@ function renderInventory(){
         </div>
       </td>
       <td style="padding:10px 16px;text-align:center;font-size:12px;color:var(--muted)">${cat?.name||'—'}</td>
-      <td style="padding:10px 16px;text-align:center;font-weight:700;color:${isLow?'var(--red)':p.stock===null?'var(--muted)':'var(--text)'}">
-        ${p.stock!=null?p.stock:'∞'}
+      <td style="padding:10px 16px;text-align:center">
+        ${_mode==='retail'?`<div style="display:flex;align-items:center;justify-content:center;gap:6px">
+          <button onclick="quickStockAdj('${p.id}',-1)" style="width:24px;height:24px;border-radius:5px;border:1px solid var(--border);background:var(--bg3);color:var(--red);font-weight:700;cursor:pointer">−</button>
+          <span style="font-weight:700;color:${isLow?'var(--red)':p.stock===null?'var(--muted)':'var(--text)'}">${p.stock!=null?p.stock:'∞'}</span>
+          <button onclick="quickStockAdj('${p.id}',1)" style="width:24px;height:24px;border-radius:5px;border:1px solid var(--border);background:var(--bg3);color:var(--accent2);font-weight:700;cursor:pointer">+</button>
+        </div>`:`<span style="font-weight:700;color:${isLow?'var(--red)':p.stock===null?'var(--muted)':'var(--text)'}">${p.stock!=null?p.stock:'∞'}</span>`}
       </td>
       <td style="padding:10px 16px;text-align:center;font-size:12px;color:var(--muted)">${p.low_alert||'—'}</td>
+      ${_mode==='retail'?`<td style="padding:10px 16px;text-align:center;font-size:11px;color:var(--muted);font-family:monospace">${p.barcode||'—'}</td>`:''}
       <td style="padding:10px 16px;text-align:center;font-size:12px;color:var(--muted)">${p.cost_price?p.cost_price+' SAR':'—'}</td>
       <td style="padding:10px 16px;text-align:center;font-size:12px;color:var(--accent2)">${val!=null?val+' SAR':'—'}</td>
       <td style="padding:10px 16px;text-align:center">
@@ -5341,6 +5362,19 @@ async function saveAdjustment(){
   closeAdjustModal();renderInventory();renderProducts();
   showToast(`📦 ${p.name}: ${prevStock} → ${newStock} (${reason})`);
 }
+async function quickStockAdj(productId, delta){
+  const p=_products.find(x=>x.id===productId);
+  if(!p) return;
+  const prev=p.stock??0;
+  const newStock=Math.max(0,prev+delta);
+  p.stock=newStock;
+  const mainId=_businessId||_bizId;
+  if(mainId) await sb.from('products').update({stock:newStock}).eq('id',productId);
+  renderProductsList();
+  renderProducts();
+  updateLowStockBanner();
+}
+
 function exportInventoryCSV(){
   const rows=[['Product','Category','Stock','Low Alert','Cost Price','Stock Value']];
   _products.forEach(p=>{
