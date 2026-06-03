@@ -636,12 +636,36 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
     </div>
     <!-- Features -->
     <div style="max-width:900px;margin:0 auto;padding:0 20px 40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
-      ${[['🧾','Smart POS','Fast order taking, split bills, multiple payment methods'],['🍳','Kitchen Display','Real-time orders sent to kitchen screen automatically'],['🏪','Multi-Branch','Manage all your locations from one account'],['📊','Reports & Analytics','Sales reports, top items, staff performance'],['🎯','Promotions','BOGO, discounts, happy hour, Buy X Get 1 Free'],['👥','Customer Loyalty','Points system, purchase history, SMS receipts']].map(([e,t,d])=>`
       <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px">
-        <div style="font-size:28px;margin-bottom:10px">${e}</div>
-        <div style="font-size:14px;font-weight:700;margin-bottom:6px">${t}</div>
-        <div style="font-size:12px;color:var(--muted)">${d}</div>
-      </div>`).join('')}
+        <div style="font-size:28px;margin-bottom:10px">🧾</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:6px">Smart POS</div>
+        <div style="font-size:12px;color:var(--muted)">Fast order taking, split bills, multiple payment methods</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px">
+        <div style="font-size:28px;margin-bottom:10px">🍳</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:6px">Kitchen Display</div>
+        <div style="font-size:12px;color:var(--muted)">Real-time orders sent to kitchen screen automatically</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px">
+        <div style="font-size:28px;margin-bottom:10px">🏪</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:6px">Multi-Branch</div>
+        <div style="font-size:12px;color:var(--muted)">Manage all your locations from one account</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px">
+        <div style="font-size:28px;margin-bottom:10px">📊</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:6px">Reports &amp; Analytics</div>
+        <div style="font-size:12px;color:var(--muted)">Sales reports, top items, staff performance</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px">
+        <div style="font-size:28px;margin-bottom:10px">🎯</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:6px">Promotions</div>
+        <div style="font-size:12px;color:var(--muted)">BOGO, discounts, happy hour, Buy X Get 1 Free</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px">
+        <div style="font-size:28px;margin-bottom:10px">👥</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:6px">Customer Loyalty</div>
+        <div style="font-size:12px;color:var(--muted)">Points system, purchase history, SMS receipts</div>
+      </div>
     </div>
     <!-- Pricing -->
     <div style="max-width:900px;margin:0 auto;padding:0 20px 60px;text-align:center">
@@ -652,20 +676,31 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
           <div style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px">STARTER</div>
           <div style="font-size:32px;font-weight:900;margin-bottom:4px">99 <span style="font-size:14px;color:var(--muted)">SAR/mo</span></div>
           <div style="font-size:11px;color:var(--muted);margin-bottom:16px">1 branch · Up to 3 staff</div>
-          ${['POS & Orders','Kitchen Display','Basic Reports','Email Support'].map(f=>`<div style="font-size:12px;padding:4px 0;color:var(--text)">✅ ${f}</div>`).join('')}
+          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ POS &amp; Orders</div>
+          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Kitchen Display</div>
+          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Basic Reports</div>
+          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Email Support</div>
         </div>
         <div style="background:linear-gradient(135deg,rgba(0,165,80,.15),rgba(0,108,53,.1));border:2px solid rgba(0,165,80,.5);border-radius:16px;padding:24px;text-align:left;position:relative">
           <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--accent2);color:#fff;font-size:10px;font-weight:800;padding:3px 12px;border-radius:20px">MOST POPULAR</div>
           <div style="font-size:13px;font-weight:700;color:var(--accent2);margin-bottom:8px">GROWTH</div>
           <div style="font-size:32px;font-weight:900;margin-bottom:4px">199 <span style="font-size:14px;color:var(--muted)">SAR/mo</span></div>
           <div style="font-size:11px;color:var(--muted);margin-bottom:16px">3 branches · Unlimited staff</div>
-          ${['Everything in Starter','Multi-Branch','Customer Loyalty','Promotions & Promos','Priority Support'].map(f=>`<div style="font-size:12px;padding:4px 0;color:var(--text)">✅ ${f}</div>`).join('')}
+          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Everything in Starter</div>
+          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Multi-Branch</div>
+          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Customer Loyalty</div>
+          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Promotions &amp; Promos</div>
+          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Priority Support</div>
         </div>
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;text-align:left">
           <div style="font-size:13px;font-weight:700;color:#58a6ff;margin-bottom:8px">ENTERPRISE</div>
           <div style="font-size:32px;font-weight:900;margin-bottom:4px">399 <span style="font-size:14px;color:var(--muted)">SAR/mo</span></div>
           <div style="font-size:11px;color:var(--muted);margin-bottom:16px">Unlimited branches & staff</div>
-          ${['Everything in Growth','Unlimited Branches','Owner Dashboard','Advanced Reports','Dedicated Support'].map(f=>`<div style="font-size:12px;padding:4px 0;color:var(--text)">✅ ${f}</div>`).join('')}
+          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Everything in Growth</div>
+          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Unlimited Branches</div>
+          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Owner Dashboard</div>
+          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Advanced Reports</div>
+          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Dedicated Support</div>
         </div>
       </div>
       <div style="margin-top:24px;font-size:13px;color:var(--muted)">All plans include a <strong style="color:var(--text)">14-day free trial</strong>. No credit card required to start.</div>
@@ -788,6 +823,11 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
       <div style="font-size:38px;margin-bottom:8px">📊</div>
       <div style="font-size:13px;font-weight:800">Owner Dashboard</div>
       <div style="font-size:10px;color:var(--muted);margin-top:3px">All branches overview</div>
+    </div>
+    <div id="rs-superadmin-card" onclick="openSuperAdmin()" style="display:none;background:linear-gradient(135deg,rgba(248,81,73,.12),rgba(88,166,255,.08));border:2px solid rgba(248,81,73,.4);border-radius:16px;padding:22px 14px;text-align:center;cursor:pointer;transition:all .15s">
+      <div style="font-size:38px;margin-bottom:8px">🛡</div>
+      <div style="font-size:13px;font-weight:800">Super Admin</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:3px">All clients & billing</div>
     </div>
   </div>
 
@@ -936,6 +976,39 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
         <button onclick="adminClearAuditLog()" style="padding:10px 16px;border-radius:10px;border:1px solid rgba(248,81,73,.3);background:rgba(248,81,73,.07);color:var(--red);font-size:12px;font-weight:600;cursor:pointer">📋 Clear Audit Log</button>
         <button onclick="adminFullReset()" style="padding:10px 16px;border-radius:10px;border:2px solid rgba(248,81,73,.6);background:rgba(248,81,73,.15);color:var(--red);font-size:12px;font-weight:800;cursor:pointer">⚠️ Full Test Reset (Orders + Audit + Counter)</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUPER ADMIN PANEL -->
+<div id="super-admin-panel" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:900;flex-direction:column;overflow:hidden">
+  <div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:18px;font-weight:900">Saudi<span style="color:var(--accent2)">POS</span></span>
+      <span style="font-size:10px;font-weight:700;padding:2px 12px;border-radius:20px;background:rgba(88,166,255,.15);color:#58a6ff;border:1px solid rgba(88,166,255,.3)">🛡 SUPER ADMIN</span>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input id="sa-search" placeholder="Search clients..." class="form-input" style="width:200px;font-size:12px" oninput="renderSAClients()"/>
+      <button onclick="saCleanDuplicates()" style="padding:6px 14px;border-radius:8px;border:1px solid rgba(248,81,73,.4);background:rgba(248,81,73,.1);color:var(--red);font-size:12px;font-weight:700;cursor:pointer">🧹 Remove Duplicates</button>
+      <button onclick="loadSAClients()" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--accent2);font-size:12px;cursor:pointer">↻ Refresh</button>
+      <button onclick="closeSuperAdmin()" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-size:12px;cursor:pointer">← Back</button>
+    </div>
+  </div>
+  <div style="flex-shrink:0;padding:16px 20px 0;display:flex;gap:12px;flex-wrap:wrap" id="sa-stats"></div>
+  <!-- Filter tabs -->
+  <div style="flex-shrink:0;padding:10px 20px 0;display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button onclick="setSAFilter('all')" id="sa-tab-all" class="sa-tab active-tab" style="padding:5px 14px;border-radius:20px;border:1px solid var(--accent2);background:rgba(0,165,80,.15);color:var(--accent2);font-size:11px;font-weight:700;cursor:pointer">All</button>
+      <button onclick="setSAFilter('active')" id="sa-tab-active" class="sa-tab" style="padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-size:11px;font-weight:700;cursor:pointer">✅ Active</button>
+      <button onclick="setSAFilter('trial')" id="sa-tab-trial" class="sa-tab" style="padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-size:11px;font-weight:700;cursor:pointer">⏰ Trial</button>
+      <button onclick="setSAFilter('expiring')" id="sa-tab-expiring" class="sa-tab" style="padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-size:11px;font-weight:700;cursor:pointer">🔥 Expiring ≤3d</button>
+      <button onclick="setSAFilter('expired')" id="sa-tab-expired" class="sa-tab" style="padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-size:11px;font-weight:700;cursor:pointer">🔴 Expired</button>
+    </div>
+    <button onclick="exportSAClientsCSV()" style="padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-size:11px;cursor:pointer">⬇ Export CSV</button>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:16px 20px">
+    <div id="sa-clients-list" style="display:flex;flex-direction:column;gap:10px">
+      <div style="color:var(--muted);text-align:center;padding:40px">Loading clients...</div>
     </div>
   </div>
 </div>
@@ -1149,13 +1222,19 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
   <div class="screen" id="menu-screen">
     <div class="screen-header">
       <span class="screen-title" data-i18n="menu-title">Menu Management</span>
-      <div style="display:flex;gap:8px">
+      <div style="display:flex;gap:8px;align-items:center">
+        <div id="menu-tabs" style="display:none;gap:4px;display:flex">
+          <button id="menu-tab-items-btn" onclick="setMenuTab('items')" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--accent);color:#000;font-size:12px;font-weight:700;cursor:pointer">🍽 Items</button>
+          <button id="menu-tab-control-btn" onclick="setMenuTab('control')" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;font-weight:700;cursor:pointer">🌿 Branch Control</button>
+        </div>
         <button class="btn btn-secondary" id="push-menu-btn" onclick="openPushMenuModal()" style="display:none">🔄 Push Menu to Branch</button>
-        <button class="btn btn-secondary" onclick="openCatModal()">+ Category</button>
-        <button class="btn btn-primary" onclick="openProductModal()">+ Product</button>
+        <button class="btn btn-secondary" id="menu-add-cat-btn" onclick="openCatModal()">+ Category</button>
+        <button class="btn btn-primary" id="menu-add-product-btn" onclick="openProductModal()">+ Product</button>
       </div>
     </div>
-    <div class="menu-mgmt-body">
+
+    <!-- Items tab -->
+    <div id="menu-tab-items-body" class="menu-mgmt-body">
       <div class="cat-panel">
         <div class="cat-panel-title">Categories</div>
         <div id="cat-list"></div>
@@ -1164,14 +1243,35 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
         <div style="text-align:center;padding:40px;color:var(--muted)">Select a category</div>
       </div>
     </div>
+
+    <!-- Branch Control tab -->
+    <div id="menu-tab-control-body" style="display:none;flex:1;overflow-y:auto;padding:16px">
+      <div style="max-width:900px;margin:0 auto">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-size:15px;font-weight:800">🌿 Branch Visibility Control</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">Control which items are visible on each branch</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:12px;color:var(--muted)">View by:</span>
+            <button onclick="setBranchControlView('item')" id="bcv-item-btn" style="padding:5px 12px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:#000;font-size:11px;font-weight:700;cursor:pointer">Item</button>
+            <button onclick="setBranchControlView('branch')" id="bcv-branch-btn" style="padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:11px;font-weight:700;cursor:pointer">Branch</button>
+          </div>
+        </div>
+        <div id="branch-control-body"></div>
+      </div>
+    </div>
   </div>
 
   <!-- ── REPORTS SCREEN ── -->
   <div class="screen" id="reports-screen">
     <div class="reports-body">
-      <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
         <span class="screen-title" data-i18n="reports-title">Reports & Analytics</span>
-        <div style="display:flex;gap:8px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <select class="form-input" id="report-branch" onchange="renderReports()" style="width:140px;padding:6px 10px;font-size:12px">
+            <option value="all">All Branches</option>
+          </select>
           <select class="form-input" id="report-period" onchange="renderReports()" style="width:130px;padding:6px 10px;font-size:12px">
             <option value="today">Today</option>
             <option value="week">This Week</option>
@@ -1242,7 +1342,10 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
         <div class="settings-section-title">🏪 Business Info</div>
         <div class="settings-row">
           <div><div class="settings-label">Business Name</div></div>
-          <input class="form-input" id="set-biz-name" style="width:200px" oninput="saveSetting('biz_name',this.value)"/>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input class="form-input" id="set-biz-name" style="width:180px" placeholder="My Business"/>
+            <button onclick="saveBizName()" style="padding:6px 14px;border-radius:8px;border:none;background:var(--accent);color:#000;font-size:12px;font-weight:700;cursor:pointer">Save</button>
+          </div>
         </div>
         <div class="settings-row">
           <div><div class="settings-label">Currency</div></div>
@@ -1280,8 +1383,11 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
           <div style="font-size:12px;color:var(--muted)" id="set-email">—</div>
         </div>
         <div class="settings-row">
-          <div><div class="settings-label">IT Admin PIN</div><div class="settings-desc">4-digit PIN to access IT Admin panel (default: 0000)</div></div>
-          <input class="form-input" id="set-admin-pin" type="password" inputmode="numeric" maxlength="4" style="width:100px" placeholder="0000" oninput="saveSetting('admin_pin',this.value)"/>
+          <div><div class="settings-label">IT Admin PIN</div><div class="settings-desc">4–6 digit PIN to access IT Admin panel (default: 0000)</div></div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input class="form-input" id="set-admin-pin" type="password" inputmode="numeric" maxlength="6" style="width:100px" placeholder="0000"/>
+            <button onclick="saveAdminPin()" style="padding:6px 14px;border-radius:8px;border:none;background:var(--accent);color:#000;font-size:12px;font-weight:700;cursor:pointer">Save</button>
+          </div>
         </div>
         <div class="settings-row">
           <div><div class="settings-label">Business Mode</div></div>
@@ -1309,6 +1415,82 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
             <input class="form-input" id="set-branch-phone" placeholder="Phone" style="width:100%"/>
             <button class="btn btn-primary" onclick="addBranchFromSettings()" style="width:100%">+ Add Branch</button>
           </div>
+        </div>
+      </div>
+      <!-- BRANCH SETTINGS SECTION -->
+      <div class="settings-section" id="branch-settings-section" style="display:none">
+        <div class="settings-section-title">⚙️ Branch Settings</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Override VAT, currency, and receipt footer for this branch only.</div>
+        <div class="settings-row">
+          <div><div class="settings-label">Branch Currency</div></div>
+          <select class="form-input" id="bset-currency" style="width:130px" onchange="saveBranchSetting('currency',this.value)">
+            <option value="">Same as business</option>
+            <option value="SAR">SAR — Saudi Riyal</option>
+            <option value="AED">AED — UAE Dirham</option>
+            <option value="USD">USD — US Dollar</option>
+            <option value="KWD">KWD — Kuwaiti Dinar</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-label">Branch VAT Rate</div><div class="settings-desc">Leave blank to use business default</div></div>
+          <input class="form-input" id="bset-vat" type="number" style="width:80px" placeholder="Default" oninput="saveBranchSetting('vat_rate',this.value===''?null:parseFloat(this.value))"/>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-label">Branch Receipt Footer</div></div>
+          <input class="form-input" id="bset-footer" style="width:200px" placeholder="Same as business" oninput="saveBranchSetting('receipt_footer',this.value)"/>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-label">Branch Name on Receipt</div></div>
+          <input class="form-input" id="bset-name" style="width:200px" placeholder="Branch name" oninput="saveBranchSetting('branch_name',this.value)"/>
+        </div>
+      </div>
+      <!-- SUBSCRIPTION SECTION -->
+      <div class="settings-section">
+        <div class="settings-section-title">💳 Subscription</div>
+        <div id="subscription-info"></div>
+      </div>
+      <!-- API / INTEGRATIONS SECTION -->
+      <div class="settings-section" id="integrations-section">
+        <div class="settings-section-title">🔌 API & Integrations</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Use your API key to connect HungerStation, Jahez, Talabat, or any custom system. Send orders directly into SaudiPOS.</div>
+        <div class="settings-row">
+          <div><div class="settings-label">Your API Key</div><div class="settings-desc">Keep this secret — share only with trusted integrations</div></div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input id="api-key-display" class="form-input" readonly style="width:260px;font-family:monospace;font-size:12px;letter-spacing:1px" value="Click Generate to create"/>
+            <button onclick="copyApiKey()" style="padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-size:12px;cursor:pointer">📋 Copy</button>
+            <button onclick="generateApiKey()" style="padding:7px 12px;border-radius:8px;border:none;background:var(--accent2);color:#fff;font-size:12px;font-weight:700;cursor:pointer">⚡ Generate</button>
+          </div>
+        </div>
+        <div class="settings-row" style="align-items:flex-start">
+          <div><div class="settings-label">API Endpoint</div><div class="settings-desc">POST orders to this URL</div></div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <input class="form-input" readonly id="api-endpoint-display" style="width:360px;font-family:monospace;font-size:11px" value="https://hjygvfhxyonmizdleoqe.supabase.co/functions/v1/receive-order"/>
+            <button onclick="copyEndpoint()" style="padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-size:11px;cursor:pointer;align-self:flex-start">📋 Copy Endpoint</button>
+          </div>
+        </div>
+        <div class="settings-row" style="align-items:flex-start">
+          <div><div class="settings-label">Example Request</div></div>
+          <pre style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:10px;color:var(--muted);overflow-x:auto;max-width:400px;white-space:pre">{
+  "source": "hungerstation",
+  "source_order_id": "HS-9981",
+  "order_type": "delivery",
+  "items": [
+    {"name":"Beef Burger","qty":2,"price":25.00},
+    {"name":"Pepsi","qty":1,"price":7.00}
+  ],
+  "customer": {
+    "name": "Ahmed Ali",
+    "phone": "0501234567",
+    "address": "Al Olaya, Riyadh"
+  },
+  "total": 57.00,
+  "notes": "Extra sauce"
+}</pre>
+        </div>
+        <div id="api-test-result" style="display:none;margin-top:8px;padding:10px 14px;border-radius:8px;font-size:12px"></div>
+        <div class="settings-row">
+          <div><div class="settings-label">Test Connection</div></div>
+          <button onclick="testApiConnection()" style="padding:7px 16px;border-radius:8px;border:1px solid rgba(88,166,255,.3);background:rgba(88,166,255,.08);color:#58a6ff;font-size:12px;font-weight:600;cursor:pointer">🧪 Send Test Order</button>
         </div>
       </div>
     </div>
@@ -1471,6 +1653,11 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
       <div class="form-group"><label class="form-label">🔐 Login PIN <span style="color:var(--accent2);font-size:10px;font-weight:700">(used to login)</span></label><input class="form-input" id="st-pin" type="text" inputmode="numeric" placeholder="e.g. 1234" maxlength="4" style="letter-spacing:6px;font-weight:800;font-size:18px"/></div>
       <div class="form-group"><label class="form-label">Salary (SAR/month)</label><input class="form-input" id="st-salary" type="number" placeholder="0"/></div>
       <div class="form-group"><label class="form-label">Start Date</label><input class="form-input" id="st-start" type="date"/></div>
+    </div>
+    <div id="st-branches-wrap" style="display:none;margin-top:10px">
+      <label class="form-label">🏢 Allowed Branches</label>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Leave all ON = works at all branches</div>
+      <div id="st-branches-list" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px"></div>
     </div>
     <div class="btn-row"><button class="btn btn-secondary" onclick="closeStaffModal()">Cancel</button><button class="btn btn-primary" onclick="saveStaff()">Save</button></div>
   </div>
@@ -2430,6 +2617,7 @@ async function doSignup(){
 
 async function doLogout(){
   sessionStorage.removeItem('posRole');
+  sessionStorage.removeItem('sposBranchId');
   await sb.auth.signOut();
   _user=null;_profile=null;_bizId=null;_businessId=null;_branches=[];_currentBranch=null;
   clearInterval(_kdsInterval);clearInterval(_kdsClockInterval);
@@ -2448,8 +2636,24 @@ async function onSignedIn(user){
   document.getElementById('auth-screen').style.display='none';
   document.getElementById('loading').style.display='flex';
   document.getElementById('loading-text').textContent='Loading your business...';
-  // Load business
-  let{data:biz}=await sb.from('businesses').select('*').eq('owner_id',user.id).single();
+  // Load business — pick the one with the most branches/best settings (handles duplicates from race condition)
+  let{data:bizArr}=await sb.from('businesses').select('*').eq('owner_id',user.id).order('created_at',{ascending:false});
+  let biz=null;
+  if(Array.isArray(bizArr)&&bizArr.length>0){
+    // Pick the record with the most branches, then prefer one with plan/status, then newest
+    bizArr.sort((a,b)=>{
+      const aBranches=(a.settings?.branches||[]).length;
+      const bBranches=(b.settings?.branches||[]).length;
+      if(bBranches!==aBranches) return bBranches-aBranches;
+      const aHasPlan=a.settings?.plan?1:0;
+      const bHasPlan=b.settings?.plan?1:0;
+      if(bHasPlan!==aHasPlan) return bHasPlan-aHasPlan;
+      return new Date(b.created_at)-new Date(a.created_at);
+    });
+    biz=bizArr[0];
+  } else if(bizArr&&!Array.isArray(bizArr)){
+    biz=bizArr;
+  }
   // Auto-create business if missing (e.g. signup was interrupted)
   if(!biz){
     const meta=user.user_metadata||{};
@@ -2509,8 +2713,14 @@ async function onSignedIn(user){
     // Auto-select single branch
     await selectBranch(_branches[0],true);
   } else {
-    // Show branch picker
-    showBranchScreen();
+    // Multiple branches — restore last selected branch from session
+    const savedBranchId=sessionStorage.getItem('sposBranchId');
+    const savedBranch=savedBranchId&&_branches.find(b=>b.id===savedBranchId);
+    if(savedBranch){
+      await selectBranch(savedBranch,true);
+    } else {
+      showBranchScreen();
+    }
   }
 }
 
@@ -2528,16 +2738,23 @@ function updateBranchIndicator(){
   // Show push menu button only when this branch has products AND there are other branches
   const pb=document.getElementById('push-menu-btn');
   if(pb) pb.style.display=(_branches.length>1&&_products.length>0)?'inline-flex':'none';
+  // Show Branch Control tab only for owner with 2+ branches
+  const mt=document.getElementById('menu-tabs');
+  if(mt) mt.style.display=(_branches.length>1&&!_isBranchMode())?'flex':'none';
 }
 
 async function selectBranch(branch, skipScreen=false){
   _currentBranch=branch;
   _bizId=branch.id;
+  sessionStorage.setItem('sposBranchId',branch.id);
   updateBranchIndicator();
   // Hide branch screen
   document.getElementById('branch-screen').style.display='none';
   document.getElementById('loading').style.display='flex';
   document.getElementById('loading-text').textContent='Loading branch data...';
+  // Always re-fetch fresh settings so branch_menus reflects latest pushes
+  const{data:freshBiz}=await sb.from('businesses').select('settings').eq('id',_businessId).single();
+  if(freshBiz?.settings) _settings={..._settings,...freshBiz.settings};
   await loadAll();
   document.getElementById('loading').style.display='none';
   const savedRole=sessionStorage.getItem('posRole');
@@ -2585,10 +2802,10 @@ function closeAddBranchModal(){
 }
 
 async function _saveBranchesToDB(){
-  // Save _branches array into businesses.settings.branches
-  const allBranches=[..._branches,...(_settings.branches||[]).filter(b=>!_branches.find(x=>x.id===b.id))];
+  if(!_businessId){showToast('Error: business not loaded — please refresh',true);return;}
   _settings.branches=_branches;
-  await sb.from('businesses').update({settings:{..._settings,branches:_branches}}).eq('id',_businessId);
+  const{error}=await sb.from('businesses').update({settings:{..._settings,branches:_branches}}).eq('id',_businessId);
+  if(error) showToast('Save failed: '+error.message,true);
 }
 
 async function saveBranch(){
@@ -2678,8 +2895,10 @@ async function confirmPushMenu(){
   if(!checked.length){showToast('Select at least one branch',true);return;}
   const btn=document.querySelector('#push-menu-modal .btn-primary');
   if(btn){btn.disabled=true;btn.textContent='⏳ Pushing...';}
-  // Store pushed menu in businesses.settings.branch_menus — avoids RLS issues
-  const branch_menus=_settings.branch_menus||{};
+  // Re-fetch fresh settings from DB to avoid overwriting other branches with stale data
+  const{data:freshBiz}=await sb.from('businesses').select('settings').eq('id',_businessId).single();
+  const freshSettings=freshBiz?.settings||{};
+  const branch_menus={...(freshSettings.branch_menus||{})};
   for(const targetId of checked){
     branch_menus[targetId]={
       cats:_cats,
@@ -2687,7 +2906,7 @@ async function confirmPushMenu(){
       pushed_at:new Date().toISOString()
     };
   }
-  _settings.branch_menus=branch_menus;
+  _settings={..._settings,...freshSettings,branch_menus};
   const{error}=await sb.from('businesses').update({settings:{..._settings}}).eq('id',_businessId);
   closePushMenuModal();
   if(btn){btn.disabled=false;btn.textContent='🔄 Push Menu';}
@@ -2852,7 +3071,7 @@ function setScreen(name){
   document.getElementById(name+'-screen').classList.add('active');
   document.querySelector(`[data-screen="${name}"]`)?.classList.add('active');
   if(name==='orders') renderOrders();
-  if(name==='reports'){renderReports();loadAuditLogs();}
+  if(name==='reports'){populateReportBranchFilter();renderReports();loadAuditLogs();}
   if(name==='menu'){renderCatList();renderProductsList();}
   if(name==='tables') renderTables();
   if(name==='kitchen') renderKitchen();
@@ -2861,7 +3080,7 @@ function setScreen(name){
   if(name==='staff') renderStaff();
   if(name==='promos') renderPromos();
   if(name==='devices'){loadDevices();renderDevices();}
-  if(name==='settings') renderBranchesSettings();
+  if(name==='settings'){renderBranchesSettings();renderBranchSettingsSection();renderSubscriptionInfo();renderIntegrationsSection();}
 }
 
 // ── POS ───────────────────────────────────────────────────────────────────────
@@ -2900,6 +3119,7 @@ function renderProducts(){
     const combos=_products.filter(p=>{
       if(p.is_active===false||!p.is_combo) return false;
       if(q&&!p.name?.toLowerCase().includes(q)&&!(p.name_ar||'').toLowerCase().includes(q)) return false;
+      if(_isBranchMode()&&!_isVisibleOnBranch(p.id,_bizId)) return false;
       return true;
     });
     if(!combos.length){grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted)">No combo products found</div>`;return;}
@@ -2912,6 +3132,8 @@ function renderProducts(){
     if(p.is_active===false) return false;
     if(_filterCat!=='all'&&p.cat_id!==_filterCat) return false;
     if(q&&!p.name?.toLowerCase().includes(q)&&!(p.name_ar||'').toLowerCase().includes(q)) return false;
+    // Branch visibility: hide items not allowed for this branch
+    if(_isBranchMode()&&!_isVisibleOnBranch(p.id,_bizId)) return false;
     return true;
   });
   if(!prods.length){
@@ -3207,7 +3429,7 @@ function renderCart(){
 
 function updateTotals(){
   const sub=_cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const vatRate=(_settings.vat_rate||15)/100;
+  const vatRate=(_getEffectiveSetting('vat_rate')||15)/100;
   const vatAmt=sub*vatRate;
   // Recalculate BOGO discount dynamically based on current cart
   if(_appliedPromo&&_appliedPromo.type==='bogo'){
@@ -3273,7 +3495,7 @@ function getTotal(){
   return{sub,vatAmt,discAmt,total:sub+vatAmt-discAmt};
 }
 
-function fmtPrice(v){return`${(+v||0).toFixed(2)} ${_settings.currency||'SAR'}`;}
+function fmtPrice(v){return`${(+v||0).toFixed(2)} ${_getEffectiveSetting('currency')||'SAR'}`;}
 
 // ── ORDER TYPE & TABLE ────────────────────────────────────────────────────────
 function setOrderType(type){
@@ -3670,7 +3892,7 @@ function showReceipt(order){
     ${(order.items||[]).map(i=>`<div class="receipt-item-row"><span>${i.qty}x ${i.name}</span><span>${(i.price*i.qty).toFixed(2)}</span></div>`).join('')}
     <hr class="receipt-hr"/>
     <div class="receipt-item-row"><span>Subtotal</span><span>${order.subtotal?.toFixed(2)}</span></div>
-    ${_settings.show_vat?`<div class="receipt-item-row"><span>VAT (${_settings.vat_rate||15}%)</span><span>${order.vat?.toFixed(2)}</span></div>`:''}
+    ${_settings.show_vat?`<div class="receipt-item-row"><span>VAT (${_getEffectiveSetting('vat_rate')||15}%)</span><span>${order.vat?.toFixed(2)}</span></div>`:''}
     ${order.discount>0?`<div class="receipt-item-row"><span>Discount</span><span>-${order.discount?.toFixed(2)}</span></div>`:''}
     <div class="receipt-total-row"><span>TOTAL</span><span>${order.total?.toFixed(2)} ${cur}</span></div>
     <div style="text-align:center;margin-top:4px;font-size:10px">Payment: ${order.payment_method?.toUpperCase()}</div>
@@ -3811,7 +4033,7 @@ function renderKitchen(){
     if(ks==='ready')  actionBtn=`<button onclick="markKitchenDone('${o.id}')" class="kitchen-done-btn" style="flex:1;animation:pulse .8s infinite">🏁 Done</button>`;
     return`<div class="kitchen-card${urgent?' urgent':''}" id="kcard-${o.id}" style="${ks==='ready'?'border-color:var(--accent2);box-shadow:0 0 12px rgba(0,165,80,.2)':ks==='making'?'border-color:var(--blue)':''}">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-        <div class="kitchen-order-num">Order #${String(o.order_num).padStart(3,'0')}</div>
+        <div class="kitchen-order-num" style="display:flex;align-items:center;gap:6px">Order #${String(o.order_num).padStart(3,'0')}${o.source?`<span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;${_sourceStyle(o.source)}">${_sourceName(o.source)}</span>`:''}</div>
         <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:${ts.bg};color:${ts.color}">${ts.label}</span>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
@@ -3885,8 +4107,12 @@ function renderOrders(){
         ${o.type==='dinein'?'🪑':o.type==='takeaway'?'🛍':o.type==='delivery'?'🛵':'🛒'}
       </div>
       <div style="flex:1">
-        <div style="font-size:13px;font-weight:600">Order #${String(o.order_num).padStart(3,'0')}${o.table_num?' · Table '+o.table_num:''}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px">${(o.items||[]).length} items · ${new Date(o.created_at).toLocaleString()}</div>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <span style="font-size:13px;font-weight:600">Order #${String(o.order_num).padStart(3,'0')}${o.table_num?' · Table '+o.table_num:''}</span>
+          ${o.source?`<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;${_sourceStyle(o.source)}">${_sourceName(o.source)}</span>`:''}
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${(o.items||[]).length} items · ${new Date(o.created_at).toLocaleString()}${o.source_order_id?` · Ref: ${o.source_order_id}`:''}</div>
+        ${o.customer_name?`<div style="font-size:11px;color:var(--muted)">👤 ${o.customer_name}${o.customer_phone?' · '+o.customer_phone:''}${o.delivery_address?' · 📍'+o.delivery_address:''}</div>`:''}
       </div>
       <div style="text-align:right">
         <div style="font-size:14px;font-weight:700;color:var(--accent2)">${o.total?.toFixed(2)} ${o.currency||'SAR'}</div>
@@ -4446,11 +4672,18 @@ function exportOrdersCSV(){
 }
 
 // ── REPORTS ───────────────────────────────────────────────────────────────────
-function renderReports(){
+async function renderReports(){
   const period=document.getElementById('report-period')?.value||'today';
+  const branchFilter=document.getElementById('report-branch')?.value||'all';
   const now=new Date();
-  const todayStr=now.toLocaleDateString('en-CA'); // YYYY-MM-DD in local time
-  const filtered=_orders.filter(o=>{
+  const todayStr=now.toLocaleDateString('en-CA');
+  // If filtering by a specific branch, load that branch's orders from DB
+  let ordersToFilter=_orders;
+  if(branchFilter!=='all'&&branchFilter!==_bizId){
+    const{data}=await sb.from('orders').select('*').eq('biz_id',branchFilter).eq('status','paid').order('created_at',{ascending:false}).limit(500);
+    ordersToFilter=data||[];
+  }
+  const filtered=ordersToFilter.filter(o=>{
     if(o.status!=='paid') return false;
     const d=new Date(o.created_at);
     const dStr=d.toLocaleDateString('en-CA');
@@ -4462,8 +4695,10 @@ function renderReports(){
   const revenue=filtered.reduce((s,o)=>s+o.total,0);
   const avgOrder=filtered.length?revenue/filtered.length:0;
   const vatCollected=filtered.reduce((s,o)=>s+(o.vat||0),0);
-  const cur=_settings.currency||'SAR';
+  const branchName=branchFilter==='all'?'All Branches':(_branches.find(b=>b.id===branchFilter)?.name||'Branch');
+  const cur=_getEffectiveSetting('currency')||'SAR';
   document.getElementById('report-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-label">📍 Branch</div><div class="stat-value" style="font-size:14px">${branchName}</div></div>
     <div class="stat-card"><div class="stat-label">Revenue</div><div class="stat-value c-green">${revenue.toFixed(2)}<span style="font-size:12px;font-weight:400;color:var(--muted)"> ${cur}</span></div></div>
     <div class="stat-card"><div class="stat-label">Orders</div><div class="stat-value c-blue">${filtered.length}</div></div>
     <div class="stat-card"><div class="stat-label">Avg Order</div><div class="stat-value c-amber">${avgOrder.toFixed(2)}<span style="font-size:12px;font-weight:400;color:var(--muted)"> ${cur}</span></div></div>
@@ -4773,9 +5008,23 @@ async function deleteCat(id){
 }
 
 // ── SETTINGS ─────────────────────────────────────────────────────────────────
+async function saveBizName(){
+  const val=(document.getElementById('set-biz-name').value||'').trim();
+  if(!val){showToast('Business name cannot be empty',true);return;}
+  await saveSetting('biz_name',val);
+  showToast('Business name saved ✓');
+}
+async function saveAdminPin(){
+  const val=(document.getElementById('set-admin-pin').value||'').trim();
+  if(!/^\d{4,6}$/.test(val)){showToast('PIN must be 4 to 6 digits',true);return;}
+  await saveSetting('admin_pin',val);
+  showToast('IT Admin PIN saved ✓');
+}
 async function saveSetting(key,value){
   _settings[key]=value;
-  if(_bizId) await sb.from('businesses').update({settings:_settings}).eq('id',_bizId);
+  // Always update the PARENT business record (not the branch)
+  const targetId=_businessId||_bizId;
+  if(targetId) await sb.from('businesses').update({settings:_settings}).eq('id',targetId);
   if(key==='vat_rate') updateTotals();
   if(key==='biz_name'){
     const name=value||'My Business';
@@ -5143,6 +5392,12 @@ function renderStaff(){
         ${s.phone?`<div>📱 ${s.phone}</div>`:''}
         ${s.salary?`<div>💰 ${s.salary} SAR/month</div>`:''}
         ${s.start_date?`<div>📅 Since ${s.start_date}</div>`:''}
+        ${(()=>{
+          const assigned=s.branches||[];
+          if(assigned.length===0) return '<div>🏢 All branches</div>';
+          const names=assigned.map(id=>{const b=_branches.find(x=>x.id===id);return b?b.name:id;});
+          return `<div>🏢 ${names.join(', ')}</div>`;
+        })()}
       </div>
       <div style="padding:8px 12px;border-radius:8px;background:${s.pin?'rgba(0,165,80,.1)':'rgba(248,81,73,.08)'};border:1px solid ${s.pin?'rgba(0,165,80,.3)':'rgba(248,81,73,.3)'};margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
         <span style="font-size:11px;font-weight:700;color:${s.pin?'var(--accent2)':'var(--red)'}">${s.pin?'🔐 PIN set':'⚠️ No PIN set'}</span>
@@ -5163,18 +5418,47 @@ function openStaffModal(id){
   document.getElementById('st-pin').value=_editStaff?.pin||'';
   document.getElementById('st-salary').value=_editStaff?.salary||'';
   document.getElementById('st-start').value=_editStaff?.start_date||'';
+  // Branch assignment — only show if 2+ branches and not in branch mode
+  const bwrap=document.getElementById('st-branches-wrap');
+  const blist=document.getElementById('st-branches-list');
+  const nonMain=_branches.filter(b=>b.id!==_businessId);
+  if(nonMain.length>0&&!_isBranchMode()){
+    bwrap.style.display='block';
+    const assignedBranches=_editStaff?.branches||[];
+    blist.innerHTML=nonMain.map(b=>{
+      const checked=assignedBranches.length===0||assignedBranches.includes(b.id);
+      return `<label style="display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;font-size:12px">
+        <input type="checkbox" id="st-branch-${b.id}" ${checked?'checked':''} style="accent-color:var(--accent)">
+        ${b.name}
+      </label>`;
+    }).join('');
+  } else {
+    bwrap.style.display='none';
+  }
   document.getElementById('staff-modal').style.display='flex';
 }
 function closeStaffModal(){document.getElementById('staff-modal').style.display='none';}
 async function saveStaff(){
   const name=document.getElementById('st-name').value.trim();
   if(!name){showToast('Name required',true);return;}
+  // Collect branch assignments
+  const nonMain=_branches.filter(b=>b.id!==_businessId);
+  let assignedBranches=[];
+  if(nonMain.length>0&&!_isBranchMode()){
+    assignedBranches=nonMain.filter(b=>{
+      const cb=document.getElementById('st-branch-'+b.id);
+      return cb&&cb.checked;
+    }).map(b=>b.id);
+    // If all checked = no restriction (empty array)
+    if(assignedBranches.length===nonMain.length) assignedBranches=[];
+  }
   // Staff always saved to main business ID so they're shared across branches
   const rec={biz_id:_businessId||_bizId,name,role:document.getElementById('st-role').value,
     phone:document.getElementById('st-phone').value.trim(),
     pin:document.getElementById('st-pin').value.trim(),
     salary:+document.getElementById('st-salary').value||null,
-    start_date:document.getElementById('st-start').value||null};
+    start_date:document.getElementById('st-start').value||null,
+    branches:assignedBranches};
   if(_editStaff){
     Object.assign(_editStaff,rec);
     if(_bizId) await sb.from('staff').update(rec).eq('id',_editStaff.id);
@@ -5517,13 +5801,657 @@ const ROLE_NAV={
   admin:[]     // handled by admin screen
 };
 
+const SUPER_ADMIN_EMAIL='md.nawas85@gmail.com';
+function _isSuperAdmin(){return _user?.email===SUPER_ADMIN_EMAIL;}
+
 function showRoleScreen(){
   document.getElementById('app').style.display='none';
   document.getElementById('kds-screen').style.display='none';
   document.getElementById('role-screen').style.display='flex';
-  // Show dashboard card only if owner has 2+ branches
+  // Owner Dashboard: only at main business level (not inside a branch), and only if 2+ branches
   const dc=document.getElementById('rs-dashboard-card');
-  if(dc) dc.style.display=_branches.length>1?'block':'none';
+  if(dc) dc.style.display=(_branches.length>1&&!_isBranchMode())?'block':'none';
+  // Super Admin: only at main level, only for super admin email
+  const sc=document.getElementById('rs-superadmin-card');
+  if(sc) sc.style.display=(_isSuperAdmin()&&!_isBranchMode())?'block':'none';
+}
+
+// ── ONLINE ORDER SOURCE HELPERS ───────────────────────────────────────────────
+function _sourceName(s){
+  return{hungerstation:'🟡 HungerStation',jahez:'🟠 Jahez',talabat:'🔴 Talabat',noon:'⚫ Noon Food',careem:'🟢 Careem',test:'🔵 Test API'}[s]||('📦 '+s);
+}
+function _sourceStyle(s){
+  const c={hungerstation:'background:rgba(255,200,0,.15);color:#d4a800;border:1px solid rgba(255,200,0,.4)',
+    jahez:'background:rgba(255,120,0,.15);color:#e06000;border:1px solid rgba(255,120,0,.4)',
+    talabat:'background:rgba(248,81,73,.15);color:var(--red);border:1px solid rgba(248,81,73,.4)',
+    noon:'background:rgba(150,150,150,.15);color:#aaa;border:1px solid rgba(150,150,150,.4)',
+    careem:'background:rgba(0,165,80,.15);color:var(--accent2);border:1px solid rgba(0,165,80,.4)',
+    test:'background:rgba(88,166,255,.15);color:#58a6ff;border:1px solid rgba(88,166,255,.4)'};
+  return c[s]||'background:var(--bg3);color:var(--muted);border:1px solid var(--border)';
+}
+
+// ── BRANCH CONTROL ────────────────────────────────────────────────────────────
+let _bcView='item'; // 'item' or 'branch'
+let _menuTab='items';
+
+function setMenuTab(tab){
+  _menuTab=tab;
+  document.getElementById('menu-tab-items-body').style.display=tab==='items'?'flex':'none';
+  document.getElementById('menu-tab-control-body').style.display=tab==='control'?'flex':'none';
+  document.getElementById('menu-add-cat-btn').style.display=tab==='items'?'':'none';
+  document.getElementById('menu-add-product-btn').style.display=tab==='items'?'':'none';
+  document.getElementById('push-menu-btn').style.display=tab==='items'&&_branches.length>1&&_products.length>0?'inline-flex':'none';
+  document.getElementById('menu-tab-items-btn').style.background=tab==='items'?'var(--accent)':'var(--bg3)';
+  document.getElementById('menu-tab-items-btn').style.color=tab==='items'?'#000':'var(--text)';
+  document.getElementById('menu-tab-control-btn').style.background=tab==='control'?'var(--accent)':'var(--bg3)';
+  document.getElementById('menu-tab-control-btn').style.color=tab==='control'?'#000':'var(--text)';
+  if(tab==='control') renderBranchControl();
+}
+
+function setBranchControlView(v){
+  _bcView=v;
+  document.getElementById('bcv-item-btn').style.background=v==='item'?'var(--accent)':'var(--bg3)';
+  document.getElementById('bcv-item-btn').style.color=v==='item'?'#000':'var(--text)';
+  document.getElementById('bcv-item-btn').style.borderColor=v==='item'?'var(--accent)':'var(--border)';
+  document.getElementById('bcv-branch-btn').style.background=v==='branch'?'var(--accent)':'var(--bg3)';
+  document.getElementById('bcv-branch-btn').style.color=v==='branch'?'#000':'var(--text)';
+  document.getElementById('bcv-branch-btn').style.borderColor=v==='branch'?'var(--accent)':'var(--border)';
+  renderBranchControl();
+}
+
+function _getItemVisibility(productId){
+  // Returns array of branchIds that CAN see this item. Empty = visible everywhere.
+  return (_settings.item_visibility||{})[productId]||[];
+}
+
+function _isVisibleOnBranch(productId, branchId){
+  const vis=_getItemVisibility(productId);
+  if(vis.length===0) return true; // visible everywhere by default
+  return vis.includes(branchId);
+}
+
+async function _saveItemVisibility(productId, branchIds){
+  if(!_settings.item_visibility) _settings.item_visibility={};
+  if(branchIds.length===0||branchIds.length===_branches.length){
+    // all branches = default (visible everywhere), remove entry
+    delete _settings.item_visibility[productId];
+  } else {
+    _settings.item_visibility[productId]=branchIds;
+  }
+  const targetId=_businessId||_bizId;
+  await sb.from('businesses').update({settings:_settings}).eq('id',targetId);
+}
+
+async function toggleItemBranch(productId, branchId, checked){
+  const allBranchIds=_branches.map(b=>b.id);
+  let current=_getItemVisibility(productId);
+  if(current.length===0) current=[...allBranchIds]; // was visible everywhere
+  if(checked){
+    if(!current.includes(branchId)) current.push(branchId);
+  } else {
+    current=current.filter(id=>id!==branchId);
+  }
+  await _saveItemVisibility(productId, current);
+  showToast('Visibility updated ✓');
+}
+
+async function toggleBranchItem(branchId, productId, checked){
+  await toggleItemBranch(productId, branchId, checked);
+}
+
+function renderBranchControl(){
+  const el=document.getElementById('branch-control-body');
+  if(!el) return;
+  const branches=_branches.filter(b=>b.id); // all branches including main
+
+  if(_bcView==='item'){
+    // Per-item view: each product row, branch toggles
+    let html='';
+    const cats=_cats.filter(c=>c.id);
+    for(const cat of cats){
+      const prods=_products.filter(p=>p.cat_id===cat.id);
+      if(!prods.length) continue;
+      html+=`<div style="margin-bottom:20px">
+        <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)">${cat.name}</div>`;
+      for(const p of prods){
+        html+=`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--bg3);overflow:hidden;flex-shrink:0">
+            ${p.image?`<img src="${p.image}" style="width:100%;height:100%;object-fit:cover">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:16px">🍽</div>`}
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</div>
+            <div style="font-size:11px;color:var(--muted)">${fmtPrice(p.price)}</div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end">`;
+        for(const b of branches){
+          const visible=_isVisibleOnBranch(p.id, b.id);
+          const isMain=b.id===_businessId;
+          html+=`<div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:60px">
+            <div style="font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60px;text-align:center">${isMain?'🏠 Main':b.name}</div>
+            ${isMain
+              ? `<div style="font-size:10px;color:var(--accent2);font-weight:700">Always ✓</div>`
+              : `<label class="toggle-switch" style="transform:scale(.8)"><input type="checkbox" ${visible?'checked':''} onchange="toggleItemBranch('${p.id}','${b.id}',this.checked)"><span class="toggle-slider"></span></label>`
+            }
+          </div>`;
+        }
+        html+='</div></div>';
+      }
+      html+='</div>';
+    }
+    el.innerHTML=html||'<div style="text-align:center;padding:40px;color:var(--muted)">No products yet. Add products first.</div>';
+
+  } else {
+    // Per-branch view: select branch, see all items with toggles
+    const nonMain=branches.filter(b=>b.id!==_businessId);
+    if(!nonMain.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">No branches yet.</div>';return;}
+    let html=`<div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap">`;
+    nonMain.forEach((b,i)=>{
+      html+=`<button onclick="selectBCBranch('${b.id}')" id="bc-branch-btn-${b.id}" style="padding:7px 16px;border-radius:10px;border:1.5px solid ${i===0?'var(--accent)':'var(--border)'};background:${i===0?'rgba(255,184,0,.1)':'var(--bg3)'};color:${i===0?'var(--accent)':'var(--text)'};font-size:12px;font-weight:700;cursor:pointer">${b.name}</button>`;
+    });
+    html+='</div><div id="bc-branch-items"></div>';
+    el.innerHTML=html;
+    selectBCBranch(nonMain[0].id);
+  }
+}
+
+function selectBCBranch(branchId){
+  // Update button styles
+  _branches.filter(b=>b.id!==_businessId).forEach(b=>{
+    const btn=document.getElementById('bc-branch-btn-'+b.id);
+    if(!btn) return;
+    const active=b.id===branchId;
+    btn.style.borderColor=active?'var(--accent)':'var(--border)';
+    btn.style.background=active?'rgba(255,184,0,.1)':'var(--bg3)';
+    btn.style.color=active?'var(--accent)':'var(--text)';
+  });
+  const branch=_branches.find(b=>b.id===branchId);
+  const el=document.getElementById('bc-branch-items');
+  if(!el) return;
+  let html=`<div style="margin-bottom:12px;font-size:12px;color:var(--muted)">Items visible on <strong style="color:var(--text)">${branch?.name||branchId}</strong>. Toggle to show/hide.</div>`;
+  const cats=_cats.filter(c=>c.id);
+  for(const cat of cats){
+    const prods=_products.filter(p=>p.cat_id===cat.id);
+    if(!prods.length) continue;
+    html+=`<div style="margin-bottom:16px">
+      <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)">${cat.name}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">`;
+    for(const p of prods){
+      const visible=_isVisibleOnBranch(p.id, branchId);
+      html+=`<div style="display:flex;align-items:center;gap:8px;padding:10px;border-radius:10px;border:1px solid ${visible?'rgba(255,184,0,.2)':'var(--border)'};background:${visible?'rgba(255,184,0,.05)':'var(--bg2)'}">
+        <label class="toggle-switch" style="transform:scale(.8);flex-shrink:0"><input type="checkbox" ${visible?'checked':''} onchange="toggleBranchItem('${branchId}','${p.id}',this.checked);this.closest('div').style.borderColor=this.checked?'rgba(255,184,0,.2)':'var(--border)';this.closest('div').style.background=this.checked?'rgba(255,184,0,.05)':'var(--bg2)'"><span class="toggle-slider"></span></label>
+        <div style="min-width:0">
+          <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</div>
+          <div style="font-size:10px;color:var(--muted)">${fmtPrice(p.price)}</div>
+        </div>
+      </div>`;
+    }
+    html+='</div></div>';
+  }
+  el.innerHTML=html||'<div style="color:var(--muted);padding:20px">No products yet.</div>';
+}
+
+// ── API KEY & INTEGRATIONS ────────────────────────────────────────────────────
+function renderIntegrationsSection(){
+  const key=_settings.api_key||'';
+  const el=document.getElementById('api-key-display');
+  if(el) el.value=key||'Click Generate to create';
+}
+async function generateApiKey(){
+  if(_settings.api_key&&!confirm('Regenerate API key? Your current integrations will stop working until you update them.')) return;
+  const arr=new Uint8Array(24);
+  crypto.getRandomValues(arr);
+  const key='spos_live_'+Array.from(arr).map(b=>b.toString(16).padStart(2,'0')).join('');
+  _settings.api_key=key;
+  const targetId=_businessId||_bizId;
+  await sb.from('businesses').update({settings:_settings}).eq('id',targetId);
+  document.getElementById('api-key-display').value=key;
+  showToast('✅ API key generated!');
+}
+function copyApiKey(){
+  const key=document.getElementById('api-key-display').value;
+  if(!key||key==='Click Generate to create'){showToast('Generate a key first',true);return;}
+  navigator.clipboard.writeText(key).then(()=>showToast('API key copied!'));
+}
+function copyEndpoint(){
+  navigator.clipboard.writeText('https://hjygvfhxyonmizdleoqe.supabase.co/functions/v1/receive-order').then(()=>showToast('Endpoint copied!'));
+}
+async function testApiConnection(){
+  const key=_settings.api_key;
+  if(!key){showToast('Generate an API key first',true);return;}
+  const btn=event.target;
+  btn.disabled=true;btn.textContent='⏳ Testing...';
+  const res=document.getElementById('api-test-result');
+  try{
+    const r=await fetch('https://hjygvfhxyonmizdleoqe.supabase.co/functions/v1/receive-order',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key},
+      body:JSON.stringify({
+        source:'test',source_order_id:'TEST-001',order_type:'delivery',
+        items:[{name:'Test Item',qty:1,price:10.00}],
+        customer:{name:'Test Customer',phone:'0500000000',address:'Test Address'},
+        total:10.00,notes:'API test order'
+      })
+    });
+    const data=await r.json();
+    if(r.ok){
+      res.style.display='block';res.style.background='rgba(0,165,80,.1)';res.style.border='1px solid rgba(0,165,80,.3)';res.style.color='var(--accent2)';
+      res.textContent='✅ Success! Test order created — check your POS Orders tab. Order ID: '+(data.order_id||'created');
+    } else {
+      res.style.display='block';res.style.background='rgba(248,81,73,.1)';res.style.border='1px solid rgba(248,81,73,.3)';res.style.color='var(--red)';
+      res.textContent='❌ Error: '+(data.error||r.statusText);
+    }
+  }catch(e){
+    res.style.display='block';res.style.background='rgba(248,81,73,.1)';res.style.border='1px solid rgba(248,81,73,.3)';res.style.color='var(--red)';
+    res.textContent='❌ Could not reach API: '+e.message;
+  }
+  btn.disabled=false;btn.textContent='🧪 Send Test Order';
+}
+
+// ── BRANCH SETTINGS ──────────────────────────────────────────────────────────
+function _getBranchSettings(branchId){
+  return (_settings.branch_settings||{})[branchId||_bizId]||{};
+}
+function _getEffectiveSetting(key){
+  if(_isBranchMode()){
+    const bs=_getBranchSettings(_bizId);
+    if(bs[key]!==undefined&&bs[key]!==''&&bs[key]!==null) return bs[key];
+  }
+  return _settings[key];
+}
+async function saveBranchSetting(key,value){
+  const bs=_settings.branch_settings||{};
+  bs[_bizId]=bs[_bizId]||{};
+  if(value===''||value===null) delete bs[_bizId][key];
+  else bs[_bizId][key]=value;
+  _settings.branch_settings=bs;
+  await sb.from('businesses').update({settings:{..._settings}}).eq('id',_businessId);
+  if(key==='vat_rate') updateTotals();
+}
+function renderBranchSettingsSection(){
+  const section=document.getElementById('branch-settings-section');
+  if(!section) return;
+  if(!_isBranchMode()){section.style.display='none';return;}
+  section.style.display='block';
+  const bs=_getBranchSettings(_bizId);
+  const cur=document.getElementById('bset-currency');
+  const vat=document.getElementById('bset-vat');
+  const foot=document.getElementById('bset-footer');
+  const name=document.getElementById('bset-name');
+  if(cur) cur.value=bs.currency||'';
+  if(vat) vat.value=bs.vat_rate!=null?bs.vat_rate:'';
+  if(foot) foot.value=bs.receipt_footer||'';
+  if(name) name.value=bs.branch_name||_currentBranch?.name||'';
+}
+function renderSubscriptionInfo(){
+  const el=document.getElementById('subscription-info');
+  if(!el) return;
+  const plan=_settings.plan||'growth';
+  const status=_settings.status||'trial';
+  const trialEnd=_settings.trial_ends_at;
+  const daysLeft=trialEnd?Math.max(0,Math.ceil((new Date(trialEnd)-Date.now())/(1000*60*60*24))):0;
+  const planLabels={starter:'Starter — 99 SAR/mo',growth:'Growth — 199 SAR/mo',enterprise:'Enterprise — 399 SAR/mo'};
+  el.innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="settings-row">
+        <div><div class="settings-label">Current Plan</div></div>
+        <div style="font-size:13px;font-weight:700;color:var(--accent2)">${planLabels[plan]||plan}</div>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-label">Status</div></div>
+        <div style="font-size:13px;font-weight:700;color:${status==='active'?'var(--accent2)':'var(--amber)'}">${status==='active'?'✅ Active':'⏰ Trial ('+daysLeft+' days left)'}</div>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-label">Branches</div></div>
+        <div style="font-size:13px;color:var(--muted)">${_branches.length} branch${_branches.length!==1?'es':''}</div>
+      </div>
+      <div class="settings-row">
+        <div></div>
+        <button onclick="showUpgradeModal()" style="padding:8px 20px;border-radius:8px;border:none;background:var(--accent2);color:#fff;font-size:13px;font-weight:700;cursor:pointer">⚡ Upgrade Plan</button>
+      </div>
+    </div>`;
+}
+
+// ── SUPER ADMIN ───────────────────────────────────────────────────────────────
+let _saClients=[];
+async function openSuperAdmin(){
+  if(!_isSuperAdmin()){showToast('Access denied',true);return;}
+  document.getElementById('role-screen').style.display='none';
+  document.getElementById('super-admin-panel').style.display='flex';
+  await loadSAClients();
+}
+function closeSuperAdmin(){
+  document.getElementById('super-admin-panel').style.display='none';
+  document.getElementById('role-screen').style.display='flex';
+}
+async function loadSAClients(){
+  document.getElementById('sa-clients-list').innerHTML='<div style="color:var(--muted);text-align:center;padding:40px">Loading...</div>';
+  // Try RPC first (bypasses RLS), fallback to direct query
+  let clients=[];
+  const{data:rpcData,error:rpcErr}=await sb.rpc('sa_get_all_businesses');
+  if(!rpcErr&&rpcData){
+    clients=rpcData;
+  } else {
+    const{data,error}=await sb.from('businesses').select('id,name,type,created_at,settings,owner_id').order('created_at',{ascending:false});
+    if(error){showToast('Error: '+error.message,true);return;}
+    clients=data||[];
+  }
+  // Try to fetch owner emails via SA function that joins auth.users
+  const{data:emailData}=await sb.rpc('sa_get_owner_emails');
+  if(emailData){
+    const emailMap={};
+    emailData.forEach(r=>{emailMap[r.owner_id]=r.email;});
+    clients.forEach(c=>{c.owner_email=emailMap[c.owner_id]||null;});
+  }
+  _saClients=clients;
+  // If only 1 result (own business), RLS is blocking — show setup instructions
+  if(_saClients.length<=1&&!rpcData){
+    document.getElementById('sa-clients-list').innerHTML=`
+      <div style="background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);border-radius:14px;padding:20px">
+        <div style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:10px">⚠️ RLS Policy Needed</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Supabase Row Level Security is blocking the super admin from reading all clients. Run this SQL once in your <a href="https://supabase.com/dashboard/project/hjygvfhxyonmizdleoqe/sql" target="_blank" style="color:#58a6ff">Supabase SQL Editor</a>:</div>
+        <pre style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:11px;overflow-x:auto;white-space:pre-wrap;color:var(--text)">CREATE OR REPLACE FUNCTION sa_get_all_businesses()
+RETURNS SETOF businesses
+LANGUAGE sql SECURITY DEFINER
+AS $$
+  SELECT * FROM businesses
+  WHERE (SELECT email FROM auth.users WHERE id = auth.uid()) = 'md.nawas85@gmail.com'
+  ORDER BY created_at DESC;
+$$;
+GRANT EXECUTE ON FUNCTION sa_get_all_businesses() TO authenticated;</pre>
+        <button onclick="navigator.clipboard.writeText(document.querySelector('pre').textContent).then(()=>showToast('Copied!'))" style="margin-top:10px;padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;cursor:pointer">📋 Copy SQL</button>
+      </div>`;
+    return;
+  }
+  renderSAStats();
+  renderSAClients();
+}
+let _saFilter='all';
+function setSAFilter(f){
+  _saFilter=f;
+  document.querySelectorAll('.sa-tab').forEach(b=>{
+    b.style.background='var(--bg3)';b.style.color='var(--muted)';b.style.borderColor='var(--border)';
+  });
+  const active=document.getElementById('sa-tab-'+f);
+  if(active){active.style.background='rgba(0,165,80,.15)';active.style.color='var(--accent2)';active.style.borderColor='var(--accent2)';}
+  renderSAClients();
+}
+function renderSAStats(){
+  const total=_saClients.length;
+  const active=_saClients.filter(c=>c.settings?.status==='active').length;
+  const trial=_saClients.filter(c=>(!c.settings?.status||c.settings?.status==='trial')&&(c.settings?.trial_ends_at?new Date(c.settings.trial_ends_at)>Date.now():true)).length;
+  const expired=_saClients.filter(c=>{
+    const t=c.settings?.trial_ends_at;
+    return t&&new Date(t)<Date.now()&&c.settings?.status!=='active';
+  }).length;
+  const expiring=_saClients.filter(c=>{
+    if(c.settings?.status==='active') return false;
+    const t=c.settings?.trial_ends_at;
+    if(!t) return false;
+    const d=Math.ceil((new Date(t)-Date.now())/(1000*60*60*24));
+    return d>=0&&d<=3;
+  }).length;
+  const planPrice={starter:99,growth:199,enterprise:399};
+  const mrr=_saClients.filter(c=>c.settings?.status==='active').reduce((s,c)=>s+(planPrice[c.settings?.plan||'growth']||199),0);
+  document.getElementById('sa-stats').innerHTML=`
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 20px;text-align:center">
+      <div style="font-size:24px;font-weight:900">${total}</div><div style="font-size:11px;color:var(--muted)">Total Clients</div>
+    </div>
+    <div style="background:rgba(0,165,80,.08);border:1px solid rgba(0,165,80,.3);border-radius:12px;padding:14px 20px;text-align:center">
+      <div style="font-size:24px;font-weight:900;color:var(--accent2)">${active}</div><div style="font-size:11px;color:var(--muted)">Active (Paid)</div>
+    </div>
+    <div style="background:rgba(210,153,34,.08);border:1px solid rgba(210,153,34,.3);border-radius:12px;padding:14px 20px;text-align:center">
+      <div style="font-size:24px;font-weight:900;color:var(--amber)">${trial}</div><div style="font-size:11px;color:var(--muted)">On Trial</div>
+    </div>
+    <div style="background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);border-radius:12px;padding:14px 20px;text-align:center">
+      <div style="font-size:24px;font-weight:900;color:var(--red)">${expired}</div><div style="font-size:11px;color:var(--muted)">Trial Expired</div>
+    </div>
+    ${expiring>0?`<div style="background:rgba(248,81,73,.12);border:2px solid rgba(248,81,73,.5);border-radius:12px;padding:14px 20px;text-align:center">
+      <div style="font-size:24px;font-weight:900;color:var(--red)">${expiring}</div><div style="font-size:11px;color:var(--muted)">🔥 Expiring ≤3d</div>
+    </div>`:''}
+    <div style="background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.3);border-radius:12px;padding:14px 20px;text-align:center">
+      <div style="font-size:22px;font-weight:900;color:#58a6ff">${mrr.toLocaleString()}</div><div style="font-size:11px;color:var(--muted)">MRR (SAR/mo)</div>
+    </div>`;
+}
+function renderSAClients(){
+  const q=(document.getElementById('sa-search')?.value||'').toLowerCase();
+  const list=_saClients.filter(c=>{
+    const s=c.settings||{};
+    if(q&&!c.name?.toLowerCase().includes(q)&&!s.biz_name?.toLowerCase().includes(q)&&!s.phone?.includes(q)&&!c.owner_email?.toLowerCase().includes(q)) return false;
+    if(_saFilter==='active') return s.status==='active';
+    if(_saFilter==='trial') return s.status!=='active'&&(!s.trial_ends_at||new Date(s.trial_ends_at)>Date.now());
+    if(_saFilter==='expired') return s.status!=='active'&&s.trial_ends_at&&new Date(s.trial_ends_at)<Date.now();
+    if(_saFilter==='expiring'){
+      if(s.status==='active') return false;
+      if(!s.trial_ends_at) return false;
+      const d=Math.ceil((new Date(s.trial_ends_at)-Date.now())/(1000*60*60*24));
+      return d>=0&&d<=3;
+    }
+    return true;
+  });
+  const el=document.getElementById('sa-clients-list');
+  if(!list.length){el.innerHTML='<div style="color:var(--muted);text-align:center;padding:40px">No clients found</div>';return;}
+  el.innerHTML=list.map(c=>{
+    const s=c.settings||{};
+    const status=s.status||'trial';
+    const plan=s.plan||'growth';
+    const planLabels={starter:'Starter · 99 SAR/mo',growth:'Growth · 199 SAR/mo',enterprise:'Enterprise · 399 SAR/mo'};
+    const trialEnd=s.trial_ends_at;
+    const daysLeft=trialEnd?Math.ceil((new Date(trialEnd)-Date.now())/(1000*60*60*24)):null;
+    const statusColor=status==='active'?'var(--accent2)':daysLeft!=null&&daysLeft<=0?'var(--red)':'var(--amber)';
+    const statusBg=status==='active'?'rgba(0,165,80,.1)':daysLeft!=null&&daysLeft<=0?'rgba(248,81,73,.1)':'rgba(210,153,34,.1)';
+    const statusBorder=status==='active'?'rgba(0,165,80,.3)':daysLeft!=null&&daysLeft<=0?'rgba(248,81,73,.3)':'rgba(210,153,34,.3)';
+    const statusLabel=status==='active'?'✅ Active':daysLeft!=null&&daysLeft<=0?'🔴 Trial Expired':`⏰ Trial · ${daysLeft}d left`;
+    const branchList=s.branches||[];
+    const branchCount=branchList.length||1;
+    const branchNames=branchList.length>0?branchList.map(b=>b.name).join(', '):'Main Branch';
+    const created=new Date(c.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    const trialEndStr=trialEnd?new Date(trialEnd).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—';
+    const currency=s.currency||'SAR';
+    const vatRate=s.vat_rate??15;
+    const mode=c.type||'restaurant';
+    const phone=s.phone||'';
+    const waNum=(phone).replace(/\D/g,'');
+    return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+      <!-- Row 1: Header -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+          <div style="font-size:16px;font-weight:900">${s.biz_name||c.name||'Unnamed'}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px">
+            ${mode==='restaurant'?'🍔':'🛒'} ${mode.charAt(0).toUpperCase()+mode.slice(1)}
+            &nbsp;·&nbsp; Joined ${created}
+            ${phone?`&nbsp;·&nbsp; 📞 ${phone}`:''}
+          </div>
+          ${c.owner_email?`<div style="font-size:11px;color:#58a6ff;margin-top:2px">✉️ <a href="mailto:${c.owner_email}" style="color:#58a6ff;text-decoration:none">${c.owner_email}</a></div>`:''}
+          ${s.admin_note?`<div style="font-size:11px;color:var(--amber);margin-top:4px;background:rgba(210,153,34,.1);padding:4px 8px;border-radius:6px">📝 ${s.admin_note}</div>`:''}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="padding:4px 12px;border-radius:20px;border:1px solid ${statusBorder};background:${statusBg};color:${statusColor};font-size:11px;font-weight:700">${statusLabel}</span>
+          <span style="padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-size:11px;font-weight:600">${planLabels[plan]||plan}</span>
+        </div>
+      </div>
+      <!-- Row 2: Details grid -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px">
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 12px">
+          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🏪 Branches (${branchCount})</div>
+          <div style="font-size:12px;font-weight:600;line-height:1.6">${branchNames}</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 12px">
+          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">💳 Subscription</div>
+          <div style="font-size:12px;font-weight:600">${planLabels[plan]||plan}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px">Trial ends: ${trialEndStr}</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 12px">
+          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">⚙️ Settings</div>
+          <div style="font-size:12px;font-weight:600">${currency} · VAT ${vatRate}%</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px">ID: ${c.id.slice(0,8)}…</div>
+        </div>
+      </div>
+      <!-- Row 3: Actions -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;padding-top:4px;border-top:1px solid var(--border)">
+        <button onclick="saActivateClient('${c.id}')" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(0,165,80,.4);background:rgba(0,165,80,.1);color:var(--accent2);font-size:12px;font-weight:700;cursor:pointer">✅ Activate</button>
+        <button onclick="saExtendTrial('${c.id}')" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(210,153,34,.4);background:rgba(210,153,34,.1);color:var(--amber);font-size:12px;font-weight:700;cursor:pointer">+14 Days Trial</button>
+        <button onclick="saChangePlan('${c.id}')" style="padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-size:12px;cursor:pointer">📋 Change Plan</button>
+        ${waNum?`<a href="https://wa.me/${waNum}?text=${encodeURIComponent('Hi '+(s.biz_name||c.name||'')+', your SaudiPOS subscription is ready!')}" target="_blank" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(37,211,102,.4);background:rgba(37,211,102,.1);color:#25D366;font-size:12px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center">📱 WhatsApp</a>`:''}
+        <button onclick="saAddNote('${c.id}')" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(88,166,255,.3);background:rgba(88,166,255,.08);color:#58a6ff;font-size:12px;cursor:pointer">📝 Note</button>
+        <button onclick="saDeleteClient('${c.id}','${(s.biz_name||c.name||'').replace(/'/g,"\\'")}',this)" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(248,81,73,.4);background:rgba(248,81,73,.1);color:var(--red);font-size:12px;cursor:pointer;margin-left:auto">🗑 Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function _saUpdate(bizId,newSettings){
+  const{error:rpcErr}=await sb.rpc('sa_update_business',{biz_id:bizId,new_settings:newSettings});
+  if(!rpcErr) return null;
+  const{error}=await sb.from('businesses').update({settings:newSettings}).eq('id',bizId);
+  return error;
+}
+async function saActivateClient(bizId){
+  if(!confirm('Activate this client as paid?')) return;
+  const c=_saClients.find(x=>x.id===bizId);
+  const error=await _saUpdate(bizId,{...(c?.settings||{}),status:'active'});
+  if(error){showToast('RLS blocked — run SA SQL in Supabase',true);_showSASqlInstructions();}
+  else{showToast('✅ Client activated!');loadSAClients();}
+}
+async function saExtendTrial(bizId){
+  const c=_saClients.find(x=>x.id===bizId);
+  if(!c) return;
+  const current=c.settings?.trial_ends_at?new Date(c.settings.trial_ends_at):new Date();
+  const newEnd=new Date(Math.max(current,Date.now())+14*24*60*60*1000).toISOString();
+  const error=await _saUpdate(bizId,{...(c.settings||{}),trial_ends_at:newEnd,status:'trial'});
+  if(error){showToast('RLS blocked — run SA SQL in Supabase',true);_showSASqlInstructions();}
+  else{showToast('✅ Trial extended 14 days!');loadSAClients();}
+}
+async function saDeleteClient(bizId,name,btn){
+  if(!confirm(`Delete "${name}"?\n\nThis removes the business record. The auth user still exists but won't see any business on login.`)) return;
+  btn.disabled=true;btn.textContent='⏳';
+  // Try RPC first (bypasses RLS), fallback to direct
+  let error=null;
+  const{error:rpcErr}=await sb.rpc('sa_delete_business',{biz_id:bizId});
+  if(rpcErr){
+    const res=await sb.from('businesses').delete().eq('id',bizId);
+    error=res.error;
+  }
+  if(error){showToast('RLS blocked delete — run SA SQL functions in Supabase dashboard',true);btn.disabled=false;btn.textContent='🗑 Delete';return;}
+  showToast('✅ Deleted');
+  loadSAClients();
+}
+async function saCleanDuplicates(){
+  if(!_saClients.length){await loadSAClients();}
+  // Group by owner_id, keep the best record per owner
+  const byOwner={};
+  _saClients.forEach(c=>{
+    if(!byOwner[c.owner_id]) byOwner[c.owner_id]=[];
+    byOwner[c.owner_id].push(c);
+  });
+  const toDelete=[];
+  Object.values(byOwner).forEach(group=>{
+    if(group.length<=1) return;
+    // Keep the one with most branches, then plan, then newest
+    group.sort((a,b)=>{
+      const aBr=(a.settings?.branches||[]).length;
+      const bBr=(b.settings?.branches||[]).length;
+      if(bBr!==aBr) return bBr-aBr;
+      const aP=a.settings?.plan?1:0;
+      const bP=b.settings?.plan?1:0;
+      if(bP!==aP) return bP-aP;
+      return new Date(b.created_at)-new Date(a.created_at);
+    });
+    toDelete.push(...group.slice(1).map(c=>c.id));
+  });
+  if(!toDelete.length){showToast('No duplicates found ✅');return;}
+  if(!confirm(`Found ${toDelete.length} duplicate records to delete (keeping the best per user). Continue?`)) return;
+  let deleted=0,blocked=0;
+  for(const id of toDelete){
+    const{error:rpcErr}=await sb.rpc('sa_delete_business',{biz_id:id});
+    if(!rpcErr){deleted++;continue;}
+    const{error}=await sb.from('businesses').delete().eq('id',id);
+    if(!error) deleted++; else blocked++;
+  }
+  if(blocked>0){
+    showToast(`Deleted ${deleted}, blocked ${blocked} by RLS — run SA SQL in Supabase`,true);
+    _showSASqlInstructions();
+  } else {
+    showToast(`✅ Removed ${deleted} duplicates`);
+  }
+  loadSAClients();
+}
+function _showSASqlInstructions(){
+  const sql=`-- Paste ALL of this in Supabase SQL Editor once:
+-- https://supabase.com/dashboard/project/hjygvfhxyonmizdleoqe/sql/new
+
+CREATE OR REPLACE FUNCTION sa_get_all_businesses()
+RETURNS SETOF businesses LANGUAGE sql SECURITY DEFINER AS $$
+  SELECT * FROM businesses
+  WHERE (SELECT email FROM auth.users WHERE id = auth.uid()) = 'md.nawas85@gmail.com'
+  ORDER BY created_at DESC;
+$$;
+GRANT EXECUTE ON FUNCTION sa_get_all_businesses() TO authenticated;
+
+CREATE OR REPLACE FUNCTION sa_delete_business(biz_id uuid)
+RETURNS void LANGUAGE sql SECURITY DEFINER AS $$
+  DELETE FROM businesses WHERE id = biz_id
+  AND (SELECT email FROM auth.users WHERE id = auth.uid()) = 'md.nawas85@gmail.com';
+$$;
+GRANT EXECUTE ON FUNCTION sa_delete_business(uuid) TO authenticated;
+
+CREATE OR REPLACE FUNCTION sa_update_business(biz_id uuid, new_settings jsonb)
+RETURNS void LANGUAGE sql SECURITY DEFINER AS $$
+  UPDATE businesses SET settings = new_settings WHERE id = biz_id
+  AND (SELECT email FROM auth.users WHERE id = auth.uid()) = 'md.nawas85@gmail.com';
+$$;
+GRANT EXECUTE ON FUNCTION sa_update_business(uuid, jsonb) TO authenticated;`;
+  const el=document.getElementById('sa-clients-list');
+  const box=document.createElement('div');
+  box.style.cssText='background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.3);border-radius:14px;padding:20px;margin-bottom:16px';
+  box.innerHTML=`<div style="font-size:13px;font-weight:700;color:#58a6ff;margin-bottom:10px">📋 Run this SQL once in <a href="https://supabase.com/dashboard/project/hjygvfhxyonmizdleoqe/sql/new" target="_blank" style="color:#58a6ff">Supabase SQL Editor</a> to unlock full Super Admin power:</div>
+    <pre style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:10px;overflow-x:auto;white-space:pre-wrap;color:var(--text);max-height:200px">${sql}</pre>
+    <button onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent).then(()=>showToast('Copied! Paste in Supabase SQL Editor'))" style="margin-top:10px;padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;cursor:pointer">📋 Copy SQL</button>`;
+  el.prepend(box);
+}
+async function saAddNote(bizId){
+  const c=_saClients.find(x=>x.id===bizId);
+  const current=c?.settings?.admin_note||'';
+  const note=prompt('Add/edit note for this client:',current);
+  if(note===null) return;
+  const error=await _saUpdate(bizId,{...(c?.settings||{}),admin_note:note});
+  if(error) showToast('Error saving note',true);
+  else{c.settings={...(c?.settings||{}),admin_note:note};renderSAClients();showToast('✅ Note saved');}
+}
+function exportSAClientsCSV(){
+  const rows=[['Business Name','Email','Phone','Type','Branches','Status','Plan','Trial Ends','Joined','MRR (SAR)','Note']];
+  const planPrice={starter:99,growth:199,enterprise:399};
+  _saClients.forEach(c=>{
+    const s=c.settings||{};
+    const status=s.status||'trial';
+    const plan=s.plan||'growth';
+    const branches=(s.branches||[]).map(b=>b.name).join(' | ')||'Main Branch';
+    const mrr=status==='active'?planPrice[plan]||0:0;
+    rows.push([s.biz_name||c.name||'',c.owner_email||'',s.phone||'',c.type||'restaurant',branches,status,plan,s.trial_ends_at||'',new Date(c.created_at).toLocaleDateString(),mrr,s.admin_note||'']);
+  });
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=`saudipos-clients-${new Date().toISOString().slice(0,10)}.csv`;a.click();
+  showToast('✅ CSV exported');
+}
+async function saChangePlan(bizId){
+  const plan=prompt('Enter plan (starter/growth/enterprise):');
+  if(!plan||!['starter','growth','enterprise'].includes(plan)){showToast('Invalid plan',true);return;}
+  const c=_saClients.find(x=>x.id===bizId);
+  const error=await _saUpdate(bizId,{...(c?.settings||{}),plan});
+  if(error){showToast('RLS blocked — run SA SQL in Supabase',true);_showSASqlInstructions();}
+  else{showToast('✅ Plan updated!');loadSAClients();}
+}
+
+// ── BRANCH REPORTS ────────────────────────────────────────────────────────────
+function populateReportBranchFilter(){
+  const sel=document.getElementById('report-branch');
+  if(!sel) return;
+  sel.innerHTML='<option value="all">All Branches</option>';
+  _branches.forEach(b=>{
+    const opt=document.createElement('option');
+    opt.value=b.id;opt.textContent=b.name;
+    if(b.id===_bizId) opt.selected=true;
+    sel.appendChild(opt);
+  });
 }
 
 // ── TRIAL & SUBSCRIPTION ─────────────────────────────────────────────────────
@@ -5731,13 +6659,30 @@ function showPinPanel(role){
     const roleLabel=role==='manager'?'Manager':'Cashier';
     const filtered=(_staff||[]).filter(s=>s.role===role);
     if(filtered.length===0&&role==='manager'){
-      // No staff on this branch — allow owner access via IT Admin PIN
-      document.getElementById('pin-panel-label').textContent='🔐 Enter Owner PIN (IT Admin)';
-      staffEl.innerHTML=`<div style="font-size:12px;color:var(--muted);text-align:center;padding:8px">New branch — use IT Admin PIN<br>to access as Manager</div>`;
-      _pinStaff={name:'Owner',pin:_settings.admin_pin||'0000',role:'manager'};
+      document.getElementById('pin-panel-label').textContent='Set up your first Manager';
+      staffEl.innerHTML=`
+        <div style="width:100%;text-align:left">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px;text-align:center">No Manager yet. Create one now:</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <input id="quick-staff-name" class="form-input" placeholder="Manager Name *" style="width:100%;font-size:13px"/>
+            <input id="quick-staff-pin" class="form-input" type="password" inputmode="numeric" maxlength="4" placeholder="4-digit PIN *" style="width:100%;font-size:13px;letter-spacing:6px"/>
+            <button onclick="quickCreateStaff('manager')" style="padding:10px;border-radius:10px;border:none;background:var(--accent2);color:#fff;font-size:13px;font-weight:700;cursor:pointer">✅ Create & Login</button>
+            <div style="text-align:center;font-size:11px;color:var(--muted)">— or —</div>
+            <button onclick="useAdminFallback()" style="padding:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-size:12px;cursor:pointer">Use IT Admin PIN (${_settings.admin_pin||'0000'})</button>
+          </div>
+        </div>`;
+      _pinStaff=null;
     } else if(filtered.length===0){
-      document.getElementById('pin-panel-label').textContent=`No ${roleLabel} accounts found`;
-      staffEl.innerHTML=`<div style="font-size:12px;color:var(--muted);text-align:center">Go to Settings → Staff<br>and add a ${roleLabel} with a PIN.</div>`;
+      document.getElementById('pin-panel-label').textContent=`Set up your first ${roleLabel}`;
+      staffEl.innerHTML=`
+        <div style="width:100%;text-align:left">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px;text-align:center">No ${roleLabel} accounts yet. Create one now:</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <input id="quick-staff-name" class="form-input" placeholder="${roleLabel} Name *" style="width:100%;font-size:13px"/>
+            <input id="quick-staff-pin" class="form-input" type="password" inputmode="numeric" maxlength="4" placeholder="4-digit PIN *" style="width:100%;font-size:13px;letter-spacing:6px"/>
+            <button onclick="quickCreateStaff('${role}')" style="padding:10px;border-radius:10px;border:none;background:var(--accent2);color:#fff;font-size:13px;font-weight:700;cursor:pointer">✅ Create & Login</button>
+          </div>
+        </div>`;
       _pinStaff=null;
     } else if(filtered.length===1){
       // Auto-select single staff
@@ -5754,6 +6699,30 @@ function showPinPanel(role){
         </button>`).join('');
     }
   }
+}
+
+function useAdminFallback(){
+  _pinStaff={name:'Owner',pin:_settings.admin_pin||'0000',role:'manager'};
+  document.getElementById('pin-panel-label').textContent='🔐 Enter IT Admin PIN';
+  document.getElementById('pin-staff-list').innerHTML=`<div style="padding:8px 18px;border-radius:10px;background:rgba(0,165,80,.15);border:1px solid rgba(0,165,80,.4);font-size:14px;font-weight:700;color:var(--accent2)">Owner</div>`;
+}
+async function quickCreateStaff(role){
+  const name=(document.getElementById('quick-staff-name')?.value||'').trim();
+  const pin=(document.getElementById('quick-staff-pin')?.value||'').trim();
+  if(!name){showToast('Enter a name',true);return;}
+  if(!/^\d{4}$/.test(pin)){showToast('PIN must be 4 digits',true);return;}
+  if((_staff||[]).find(s=>s.pin===pin)){showToast('That PIN is already used by another staff member',true);return;}
+  const staffBizId=_businessId||_bizId;
+  const rec={biz_id:staffBizId,name,role,pin};
+  const{data,error}=await sb.from('staff').insert(rec).select().single();
+  if(error){showToast('Error: '+error.message,true);return;}
+  _staff.push(data||rec);
+  showToast(`✅ ${name} created!`);
+  // Auto login as this person
+  _pinStaff=data||rec;
+  showRoleCards();
+  selectRole(role);
+  document.getElementById('user-role').textContent=(role==='manager'?'👔 ':'💵 ')+name;
 }
 
 function pinSelectStaff(id){
@@ -5793,6 +6762,16 @@ async function verifyPin(){
     return;
   }
   if(correctPin==='' || _pinVal===correctPin){
+    // Check branch restriction
+    const assignedBranches=_pinStaff.branches||[];
+    if(assignedBranches.length>0&&_isBranchMode()&&!assignedBranches.includes(_bizId)){
+      const branchName=_currentBranch?.name||'this branch';
+      document.getElementById('pin-error').textContent=`❌ ${_pinStaff.name} is not assigned to ${branchName}.`;
+      _pinVal='';
+      document.getElementById('pin-display').textContent='';
+      setTimeout(()=>{document.getElementById('pin-error').textContent='';},3000);
+      return;
+    }
     // Save role & staff name before showRoleCards() clears them
     const role=_pinRole;
     const staffName=_pinStaff.name||'';
