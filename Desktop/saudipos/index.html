@@ -988,6 +988,7 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
   <!-- Tab bar -->
   <div style="display:flex;gap:4px;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0">
     <button class="ita-tab active" id="ita-tab-branches" onclick="setITATab('branches')" style="padding:8px 16px;border-radius:10px;border:none;background:var(--accent2);color:#fff;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">🏪 Branches</button>
+    <button class="ita-tab" id="ita-tab-products" onclick="setITATab('products')" style="padding:8px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">📦 Products</button>
     <button class="ita-tab" id="ita-tab-visibility" onclick="setITATab('visibility')" style="padding:8px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">👁 Menu Visibility</button>
     <button class="ita-tab" id="ita-tab-dashboard" onclick="setITATab('dashboard')" style="padding:8px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">📊 Owner Dashboard</button>
     <button class="ita-tab" id="ita-tab-settings" onclick="setITATab('settings')" style="padding:8px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">⚙️ Settings</button>
@@ -1002,6 +1003,20 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
         <button onclick="openAddBranchModal()" class="btn btn-primary">+ Add Branch</button>
       </div>
       <div id="ita-branch-list" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+    <!-- Products tab -->
+    <div id="ita-products" style="display:none;padding:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div style="font-size:15px;font-weight:800">📦 Products & Categories</div>
+        <div style="display:flex;gap:8px">
+          <button onclick="itaOpenCatModal()" style="padding:8px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;font-weight:700;cursor:pointer">+ Category</button>
+          <button onclick="itaOpenProductModal()" class="btn btn-primary">+ Product</button>
+        </div>
+      </div>
+      <!-- Category filter bar -->
+      <div id="ita-cat-bar" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px"></div>
+      <!-- Product list -->
+      <div id="ita-product-list" style="display:flex;flex-direction:column;gap:8px"></div>
     </div>
     <!-- Visibility tab -->
     <div id="ita-visibility" style="display:none;padding:20px">
@@ -5061,6 +5076,8 @@ async function saveProduct(){
   }
   btn.disabled=false;btn.textContent='Save Product';
   closeProductModal();renderProductsList();renderProducts();
+  // Refresh ITA products list if portal is open
+  if(document.getElementById('it-admin-portal')?.style.display==='flex') _renderITAProducts();
   showToast(_editProduct?'Product updated ✅':'Product added ✅');
 }
 async function deleteProduct(id){
@@ -6772,7 +6789,7 @@ function closeITAdminPortal(){
   showBranchScreen();
 }
 function setITATab(tab){
-  ['branches','visibility','dashboard','settings','superadmin'].forEach(t=>{
+  ['branches','products','visibility','dashboard','settings','superadmin'].forEach(t=>{
     const body=document.getElementById('ita-'+t);
     const btn=document.getElementById('ita-tab-'+t);
     if(body) body.style.display=t===tab?'block':'none';
@@ -6789,10 +6806,88 @@ function setITATab(tab){
     }
   });
   if(tab==='branches') _renderITABranches();
+  if(tab==='products') _renderITAProducts();
   if(tab==='visibility') _renderITAVisibility();
   if(tab==='dashboard') _renderITADashboard();
   if(tab==='settings') _renderITASettings();
   if(tab==='superadmin') _renderITASuperAdmin();
+}
+
+// ── ITA: PRODUCTS ────────────────────────────────────────────────────────────
+let _itaActiveCat='all';
+
+function _renderITAProducts(){
+  _renderITACatBar();
+  _renderITAProductList();
+}
+function _renderITACatBar(){
+  const bar=document.getElementById('ita-cat-bar');
+  if(!bar) return;
+  bar.innerHTML=[{id:'all',name:'All',emoji:'📋'},..._cats].map(c=>`
+    <button onclick="itaFilterCat('${c.id}')" style="padding:6px 14px;border-radius:20px;border:1.5px solid ${_itaActiveCat===c.id?'var(--accent2)':'var(--border)'};background:${_itaActiveCat===c.id?'rgba(0,165,80,.12)':'var(--bg3)'};color:${_itaActiveCat===c.id?'var(--accent2)':'var(--text)'};font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">
+      ${c.emoji||'📁'} ${c.name}
+    </button>`).join('');
+}
+function itaFilterCat(catId){_itaActiveCat=catId;_renderITAProducts();}
+function _renderITAProductList(){
+  const el=document.getElementById('ita-product-list');
+  const prods=_itaActiveCat==='all'?_products:_products.filter(p=>p.cat_id===_itaActiveCat);
+  if(!prods.length){
+    el.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)">No products${_itaActiveCat!=='all'?' in this category':' yet'}.</div>`;
+    return;
+  }
+  el.innerHTML=prods.map(p=>{
+    const cat=_cats.find(c=>c.id===p.cat_id);
+    const isActive=p.is_active!==false;
+    const branchCount=_branches.length;
+    const visCount=_branches.filter(b=>_isVisibleOnBranch(p.id,b.id)).length;
+    return`<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px">
+      ${p.image_url
+        ?`<img src="${p.image_url}" style="width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0">`
+        :`<div style="width:44px;height:44px;border-radius:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${p.emoji||'📦'}</div>`}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}${p.name_ar?' / '+p.name_ar:''}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${cat?.name||'Uncategorized'} · ${fmtPrice(p.price)}${p.stock!=null?' · Stock: '+p.stock:''}</div>
+        ${p.barcode?`<div style="font-size:10px;color:var(--muted);font-family:monospace">${p.barcode}</div>`:''}
+        <div style="font-size:10px;margin-top:3px;color:${visCount===branchCount?'var(--accent2)':'var(--amber)'}">👁 Visible on ${visCount}/${branchCount} branches</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0;align-items:flex-end">
+        <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;background:${isActive?'rgba(0,165,80,.12)':'rgba(248,81,73,.1)'};color:${isActive?'var(--accent2)':'var(--red)'}">${isActive?'● Active':'○ Hidden'}</span>
+        <button onclick="itaEditProduct('${p.id}')" style="padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:11px;font-weight:600;cursor:pointer">✏️ Edit</button>
+        <button onclick="itaDeleteProduct('${p.id}')" style="padding:5px 12px;border-radius:8px;border:1px solid rgba(248,81,73,.4);background:rgba(248,81,73,.07);color:var(--red);font-size:11px;font-weight:600;cursor:pointer">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function itaOpenProductModal(id){
+  // Set _bizId to main so product modal saves correctly
+  const prev=_bizId;
+  _bizId=_businessId||_bizId;
+  openProductModal(id);
+  // Override close to refresh ITA
+  const origClose=window.closeProductModal;
+  window._itaProductModalActive=true;
+}
+function itaEditProduct(id){itaOpenProductModal(id);}
+function itaDeleteProduct(id){
+  const p=_products.find(x=>x.id===id);
+  openSAModal({
+    title:'🗑 Delete Product',
+    subtitle:`Remove "${p?.name}"?`,
+    body:`<div style="background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);border-radius:10px;padding:14px;font-size:13px;color:var(--muted)">This product will be removed from all branches.</div>`,
+    confirmLabel:'🗑 Delete',
+    confirmColor:'var(--red)',
+    onConfirm:async()=>{
+      _products=_products.filter(x=>x.id!==id);
+      const mainId=_businessId||_bizId;
+      if(mainId) await sb.from('products').delete().eq('id',id);
+      _renderITAProductList();
+      showToast('Product deleted');
+    }
+  });
+}
+function itaOpenCatModal(){
+  openCatModal();
 }
 
 // ── ITA: BRANCHES ─────────────────────────────────────────────────────────────
