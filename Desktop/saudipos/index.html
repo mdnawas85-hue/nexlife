@@ -2601,7 +2601,16 @@ async function doSignup(){
   setAuthLoading('signup-btn',true);
   const{data,error}=await sb.auth.signUp({email,password:pass,options:{data:{biz_name:biz,biz_type:type}}});
   setAuthLoading('signup-btn',false);
-  if(error){const e=document.getElementById('signup-err');e.textContent=error.message;e.style.display='block';return;}
+  if(error){
+    const e=document.getElementById('signup-err');
+    const msg=error.message||'';
+    if(msg.toLowerCase().includes('already registered')||msg.toLowerCase().includes('already exists')||msg.toLowerCase().includes('email')){
+      e.innerHTML='This email is already registered. <a href="#" onclick="showLogin();return false;" style="color:var(--accent2);font-weight:700">Sign in instead →</a>';
+    } else {
+      e.textContent=msg;
+    }
+    e.style.display='block';return;
+  }
   if(data.user){
     const trialEnds=new Date(Date.now()+14*24*60*60*1000).toISOString();
     await sb.from('businesses').insert({
@@ -6346,17 +6355,29 @@ async function saExtendTrial(bizId){
   else{showToast('✅ Trial extended 14 days!');loadSAClients();}
 }
 async function saDeleteClient(bizId,name,btn){
-  if(!confirm(`Delete "${name}"?\n\nThis removes the business record. The auth user still exists but won't see any business on login.`)) return;
+  const c=_saClients.find(x=>x.id===bizId);
+  const ownerEmail=c?.owner_email||'';
+  if(!confirm(`Delete "${name}"?\n\nThis removes the business record.\n\nTo also free the email for re-signup, you must delete the auth user in Supabase (a SQL prompt will appear).`)) return;
   btn.disabled=true;btn.textContent='⏳';
-  // Try RPC first (bypasses RLS), fallback to direct
   let error=null;
   const{error:rpcErr}=await sb.rpc('sa_delete_business',{biz_id:bizId});
   if(rpcErr){
     const res=await sb.from('businesses').delete().eq('id',bizId);
     error=res.error;
   }
-  if(error){showToast('RLS blocked delete — run SA SQL functions in Supabase dashboard',true);btn.disabled=false;btn.textContent='🗑 Delete';return;}
-  showToast('✅ Deleted');
+  if(error){showToast('RLS blocked — run SA SQL in Supabase',true);btn.disabled=false;btn.textContent='🗑 Delete';return;}
+  // Show SQL to delete auth user so email can be reused
+  if(ownerEmail){
+    const sql=`-- Run this in Supabase SQL Editor to fully free the email:\nDELETE FROM auth.users WHERE email = '${ownerEmail}';`;
+    const el=document.getElementById('sa-clients-list');
+    const box=document.createElement('div');
+    box.style.cssText='background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);border-radius:12px;padding:16px;margin-bottom:12px';
+    box.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:8px">⚠️ Business deleted. To free <strong>${ownerEmail}</strong> for re-signup, run this SQL in <a href="https://supabase.com/dashboard/project/hjygvfhxyonmizdleoqe/sql/new" target="_blank" style="color:#58a6ff">Supabase SQL Editor</a>:</div>
+    <pre style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:11px;color:var(--text);white-space:pre-wrap">${sql}</pre>
+    <button onclick="navigator.clipboard.writeText(\`${sql}\`).then(()=>showToast('SQL copied!'))" style="margin-top:8px;padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;cursor:pointer">📋 Copy SQL</button>`;
+    el.prepend(box);
+  }
+  showToast('✅ Business deleted');
   loadSAClients();
 }
 async function saCleanDuplicates(){
