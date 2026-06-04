@@ -3190,7 +3190,7 @@ function renderBranchesSettings(){
 async function loadAll(){
   await Promise.all([loadCats(),loadProducts(),loadOrders(),loadTables(),loadCustomers(),loadStaff(),loadPromos()]);
   // Auto-seed sample data for new businesses
-  if(!_isBranchMode()&&_products.length===0) await seedSampleData();
+  // Seeding done in renderPOS on first load
   loadDevices();
   await loadShift();
   setInterval(updateShiftBtn,60000);
@@ -3514,6 +3514,10 @@ function setScreen(name){
 
 // ── POS ───────────────────────────────────────────────────────────────────────
 function renderPOS(){
+  // Seed sample data on first load if no products
+  if(!_isBranchMode()&&_products.length===0){
+    seedSampleData().then(()=>{renderCatBar();renderProducts();});
+  }
   renderCatBar();
   renderProducts();
   updateOrderNum();
@@ -3595,7 +3599,7 @@ function renderProducts(){
     return true;
   });
   if(!prods.length){
-    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted)">No products found</div>`;
+    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px"><div style="color:var(--muted);margin-bottom:16px">No products found</div><button onclick="seedSampleData().then(()=>{renderCatBar();renderProducts();})" style="padding:10px 24px;border-radius:10px;border:none;background:var(--accent2);color:#fff;font-size:13px;font-weight:700;cursor:pointer">🌱 Load Sample Menu</button></div>`;
     return;
   }
 
