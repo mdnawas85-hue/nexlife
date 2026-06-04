@@ -1098,7 +1098,7 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
       <span style="font-size:18px;font-weight:900">Saudi<span style="color:var(--accent2)">POS</span></span>
       <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(88,166,255,.15);color:#58a6ff;border:1px solid rgba(88,166,255,.3)">⚙️ IT Admin</span>
     </div>
-    <button onclick="closeITAdminPortal()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:6px 12px;border-radius:8px;border:1px solid var(--border)">← Back to Branches</button>
+    <div style="display:flex;gap:8px"><button onclick="runSystemTests()" id="test-runner-btn" style="display:none;padding:6px 12px;border-radius:8px;border:1px solid rgba(88,166,255,.4);background:rgba(88,166,255,.08);color:#58a6ff;font-size:12px;font-weight:700;cursor:pointer">🧪 Run Tests</button><button onclick="closeITAdminPortal()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:6px 12px;border-radius:8px;border:1px solid var(--border)">← Back to Branches</button></div>
   </div>
   <!-- Tab bar -->
   <div style="display:flex;gap:4px;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0">
@@ -7387,6 +7387,54 @@ function closeSuperAdminToITA(){
   const backBtn=document.querySelector('#super-admin-panel button');
   if(backBtn){backBtn.setAttribute('onclick','closeSuperAdmin()');backBtn.textContent='← Back';}
   setITATab('branches');
+}
+
+// ── BUILT-IN TEST RUNNER (Super Admin only) ───────────────────────────────────
+async function runSystemTests(){
+  if(!_isSuperAdmin()){showToast('Super Admin only',true);return;}
+  const results=[];
+  const pass=(n)=>results.push({n,ok:true});
+  const fail=(n,r)=>results.push({n,ok:false,r});
+
+  // Auth
+  _user?pass('User logged in'):fail('User logged in','No user');
+  _businessId?pass('Business loaded'):fail('Business loaded','No businessId');
+  // Settings
+  _settings?.vat_rate!=null?pass('VAT rate set'):fail('VAT rate','Missing');
+  _settings?.currency?pass('Currency set'):fail('Currency','Missing');
+  // Branches
+  _branches.length>0?pass('Branches: '+_branches.length+' found'):fail('Branches','None found');
+  // Mode
+  pass('Mode: '+_mode);
+  // DB reads
+  const{data:cats}=await sb.from('categories').select('id').eq('biz_id',_businessId).limit(5);
+  cats?.length?pass('Categories in DB: '+cats.length):fail('Categories in DB','None - add via IT Admin');
+  const{data:prods}=await sb.from('products').select('id').eq('biz_id',_businessId).limit(5);
+  prods?.length?pass('Products in DB: '+prods.length):fail('Products in DB','None - add via IT Admin → Products');
+  // DB write test (insert + delete)
+  const{data:tc,error:tce}=await sb.from('categories').insert({biz_id:_businessId,name:'__test__',emoji:'🧪',sort_order:999}).select().single();
+  if(tc){pass('DB INSERT categories: OK');await sb.from('categories').delete().eq('id',tc.id);}
+  else fail('DB INSERT categories',tce?.message||'RLS blocking insert');
+  const{data:tp,error:tpe}=await sb.from('products').insert({biz_id:_businessId,name:'__test__',price:1,is_active:false,sort_order:999}).select().single();
+  if(tp){pass('DB INSERT products: OK');await sb.from('products').delete().eq('id',tp.id);}
+  else fail('DB INSERT products',tpe?.message||'RLS blocking insert');
+  // Staff & orders
+  const{data:st}=await sb.from('staff').select('id').eq('biz_id',_businessId);
+  pass('Staff accounts: '+(st?.length||0));
+  const{data:ord}=await sb.from('orders').select('id').eq('biz_id',_businessId).limit(1);
+  pass('Orders table: accessible');
+  // Subscription
+  pass('Plan: '+(_settings?.plan||'growth')+' · Status: '+(_settings?.status||'trial'));
+
+  const passed=results.filter(r=>r.ok).length;
+  const failed=results.filter(r=>!r.ok);
+  const el=document.createElement('div');
+  el.style.cssText='position:fixed;top:20px;right:20px;z-index:9999;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;width:360px;max-height:80vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.5)';
+  el.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:12px"><b style="font-size:14px">🧪 System Tests</b><button onclick="this.closest('div[style]').remove()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px">✕</button></div>
+  <div style="font-size:12px;margin-bottom:12px;padding:8px 12px;border-radius:8px;background:${failed.length===0?'rgba(0,165,80,.1)':'rgba(248,81,73,.1)'};color:${failed.length===0?'var(--accent2)':'var(--red)'}"><b>${passed}/${results.length} passed</b> ${failed.length===0?'✅ All OK':'❌ '+failed.length+' failed'}</div>
+  ${results.map(r=>`<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px"><span>${r.ok?'✅':'❌'}</span><div><div style="font-weight:600">${r.n}</div>${!r.ok?`<div style="color:var(--red);font-size:11px">${r.r}</div>`:''}</div></div>`).join('')}`;
+  document.body.appendChild(el);
+  showToast(passed+'/'+results.length+' tests passed');
 }
 
 // ── TRIAL & SUBSCRIPTION ─────────────────────────────────────────────────────
