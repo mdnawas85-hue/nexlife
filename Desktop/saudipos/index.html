@@ -65,7 +65,7 @@ input,select,textarea{font-family:inherit;font-size:14px}
 .nav-tab.active{background:rgba(0,165,80,.15);color:var(--accent2)}
 .nav-tab:hover:not(.active){background:var(--bg3);color:var(--text)}
 .topbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.mode-badge{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer}
+.mode-badge{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:default}
 .mode-restaurant{background:rgba(0,165,80,.15);color:var(--accent2);border:1px solid rgba(0,165,80,.3)}
 .mode-retail{background:rgba(88,166,255,.15);color:var(--blue);border:1px solid rgba(88,166,255,.3)}
 .lang-btn{padding:5px 10px;border-radius:7px;font-size:11px;font-weight:600;border:1px solid var(--border);background:var(--bg3);color:var(--muted)}
@@ -1179,7 +1179,7 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
         <span style="width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;animation:pulse 1.5s infinite"></span>
         <span id="shift-btn-label">Day Closed</span>
       </button>
-      <span id="mode-badge" class="mode-badge mode-restaurant" onclick="toggleMode()">🍔 Restaurant</span>
+      <span id="mode-badge" class="mode-badge mode-restaurant">🍔 Restaurant</span>
       <button onclick="openCustomerDisplay()" title="Customer Display" style="display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap" id="customer-display-btn">🖥 Display</button>
       <button class="lang-btn" onclick="toggleLang()" id="lang-btn">🌐 AR</button>
       <div class="user-chip">
