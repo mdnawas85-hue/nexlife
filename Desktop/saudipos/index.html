@@ -632,15 +632,15 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
     <!-- Hero -->
     <div style="text-align:center;padding:60px 20px 40px;max-width:700px;margin:0 auto">
       <div style="display:inline-block;padding:4px 14px;border-radius:20px;background:rgba(0,165,80,.15);border:1px solid rgba(0,165,80,.3);color:var(--accent2);font-size:12px;font-weight:700;margin-bottom:20px">🎉 14-Day Free Trial — No credit card required</div>
-      <h1 style="font-size:clamp(28px,5vw,52px);font-weight:900;line-height:1.15;margin-bottom:16px">The POS built for<br><span style="color:var(--accent2)">Saudi Restaurants</span></h1>
-      <p style="font-size:15px;color:var(--muted);max-width:500px;margin:0 auto 32px">Multi-branch management, kitchen display, customer loyalty, inventory tracking — all in one place.</p>
+      <h1 style="font-size:clamp(28px,5vw,52px);font-weight:900;line-height:1.15;margin-bottom:16px">The POS built for<br><span id="landing-type-label" style="color:var(--accent2)">Saudi Restaurants</span></h1>
+      <p id="landing-sub" style="font-size:15px;color:var(--muted);max-width:500px;margin:0 auto 32px">Multi-branch management, kitchen display, customer loyalty, inventory tracking — all in one place.</p>
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
         <button onclick="showSignupForm()" style="padding:14px 32px;border-radius:12px;border:none;background:var(--accent2);color:#fff;font-size:16px;font-weight:800;cursor:pointer">🚀 Start Free Trial</button>
         <button onclick="showLoginForm()" style="padding:14px 32px;border-radius:12px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:16px;font-weight:700;cursor:pointer">Sign In →</button>
       </div>
     </div>
     <!-- Features -->
-    <div style="max-width:900px;margin:0 auto;padding:0 20px 40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
+    <div id="landing-features" style="max-width:900px;margin:0 auto;padding:0 20px 40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
       <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px">
         <div style="font-size:28px;margin-bottom:10px">🧾</div>
         <div style="font-size:14px;font-weight:700;margin-bottom:6px">Smart POS</div>
@@ -739,7 +739,7 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
       <input class="auth-input" id="su-phone" type="tel" placeholder="Phone number (e.g. 05xxxxxxxx)"/>
       <input class="auth-input" id="su-email" type="email" placeholder="Email address *" autocomplete="email"/>
       <input class="auth-input" id="su-pass" type="password" placeholder="Password (min 6 chars) *"/>
-      <select class="auth-input" id="su-type">
+      <select class="auth-input" id="su-type" onchange="updateLandingForType(this.value)">
         <option value="restaurant">🍔 Restaurant / Cafe</option>
         <option value="retail">🛒 Retail Shop</option>
         <option value="coffee">☕ Coffee Shop</option>
@@ -2679,6 +2679,62 @@ function showLoginForm(){
   document.getElementById('signup-form-panel').style.display='none';
   document.getElementById('login-form-panel').style.display='flex';
 }
+const LANDING_CONTENT={
+  restaurant:{
+    label:'Saudi Restaurants',
+    sub:'Multi-branch management, kitchen display, customer loyalty, inventory tracking — all in one place.',
+    features:[
+      {e:'🧾',t:'Smart POS',d:'Fast order taking, split bills, multiple payment methods'},
+      {e:'🍳',t:'Kitchen Display',d:'Real-time orders sent to kitchen screen automatically'},
+      {e:'🏪',t:'Multi-Branch',d:'Manage all your locations from one account'},
+      {e:'📊',t:'Reports & Analytics',d:'Sales reports, top items, staff performance'},
+      {e:'🎯',t:'Promotions',d:'BOGO, discounts, happy hour, Buy X Get 1 Free'},
+      {e:'👥',t:'Customer Loyalty',d:'Points system, purchase history, SMS receipts'},
+    ]
+  },
+  retail:{
+    label:'Saudi Retail Shops',
+    sub:'Barcode scanner, stock management, multi-branch inventory — everything your shop needs.',
+    features:[
+      {e:'🧾',t:'Smart POS',d:'Fast checkout, barcode scanner, multiple payment methods'},
+      {e:'📦',t:'Stock Management',d:'Real-time inventory tracking with low stock alerts'},
+      {e:'🔍',t:'Barcode Scanner',d:'Scan barcodes to add items instantly to cart'},
+      {e:'📊',t:'Reports & Analytics',d:'Sales reports, top products, staff performance'},
+      {e:'🏪',t:'Multi-Branch',d:'Manage all your store locations from one account'},
+      {e:'👥',t:'Customer Loyalty',d:'Points system, purchase history, SMS receipts'},
+    ]
+  },
+  coffee:{
+    label:'Saudi Coffee Shops',
+    sub:'Fast POS, order management, loyalty rewards — built for busy coffee shops.',
+    features:[
+      {e:'🧾',t:'Smart POS',d:'Fast order taking, customizations, multiple payment methods'},
+      {e:'🍳',t:'Kitchen Display',d:'Orders sent to barista screen automatically'},
+      {e:'🏪',t:'Multi-Branch',d:'Manage all your locations from one account'},
+      {e:'📊',t:'Reports & Analytics',d:'Sales reports, top drinks, staff performance'},
+      {e:'🎯',t:'Promotions',d:'Happy hour, discounts, loyalty rewards'},
+      {e:'👥',t:'Customer Loyalty',d:'Points system, purchase history, SMS receipts'},
+    ]
+  },
+};
+LANDING_CONTENT.bakery=LANDING_CONTENT.coffee;
+LANDING_CONTENT.other=LANDING_CONTENT.restaurant;
+
+function updateLandingForType(type){
+  const content=LANDING_CONTENT[type]||LANDING_CONTENT.restaurant;
+  const label=document.getElementById('landing-type-label');
+  const sub=document.getElementById('landing-sub');
+  const features=document.getElementById('landing-features');
+  if(label) label.textContent=content.label;
+  if(sub) sub.textContent=content.sub;
+  if(features) features.innerHTML=content.features.map(f=>`
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px">
+      <div style="font-size:28px;margin-bottom:10px">${f.e}</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:6px">${f.t}</div>
+      <div style="font-size:12px;color:var(--muted)">${f.d}</div>
+    </div>`).join('');
+}
+
 function showSignupForm(){
   document.getElementById('landing-page').style.display='none';
   document.getElementById('login-form-panel').style.display='none';
