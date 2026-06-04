@@ -1459,31 +1459,27 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
       <div class="screen-title" style="padding:0 0 4px" data-i18n="settings-title">Settings</div>
       <div class="settings-section">
         <div class="settings-section-title">🏪 Business Info</div>
+        <div style="padding:10px 16px;background:rgba(88,166,255,.07);border-bottom:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px">
+          ⚙️ Business name, VAT, currency and receipt settings are managed in <strong style="color:#58a6ff;cursor:pointer" onclick="document.querySelector('[data-screen=settings]').click()">IT Admin Portal → Settings</strong>
+        </div>
         <div class="settings-row">
           <div><div class="settings-label">Business Name</div></div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <input class="form-input" id="set-biz-name" style="width:180px" placeholder="My Business"/>
-            <button onclick="saveBizName()" style="padding:6px 14px;border-radius:8px;border:none;background:var(--accent);color:#000;font-size:12px;font-weight:700;cursor:pointer">Save</button>
-          </div>
+          <div style="font-size:13px;font-weight:700" id="set-biz-name-display">—</div>
         </div>
         <div class="settings-row">
           <div><div class="settings-label">Currency</div></div>
-          <select class="form-input" id="set-currency" style="width:130px" onchange="saveSetting('currency',this.value)">
-            <option value="SAR">SAR — Saudi Riyal</option>
-            <option value="AED">AED — UAE Dirham</option>
-            <option value="USD">USD — US Dollar</option>
-            <option value="KWD">KWD — Kuwaiti Dinar</option>
-          </select>
+          <div style="font-size:13px;color:var(--muted)" id="set-currency-display">SAR</div>
         </div>
         <div class="settings-row">
-          <div><div class="settings-label">VAT Rate</div><div class="settings-desc">Percentage applied to orders</div></div>
-          <input class="form-input" id="set-vat" type="number" style="width:80px" oninput="saveSetting('vat_rate',this.value)" value="15"/>
-        </div>
-        <div class="settings-row">
-          <div><div class="settings-label">Receipt Footer</div></div>
-          <input class="form-input" id="set-footer" style="width:200px" placeholder="Thank you!" oninput="saveSetting('receipt_footer',this.value)"/>
+          <div><div class="settings-label">VAT Rate</div></div>
+          <div style="font-size:13px;color:var(--muted)" id="set-vat-display">15%</div>
         </div>
       </div>
+      <!-- Hidden inputs kept for JS compatibility -->
+      <input type="hidden" id="set-biz-name"/>
+      <input type="hidden" id="set-currency"/>
+      <input type="hidden" id="set-vat"/>
+      <input type="hidden" id="set-footer"/>
       <div class="settings-section">
         <div class="settings-section-title">🖨 Printer & Receipt</div>
         <div class="settings-row">
@@ -2829,6 +2825,13 @@ async function onSignedIn(user){
   document.getElementById('set-currency').value=_settings.currency||'SAR';
   document.getElementById('set-vat').value=_settings.vat_rate??15;
   document.getElementById('set-footer').value=_settings.receipt_footer||'';
+  // Update display-only fields in POS Settings
+  const bizNameDisp=document.getElementById('set-biz-name-display');
+  const currDisp=document.getElementById('set-currency-display');
+  const vatDisp=document.getElementById('set-vat-display');
+  if(bizNameDisp) bizNameDisp.textContent=_settings.biz_name||meta.biz_name||'—';
+  if(currDisp) currDisp.textContent=_settings.currency||'SAR';
+  if(vatDisp) vatDisp.textContent=(_settings.vat_rate??15)+'%';
   document.getElementById('set-auto-print').checked=!!_settings.auto_print;
   document.getElementById('set-show-vat').checked=_settings.show_vat!==false;
   document.getElementById('set-admin-pin').value=_settings.admin_pin||'';
@@ -6651,9 +6654,13 @@ $$;
 GRANT EXECUTE ON FUNCTION sa_get_all_businesses() TO authenticated;
 
 CREATE OR REPLACE FUNCTION sa_delete_business(biz_id uuid)
-RETURNS void LANGUAGE sql SECURITY DEFINER AS $$
-  DELETE FROM businesses WHERE id = biz_id
-  AND (SELECT email FROM auth.users WHERE id = auth.uid()) = 'md.nawas85@gmail.com';
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER AS $$
+BEGIN
+  IF (SELECT email FROM auth.users WHERE id = auth.uid()) = 'md.nawas85@gmail.com' THEN
+    DELETE FROM orders WHERE orders.biz_id = sa_delete_business.biz_id;
+    DELETE FROM businesses WHERE id = sa_delete_business.biz_id;
+  END IF;
+END;
 $$;
 GRANT EXECUTE ON FUNCTION sa_delete_business(uuid) TO authenticated;
 
