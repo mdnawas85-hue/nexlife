@@ -3309,37 +3309,43 @@ async function seedSampleData(){
 
   showToast('🌱 Setting up your menu...');
 
-  // Delete default cats
+  // Delete existing cats and products first
+  await sb.from('products').delete().eq('biz_id',bizId);
   await sb.from('categories').delete().eq('biz_id',bizId);
 
-  // Insert categories one by one with error checking
-  const savedCats=[];
-  for(let i=0;i<sample.cats.length;i++){
-    const c=sample.cats[i];
-    const{data,error}=await sb.from('categories').insert({biz_id:bizId,name:c.name,name_ar:c.name_ar,emoji:c.emoji,sort_order:i}).select().single();
-    if(data) savedCats.push(data);
-    else console.warn('Cat insert failed:',error?.message);
+  // Insert all categories at once
+  const{data:savedCats,error:catErr}=await sb.from('categories')
+    .insert(sample.cats.map((c,i)=>({biz_id:bizId,name:c.name,name_ar:c.name_ar,emoji:c.emoji,sort_order:i})))
+    .select();
+  if(catErr||!savedCats?.length){
+    console.error('Category insert failed:',catErr?.message);
+    showToast('Menu setup failed — check console',true);
+    return;
   }
   _cats=savedCats;
-  if(!_cats.length){showToast('Could not create sample menu — add items manually',true);return;}
 
-  // Insert products one by one
-  const savedProds=[];
-  for(let i=0;i<sample.products.length;i++){
-    const p=sample.products[i];
-    const{data,error}=await sb.from('products').insert({
+  // Map cat index to actual DB id
+  const catIdMap={};
+  savedCats.forEach((c,i)=>{catIdMap[i]=c.id;});
+
+  // Insert all products at once using actual cat ids
+  const{data:savedProds,error:prodErr}=await sb.from('products')
+    .insert(sample.products.map((p,i)=>({
       biz_id:bizId,name:p.name,name_ar:p.name_ar,emoji:p.emoji,
-      price:p.price,cat_id:_cats[p.cat]?.id||null,
+      price:p.price,cat_id:catIdMap[p.cat]||null,
       is_active:true,sort_order:i,stock:p.stock??null,barcode:p.barcode||null,
-    }).select().single();
-    if(data) savedProds.push(data);
-    else console.warn('Product insert failed:',error?.message);
+    })))
+    .select();
+  if(prodErr){
+    console.error('Product insert failed:',prodErr?.message);
+    showToast('Products failed: '+prodErr.message,true);
+    return;
   }
-  _products=savedProds;
+  _products=savedProds||[];
 
-  // Re-render
+  // Re-render everything
   renderCatBar();renderProducts();renderProductsList();updateLowStockBanner();
-  showToast(`✅ ${_products.length} sample items ready!`);
+  showToast(`✅ ${_products.length} sample items loaded!`);
 }
 
 // ── REALTIME: sync kitchen_status across all open windows/devices ─────────────
@@ -3599,7 +3605,7 @@ function renderProducts(){
     return true;
   });
   if(!prods.length){
-    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px"><div style="color:var(--muted);margin-bottom:16px">No products found</div><button onclick="seedSampleData().then(()=>{renderCatBar();renderProducts();})" style="padding:10px 24px;border-radius:10px;border:none;background:var(--accent2);color:#fff;font-size:13px;font-weight:700;cursor:pointer">🌱 Load Sample Menu</button></div>`;
+    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted)">No products found</div>`;
     return;
   }
 
