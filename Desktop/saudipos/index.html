@@ -3128,6 +3128,15 @@ async function _saveBranchesToDB(){
 async function saveBranch(){
   const name=document.getElementById('branch-name-input').value.trim();
   if(!name){showToast('Branch name is required',true);return;}
+  const lim=getPlanLimits();
+  const activeBranches=_branches.filter(b=>b.is_active!==false).length;
+  if(activeBranches>=lim.maxBranches){
+    const planName={starter:'Growth (199 SAR/mo)',growth:'Enterprise (399 SAR/mo)'}[lim.plan]||'a higher plan';
+    showToast(`⚡ Your ${lim.plan} plan allows max ${lim.maxBranches} branch${lim.maxBranches===1?'':'es'}. Upgrade to ${planName}.`,true,4000);
+    closeAddBranchModal();
+    setTimeout(()=>showUpgradeModal(),800);
+    return;
+  }
   const addr=document.getElementById('branch-addr-input').value.trim();
   const phone=document.getElementById('branch-phone-input').value.trim();
   // First branch always uses the original businessId so existing data is inherited
@@ -3360,9 +3369,7 @@ function applyMode(){
 // ── SCREEN NAV ────────────────────────────────────────────────────────────────
 function setScreen(name){
   const lim=getPlanLimits();
-  if(name==='promos'&&!lim.hasPromotions){
-    showUpgradeNotice('Promotions & Discounts','growth');return;
-  }
+  if(name==='promos'&&!lim.hasPromotions){showUpgradeNotice('Promotions & Discounts','growth');return;}
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById(name+'-screen').classList.add('active');
@@ -6785,23 +6792,23 @@ function saDeleteClient(bizId,name){
       const authSql=`DELETE FROM auth.users WHERE email = '${ownerEmail}';`;
       navigator.clipboard.writeText(authSql).catch(()=>{});
       // Try RPC first
-      const{error:rpcErr}=await sb.rpc('sa_delete_business',{biz_id:bizId});
+      // Try full delete RPC (deletes auth.users too)
+      const{error:rpcErr}=await sb.rpc('sa_delete_client_full',{biz_id:bizId});
       if(!rpcErr){
-        showToast('✅ Business deleted — auth SQL copied to clipboard. Paste in Supabase to free the email.');
+        showToast('✅ Client fully deleted — email is now free for re-signup.');
         loadSAClients();return;
       }
-      // Try direct delete
-      const{error:directErr}=await sb.from('businesses').delete().eq('id',bizId);
-      if(!directErr){
-        showToast('✅ Business deleted — auth SQL copied to clipboard. Paste in Supabase to free the email.');
-        loadSAClients();return;
+      // Fallback: old RPC (no auth delete)
+      const{error:rpc2Err}=await sb.rpc('sa_delete_business',{biz_id:bizId});
+      if(!rpc2Err){
+        showToast('⚠️ Business deleted but email not freed. Run SQL below in Supabase.',true,5000);
+        loadSAClients();
       }
-      // Both failed — RLS is blocking. Show SQL to run manually
-      showToast('RLS blocked — use the SQL below in Supabase',true);
+      // Show manual SQL fallback
       const manualSql=`DELETE FROM businesses WHERE id = '${bizId}';\nDELETE FROM auth.users WHERE email = '${ownerEmail}';`;
       const box=document.createElement('div');
       box.style.cssText='background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);border-radius:12px;padding:16px;margin-bottom:12px';
-      box.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:8px">❌ RLS blocked — run this SQL manually in <a href="https://supabase.com/dashboard/project/hjygvfhxyonmizdleoqe/sql/new" target="_blank" style="color:#58a6ff">Supabase SQL Editor</a>:</div>
+      box.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:8px">⚠️ Run this in <a href="https://supabase.com/dashboard/project/hjygvfhxyonmizdleoqe/sql/new" target="_blank" style="color:#58a6ff">Supabase SQL Editor</a> to free the email:</div>
         <pre style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:11px;color:var(--text);white-space:pre-wrap">${manualSql}</pre>
         <button onclick="navigator.clipboard.writeText(\`${manualSql}\`).then(()=>showToast('SQL copied!'))" style="margin-top:8px;padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;cursor:pointer;width:100%">📋 Copy SQL</button>`;
       document.getElementById('sa-clients-list').prepend(box);
@@ -7459,15 +7466,15 @@ async function runSystemTests(){
 
 // ── PLAN ENFORCEMENT ─────────────────────────────────────────────────────────
 function getPlanLimits(){
-  const plan=_settings.plan||'growth';
+  const plan=_settings.plan||'starter';
   return {
     plan,
     maxBranches: plan==='enterprise' ? Infinity : plan==='growth' ? 3 : 1,
     maxStaff:    plan==='starter'    ? 3         : Infinity,
-    hasLoyalty:      plan!=='starter',
-    hasPromotions:   plan!=='starter',
+    hasLoyalty:        plan!=='starter',
+    hasPromotions:     plan!=='starter',
     hasOwnerDashboard: plan==='enterprise',
-    hasAdvancedReports: plan==='enterprise',
+    hasAdvancedReports:plan==='enterprise',
   };
 }
 function planGate(feature, requiredPlan){
@@ -7542,9 +7549,7 @@ function showUpgradeModal(){
 
 // ── OWNER DASHBOARD ──────────────────────────────────────────────────────────
 async function openOwnerDashboard(){
-  if(!getPlanLimits().hasOwnerDashboard){
-    showUpgradeNotice('Owner Dashboard','enterprise');return;
-  }
+  if(!getPlanLimits().hasOwnerDashboard){showUpgradeNotice('Owner Dashboard','enterprise');return;}
   document.getElementById('role-screen').style.display='none';
   document.getElementById('owner-dashboard').style.display='flex';
   await loadDashboard();
@@ -8057,7 +8062,6 @@ function applyRoleNav(){
     const screen=btn.dataset.screen;
     if(!screen) return;
     btn.style.display=allowed.includes(screen)?'':'none';
-    // Remove existing lock badge if any
     const existing=btn.querySelector('.plan-lock');
     if(existing) existing.remove();
     if(planLocked[screen]){
@@ -8846,3 +8850,4 @@ function applyCdPaid(d){
 </script>
 </body>
 </html>
+<!-- deploy 1780583502 -->
