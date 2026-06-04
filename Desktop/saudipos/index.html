@@ -7761,6 +7761,16 @@ function showPinPanel(role){
   document.getElementById('rs-pin-panel').style.display='block';
   document.getElementById('pin-display').textContent='';
   document.getElementById('pin-error').textContent='';
+  // Keyboard support
+  if(document._pinKeyHandler) document.removeEventListener('keydown',document._pinKeyHandler);
+  document._pinKeyHandler=function(e){
+    if(document.getElementById('rs-pin-panel').style.display==='none') return;
+    if(e.key>='0'&&e.key<='9') pinKey(e.key);
+    else if(e.key==='Backspace') pinKey('\u232b');
+    else if(e.key==='Enter') verifyPin();
+    else if(e.key==='Escape'){document.removeEventListener('keydown',document._pinKeyHandler);showRoleCards();}
+  };
+  document.addEventListener('keydown',document._pinKeyHandler);
   const staffEl=document.getElementById('pin-staff-list');
   if(role==='admin'){
     document.getElementById('pin-panel-label').textContent='🔐 Enter IT Admin PIN';
