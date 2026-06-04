@@ -6775,12 +6775,21 @@ function saDeleteClient(bizId,name){
     confirmLabel:'🗑 Delete',
     confirmColor:'var(--red)',
     onConfirm:async()=>{
+      // Always auto-copy the auth cleanup SQL to clipboard
+      const authSql=`DELETE FROM auth.users WHERE email = '${ownerEmail}';`;
+      navigator.clipboard.writeText(authSql).catch(()=>{});
       // Try RPC first
       const{error:rpcErr}=await sb.rpc('sa_delete_business',{biz_id:bizId});
-      if(!rpcErr){showToast('✅ Business deleted');loadSAClients();return;}
+      if(!rpcErr){
+        showToast('✅ Business deleted — auth SQL copied to clipboard. Paste in Supabase to free the email.');
+        loadSAClients();return;
+      }
       // Try direct delete
       const{error:directErr}=await sb.from('businesses').delete().eq('id',bizId);
-      if(!directErr){showToast('✅ Business deleted');loadSAClients();return;}
+      if(!directErr){
+        showToast('✅ Business deleted — auth SQL copied to clipboard. Paste in Supabase to free the email.');
+        loadSAClients();return;
+      }
       // Both failed — RLS is blocking. Show SQL to run manually
       showToast('RLS blocked — use the SQL below in Supabase',true);
       const manualSql=`DELETE FROM businesses WHERE id = '${bizId}';\nDELETE FROM auth.users WHERE email = '${ownerEmail}';`;
