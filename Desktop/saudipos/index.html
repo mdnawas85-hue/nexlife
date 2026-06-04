@@ -621,7 +621,8 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
 <div id="auth-screen">
   <!-- LANDING PAGE -->
   <div id="landing-page" style="width:100%;height:100%;overflow-y:auto;background:var(--bg)">
-    <!-- Nav -->
+
+    <!-- Sticky Nav -->
     <div style="position:sticky;top:0;background:rgba(13,17,23,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;z-index:10">
       <div style="font-size:22px;font-weight:900">Saudi<span style="color:var(--accent2)">POS</span></div>
       <div style="display:flex;gap:10px">
@@ -629,87 +630,163 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
         <button onclick="showSignupForm()" style="padding:8px 18px;border-radius:8px;border:none;background:var(--accent2);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Start Free Trial</button>
       </div>
     </div>
+
     <!-- Hero -->
-    <div style="text-align:center;padding:60px 20px 40px;max-width:700px;margin:0 auto">
-      <div style="display:inline-block;padding:4px 14px;border-radius:20px;background:rgba(0,165,80,.15);border:1px solid rgba(0,165,80,.3);color:var(--accent2);font-size:12px;font-weight:700;margin-bottom:20px">🎉 14-Day Free Trial — No credit card required</div>
-      <h1 style="font-size:clamp(28px,5vw,52px);font-weight:900;line-height:1.15;margin-bottom:16px">The POS built for<br><span id="landing-type-label" style="color:var(--accent2)">Saudi Restaurants</span></h1>
-      <p id="landing-sub" style="font-size:15px;color:var(--muted);max-width:500px;margin:0 auto 32px">Multi-branch management, kitchen display, customer loyalty, inventory tracking — all in one place.</p>
+    <div style="text-align:center;padding:70px 20px 50px;max-width:800px;margin:0 auto">
+      <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 16px;border-radius:20px;background:rgba(0,165,80,.12);border:1px solid rgba(0,165,80,.3);color:var(--accent2);font-size:12px;font-weight:700;margin-bottom:24px">
+        🇸🇦 Built for Saudi Arabia · VAT Ready · Arabic Support
+      </div>
+      <h1 style="font-size:clamp(32px,5.5vw,58px);font-weight:900;line-height:1.1;margin-bottom:20px">
+        One POS Platform.<br>
+        <span style="background:linear-gradient(135deg,var(--accent2),#00d4aa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Every Business Type.</span>
+      </h1>
+      <p style="font-size:16px;color:var(--muted);max-width:560px;margin:0 auto 16px;line-height:1.6">
+        SaudiPOS powers restaurants, retail shops, coffee shops, bakeries and more — with multi-branch management, real-time analytics, and a 14-day free trial.
+      </p>
+      <!-- Business type pills -->
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:32px">
+        <span style="padding:5px 14px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);font-size:12px;font-weight:600">🍔 Restaurants</span>
+        <span style="padding:5px 14px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);font-size:12px;font-weight:600">🛒 Retail Shops</span>
+        <span style="padding:5px 14px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);font-size:12px;font-weight:600">☕ Coffee Shops</span>
+        <span style="padding:5px 14px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);font-size:12px;font-weight:600">🥐 Bakeries</span>
+        <span style="padding:5px 14px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);font-size:12px;font-weight:600">🏪 &amp; More</span>
+      </div>
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-        <button onclick="showSignupForm()" style="padding:14px 32px;border-radius:12px;border:none;background:var(--accent2);color:#fff;font-size:16px;font-weight:800;cursor:pointer">🚀 Start Free Trial</button>
-        <button onclick="showLoginForm()" style="padding:14px 32px;border-radius:12px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:16px;font-weight:700;cursor:pointer">Sign In →</button>
+        <button onclick="showSignupForm()" style="padding:15px 36px;border-radius:12px;border:none;background:var(--accent2);color:#fff;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(0,165,80,.3)">🚀 Start Free Trial</button>
+        <button onclick="showLoginForm()" style="padding:15px 36px;border-radius:12px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:16px;font-weight:700;cursor:pointer">Sign In →</button>
+      </div>
+      <div style="margin-top:16px;font-size:12px;color:var(--muted)">✅ 14-day free trial &nbsp;·&nbsp; No credit card required &nbsp;·&nbsp; Cancel anytime</div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:20px;margin-bottom:48px">
+      <div style="max-width:800px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;text-align:center">
+        <div><div style="font-size:28px;font-weight:900;color:var(--accent2)">4+</div><div style="font-size:12px;color:var(--muted)">Business Types</div></div>
+        <div><div style="font-size:28px;font-weight:900;color:#58a6ff">Multi</div><div style="font-size:12px;color:var(--muted)">Branch Support</div></div>
+        <div><div style="font-size:28px;font-weight:900;color:var(--amber)">15%</div><div style="font-size:12px;color:var(--muted)">VAT Ready</div></div>
+        <div><div style="font-size:28px;font-weight:900;color:var(--accent2)">14</div><div style="font-size:12px;color:var(--muted)">Day Free Trial</div></div>
       </div>
     </div>
-    <!-- Features -->
-    <div id="landing-features" style="max-width:900px;margin:0 auto;padding:0 20px 40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px">
-        <div style="font-size:28px;margin-bottom:10px">🧾</div>
-        <div style="font-size:14px;font-weight:700;margin-bottom:6px">Smart POS</div>
-        <div style="font-size:12px;color:var(--muted)">Fast order taking, split bills, multiple payment methods</div>
+
+    <!-- Core Features -->
+    <div style="max-width:960px;margin:0 auto;padding:0 20px 48px">
+      <div style="text-align:center;margin-bottom:32px">
+        <div style="font-size:11px;font-weight:700;color:var(--accent2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Everything You Need</div>
+        <div style="font-size:26px;font-weight:900">Built for Saudi Businesses</div>
       </div>
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px">
-        <div style="font-size:28px;margin-bottom:10px">🍳</div>
-        <div style="font-size:14px;font-weight:700;margin-bottom:6px">Kitchen Display</div>
-        <div style="font-size:12px;color:var(--muted)">Real-time orders sent to kitchen screen automatically</div>
-      </div>
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px">
-        <div style="font-size:28px;margin-bottom:10px">🏪</div>
-        <div style="font-size:14px;font-weight:700;margin-bottom:6px">Multi-Branch</div>
-        <div style="font-size:12px;color:var(--muted)">Manage all your locations from one account</div>
-      </div>
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px">
-        <div style="font-size:28px;margin-bottom:10px">📊</div>
-        <div style="font-size:14px;font-weight:700;margin-bottom:6px">Reports &amp; Analytics</div>
-        <div style="font-size:12px;color:var(--muted)">Sales reports, top items, staff performance</div>
-      </div>
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px">
-        <div style="font-size:28px;margin-bottom:10px">🎯</div>
-        <div style="font-size:14px;font-weight:700;margin-bottom:6px">Promotions</div>
-        <div style="font-size:12px;color:var(--muted)">BOGO, discounts, happy hour, Buy X Get 1 Free</div>
-      </div>
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px">
-        <div style="font-size:28px;margin-bottom:10px">👥</div>
-        <div style="font-size:14px;font-weight:700;margin-bottom:6px">Customer Loyalty</div>
-        <div style="font-size:12px;color:var(--muted)">Points system, purchase history, SMS receipts</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px">
+          <div style="font-size:32px;margin-bottom:12px">🧾</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:6px">Smart POS</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.5">Fast checkout, split bills, multiple payment methods. Works on any device — tablet, phone, or desktop.</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px">
+          <div style="font-size:32px;margin-bottom:12px">🏪</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:6px">Multi-Branch</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.5">Run all your locations from one account. Each branch has its own menu visibility, staff, and orders.</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px">
+          <div style="font-size:32px;margin-bottom:12px">📊</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:6px">Owner Dashboard</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.5">See revenue, orders, and top items across all branches in real time. Daily, weekly, or monthly.</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px">
+          <div style="font-size:32px;margin-bottom:12px">🍳</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:6px">Kitchen Display</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.5">Orders go directly to the kitchen screen. No paper, no shouting. Real-time updates for your team.</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px">
+          <div style="font-size:32px;margin-bottom:12px">📦</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:6px">Inventory & Stock</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.5">Track stock levels, get low stock alerts, scan barcodes to add items. Full inventory control.</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px">
+          <div style="font-size:32px;margin-bottom:12px">👥</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:6px">Staff & Loyalty</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.5">PIN-based staff login, role management, customer loyalty points, and purchase history.</div>
+        </div>
       </div>
     </div>
+
+    <!-- Business Types -->
+    <div style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:48px 20px;margin-bottom:48px">
+      <div style="max-width:960px;margin:0 auto">
+        <div style="text-align:center;margin-bottom:32px">
+          <div style="font-size:11px;font-weight:700;color:var(--accent2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Works For Every Business</div>
+          <div style="font-size:26px;font-weight:900">Choose Your Business Type</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:8px">Sample menu auto-loads on signup based on your type</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+          <div style="background:var(--bg3);border:1.5px solid rgba(0,165,80,.3);border-radius:14px;padding:20px;text-align:center">
+            <div style="font-size:36px;margin-bottom:10px">🍔</div>
+            <div style="font-size:14px;font-weight:800;margin-bottom:4px">Restaurant</div>
+            <div style="font-size:11px;color:var(--muted)">Tables, kitchen display, dine-in & delivery</div>
+          </div>
+          <div style="background:var(--bg3);border:1.5px solid rgba(88,166,255,.3);border-radius:14px;padding:20px;text-align:center">
+            <div style="font-size:36px;margin-bottom:10px">🛒</div>
+            <div style="font-size:14px;font-weight:800;margin-bottom:4px">Retail Shop</div>
+            <div style="font-size:11px;color:var(--muted)">Barcode scanner, stock management, SKU</div>
+          </div>
+          <div style="background:var(--bg3);border:1.5px solid rgba(210,153,34,.3);border-radius:14px;padding:20px;text-align:center">
+            <div style="font-size:36px;margin-bottom:10px">☕</div>
+            <div style="font-size:14px;font-weight:800;margin-bottom:4px">Coffee Shop</div>
+            <div style="font-size:11px;color:var(--muted)">Fast POS, loyalty rewards, hot &amp; cold menu</div>
+          </div>
+          <div style="background:var(--bg3);border:1.5px solid rgba(248,81,73,.3);border-radius:14px;padding:20px;text-align:center">
+            <div style="font-size:36px;margin-bottom:10px">🥐</div>
+            <div style="font-size:14px;font-weight:800;margin-bottom:4px">Bakery</div>
+            <div style="font-size:11px;color:var(--muted)">Stock tracking, daily items, customer orders</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Pricing -->
-    <div style="max-width:900px;margin:0 auto;padding:0 20px 60px;text-align:center">
-      <div style="font-size:24px;font-weight:800;margin-bottom:8px">Simple Pricing</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:32px">Start free. Upgrade when you're ready.</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
+    <div style="max-width:960px;margin:0 auto;padding:0 20px 60px;text-align:center">
+      <div style="font-size:11px;font-weight:700;color:var(--accent2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Pricing</div>
+      <div style="font-size:26px;font-weight:900;margin-bottom:8px">Simple, Transparent Pricing</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:36px">Start free. No credit card. Upgrade anytime.</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:20px">
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;text-align:left">
-          <div style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px">STARTER</div>
-          <div style="font-size:32px;font-weight:900;margin-bottom:4px">99 <span style="font-size:14px;color:var(--muted)">SAR/mo</span></div>
-          <div style="font-size:11px;color:var(--muted);margin-bottom:16px">1 branch · Up to 3 staff</div>
-          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ POS &amp; Orders</div>
-          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Kitchen Display</div>
-          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Basic Reports</div>
-          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Email Support</div>
+          <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Starter</div>
+          <div style="font-size:36px;font-weight:900;margin-bottom:2px">99 <span style="font-size:14px;color:var(--muted)">SAR/mo</span></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:18px">1 branch · Up to 3 staff</div>
+          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)">✅ POS &amp; Orders</div>
+          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)">✅ Kitchen / Barcode</div>
+          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)">✅ Basic Reports</div>
+          <div style="font-size:12px;padding:5px 0">✅ Email Support</div>
         </div>
-        <div style="background:linear-gradient(135deg,rgba(0,165,80,.15),rgba(0,108,53,.1));border:2px solid rgba(0,165,80,.5);border-radius:16px;padding:24px;text-align:left;position:relative">
-          <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--accent2);color:#fff;font-size:10px;font-weight:800;padding:3px 12px;border-radius:20px">MOST POPULAR</div>
-          <div style="font-size:13px;font-weight:700;color:var(--accent2);margin-bottom:8px">GROWTH</div>
-          <div style="font-size:32px;font-weight:900;margin-bottom:4px">199 <span style="font-size:14px;color:var(--muted)">SAR/mo</span></div>
-          <div style="font-size:11px;color:var(--muted);margin-bottom:16px">3 branches · Unlimited staff</div>
-          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Everything in Starter</div>
-          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Multi-Branch</div>
-          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Customer Loyalty</div>
-          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Promotions &amp; Promos</div>
-          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Priority Support</div>
+        <div style="background:linear-gradient(135deg,rgba(0,165,80,.12),rgba(0,108,53,.08));border:2px solid var(--accent2);border-radius:16px;padding:24px;text-align:left;position:relative">
+          <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent2);color:#fff;font-size:10px;font-weight:800;padding:4px 14px;border-radius:20px;white-space:nowrap">⭐ MOST POPULAR</div>
+          <div style="font-size:12px;font-weight:700;color:var(--accent2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Growth</div>
+          <div style="font-size:36px;font-weight:900;margin-bottom:2px">199 <span style="font-size:14px;color:var(--muted)">SAR/mo</span></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:18px">3 branches · Unlimited staff</div>
+          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.1)">✅ Everything in Starter</div>
+          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.1)">✅ Multi-Branch</div>
+          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.1)">✅ Customer Loyalty</div>
+          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.1)">✅ Promotions</div>
+          <div style="font-size:12px;padding:5px 0">✅ Priority Support</div>
         </div>
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;text-align:left">
-          <div style="font-size:13px;font-weight:700;color:#58a6ff;margin-bottom:8px">ENTERPRISE</div>
-          <div style="font-size:32px;font-weight:900;margin-bottom:4px">399 <span style="font-size:14px;color:var(--muted)">SAR/mo</span></div>
-          <div style="font-size:11px;color:var(--muted);margin-bottom:16px">Unlimited branches & staff</div>
-          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Everything in Growth</div>
-          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Unlimited Branches</div>
-          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Owner Dashboard</div>
-          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Advanced Reports</div>
-          <div style="font-size:12px;padding:4px 0;color:var(--text)">✅ Dedicated Support</div>
+        <div style="background:var(--bg2);border:1px solid rgba(88,166,255,.4);border-radius:16px;padding:24px;text-align:left">
+          <div style="font-size:12px;font-weight:700;color:#58a6ff;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Enterprise</div>
+          <div style="font-size:36px;font-weight:900;margin-bottom:2px">399 <span style="font-size:14px;color:var(--muted)">SAR/mo</span></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:18px">Unlimited branches &amp; staff</div>
+          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)">✅ Everything in Growth</div>
+          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)">✅ Unlimited Branches</div>
+          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)">✅ Owner Dashboard</div>
+          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)">✅ Advanced Reports</div>
+          <div style="font-size:12px;padding:5px 0">✅ Dedicated Support</div>
         </div>
       </div>
-      <div style="margin-top:24px;font-size:13px;color:var(--muted)">All plans include a <strong style="color:var(--text)">14-day free trial</strong>. No credit card required to start.</div>
+      <button onclick="showSignupForm()" style="padding:15px 40px;border-radius:12px;border:none;background:var(--accent2);color:#fff;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px">🚀 Start Your Free Trial</button>
     </div>
+
+    <!-- Footer -->
+    <div style="border-top:1px solid var(--border);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div style="font-size:16px;font-weight:900">Saudi<span style="color:var(--accent2)">POS</span> <span style="font-size:11px;color:var(--muted);font-weight:400">by SaudiPOS Co.</span></div>
+      <div style="font-size:11px;color:var(--muted)">© 2026 SaudiPOS · saudipos.biz · All rights reserved</div>
+    </div>
+
   </div>
 
   <!-- LOGIN FORM -->
