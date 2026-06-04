@@ -1098,7 +1098,7 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
       <span style="font-size:18px;font-weight:900">Saudi<span style="color:var(--accent2)">POS</span></span>
       <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(88,166,255,.15);color:#58a6ff;border:1px solid rgba(88,166,255,.3)">⚙️ IT Admin</span>
     </div>
-    <div style="display:flex;gap:8px"><button onclick="runSystemTests()" id="test-runner-btn" style="display:none;padding:6px 12px;border-radius:8px;border:1px solid rgba(88,166,255,.4);background:rgba(88,166,255,.08);color:#58a6ff;font-size:12px;font-weight:700;cursor:pointer">🧪 Run Tests</button><button onclick="closeITAdminPortal()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:6px 12px;border-radius:8px;border:1px solid var(--border)">← Back to Branches</button></div>
+    <div style="display:flex;gap:8px;align-items:center"><button onclick="runSystemTests()" id="test-runner-btn" style="display:none;padding:6px 14px;border-radius:8px;border:1px solid rgba(88,166,255,.4);background:rgba(88,166,255,.08);color:#58a6ff;font-size:12px;font-weight:700;cursor:pointer">🧪 Run Tests</button><button onclick="closeITAdminPortal()" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;font-weight:600;cursor:pointer">← Back to Branches</button></div>
   </div>
   <!-- Tab bar -->
   <div style="display:flex;gap:4px;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0">
@@ -7147,7 +7147,7 @@ function _renderITABranches(){
     return;
   }
   el.innerHTML=_branches.map((b,i)=>{
-    const isMain=i===0;
+    const isMain=b.id===_businessId;
     const isActive=b.is_active!==false;
     const created=b.created_at?new Date(b.created_at).toLocaleDateString():'—';
     return`<div style="background:var(--bg2);border:1.5px solid ${isActive?'rgba(0,165,80,.3)':'var(--border)'};border-radius:14px;padding:18px 20px;margin-bottom:2px">
