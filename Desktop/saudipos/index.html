@@ -6282,7 +6282,8 @@ function renderBranchControl(){
           <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end">`;
         for(const b of branches){
           const visible=_isVisibleOnBranch(p.id, b.id);
-          const isMain=b.id===_businessId||b.id===_bizId&&!_businessId;
+          const hasMain=_branches.some(x=>x.id===_businessId);
+    const isMain=hasMain?b.id===_businessId:i===0;
           html+=`<div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:60px">
             <div style="font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60px;text-align:center">${isMain?'🏠 Main':b.name}</div>
             ${isMain
@@ -7137,8 +7138,6 @@ function itaOpenCatModal(){
 // ── ITA: BRANCHES ─────────────────────────────────────────────────────────────
 function _renderITABranches(){
   const el=document.getElementById('ita-branch-list');
-  // Debug: show which branch is main
-  console.log('[ITA] _businessId:',_businessId,'branch ids:',_branches.map(b=>b.id));
   if(!_branches.length){
     el.innerHTML=`<div style="text-align:center;padding:40px">
       <div style="font-size:40px;margin-bottom:12px">⚠️</div>
@@ -7149,7 +7148,8 @@ function _renderITABranches(){
     return;
   }
   el.innerHTML=_branches.map((b,i)=>{
-    const isMain=b.id===_businessId||b.id===_bizId&&!_businessId;
+    const hasMain=_branches.some(x=>x.id===_businessId);
+    const isMain=hasMain?b.id===_businessId:i===0;
     const isActive=b.is_active!==false;
     const created=b.created_at?new Date(b.created_at).toLocaleDateString():'—';
     return`<div style="background:var(--bg2);border:1.5px solid ${isActive?'rgba(0,165,80,.3)':'var(--border)'};border-radius:14px;padding:18px 20px;margin-bottom:2px">
