@@ -3145,7 +3145,7 @@ function renderBranchesSettings(){
 async function loadAll(){
   await Promise.all([loadCats(),loadProducts(),loadOrders(),loadTables(),loadCustomers(),loadStaff(),loadPromos()]);
   // Auto-seed sample data for new businesses
-  if(!_isBranchMode()&&_cats.length===0&&_products.length===0) await seedSampleData();
+  if(!_isBranchMode()&&_products.length===0) await seedSampleData();
   loadDevices();
   await loadShift();
   setInterval(updateShiftBtn,60000);
@@ -3264,7 +3264,8 @@ async function seedSampleData(){
 
   showToast('🌱 Setting up sample menu...');
 
-  // Insert categories
+  // Clear any default categories first, then insert sample ones
+  await sb.from('categories').delete().eq('biz_id',bizId);
   const catRecords=sample.cats.map((c,i)=>({biz_id:bizId,name:c.name,name_ar:c.name_ar,emoji:c.emoji,sort_order:i}));
   const{data:savedCats}=await sb.from('categories').insert(catRecords).select();
   _cats=savedCats||[];
