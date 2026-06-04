@@ -618,177 +618,214 @@ input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff}
 </div>
 
 <!-- AUTH -->
+<style>
+#lp{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+#lp *{box-sizing:border-box}
+.lp-nav{position:sticky;top:0;z-index:100;background:rgba(10,14,20,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.07);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.lp-logo{font-size:24px;font-weight:900;color:#fff;letter-spacing:-.5px}
+.lp-logo span{color:#00a550}
+.lp-nav-btns{display:flex;gap:10px;align-items:center}
+.lp-btn-ghost{padding:8px 20px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:transparent;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.lp-btn-ghost:hover{background:rgba(255,255,255,.08)}
+.lp-btn-primary{padding:9px 22px;border-radius:8px;border:none;background:#00a550;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+.lp-btn-primary:hover{background:#00c460;transform:translateY(-1px)}
+.lp-hero{text-align:center;padding:90px 20px 70px;position:relative;overflow:hidden}
+.lp-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,165,80,.18),transparent);pointer-events:none}
+.lp-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:20px;background:rgba(0,165,80,.1);border:1px solid rgba(0,165,80,.25);color:#00c460;font-size:12px;font-weight:700;margin-bottom:28px}
+.lp-h1{font-size:clamp(36px,6vw,64px);font-weight:900;line-height:1.08;color:#fff;letter-spacing:-1.5px;margin:0 0 10px}
+.lp-h1 .green{background:linear-gradient(135deg,#00a550,#00d4aa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lp-h1 .white{color:#fff}
+.lp-sub{font-size:17px;color:rgba(255,255,255,.55);max-width:520px;margin:16px auto 36px;line-height:1.65}
+.lp-types{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:40px}
+.lp-type-pill{padding:7px 16px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.75);font-size:13px;font-weight:600;transition:.2s}
+.lp-type-pill:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)}
+.lp-hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:18px}
+.lp-cta-main{padding:16px 40px;border-radius:12px;border:none;background:#00a550;color:#fff;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 8px 32px rgba(0,165,80,.35);transition:.2s}
+.lp-cta-main:hover{background:#00c460;transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,165,80,.45)}
+.lp-cta-sec{padding:16px 36px;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:#fff;font-size:16px;font-weight:700;cursor:pointer;transition:.2s}
+.lp-cta-sec:hover{background:rgba(255,255,255,.1)}
+.lp-trial-note{font-size:12px;color:rgba(255,255,255,.35)}
+.lp-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:rgba(255,255,255,.06);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
+.lp-stat{padding:24px 20px;text-align:center;background:#0a0e14}
+.lp-stat-num{font-size:30px;font-weight:900;color:#00a550}
+.lp-stat-label{font-size:12px;color:rgba(255,255,255,.4);margin-top:4px;font-weight:500}
+.lp-section{max-width:1000px;margin:0 auto;padding:64px 24px}
+.lp-section-label{font-size:11px;font-weight:700;color:#00a550;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
+.lp-section-title{font-size:clamp(24px,3.5vw,36px);font-weight:900;color:#fff;letter-spacing:-.5px;margin:0 0 10px}
+.lp-section-sub{font-size:15px;color:rgba(255,255,255,.45);margin-bottom:44px}
+.lp-features{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
+.lp-feat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:28px;transition:.2s}
+.lp-feat:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);transform:translateY(-2px)}
+.lp-feat-icon{font-size:36px;margin-bottom:16px}
+.lp-feat-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:8px}
+.lp-feat-desc{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6}
+.lp-biz-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.lp-biz-card{border-radius:16px;padding:28px 20px;text-align:center;border:1.5px solid;transition:.2s;cursor:default}
+.lp-biz-card:hover{transform:translateY(-3px)}
+.lp-biz-emoji{font-size:40px;margin-bottom:14px}
+.lp-biz-name{font-size:15px;font-weight:800;color:#fff;margin-bottom:6px}
+.lp-biz-desc{font-size:12px;line-height:1.5}
+.lp-pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.lp-plan{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:30px}
+.lp-plan.popular{background:linear-gradient(135deg,rgba(0,165,80,.15),rgba(0,100,50,.1));border-color:rgba(0,165,80,.5);position:relative}
+.lp-plan.popular::before{content:'⭐ MOST POPULAR';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#00a550;color:#fff;font-size:10px;font-weight:800;padding:4px 16px;border-radius:20px;white-space:nowrap}
+.lp-plan.enterprise{border-color:rgba(88,166,255,.35)}
+.lp-plan-name{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
+.lp-plan-price{font-size:42px;font-weight:900;color:#fff;line-height:1;margin-bottom:4px}
+.lp-plan-price span{font-size:14px;color:rgba(255,255,255,.4);font-weight:400}
+.lp-plan-desc{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.08)}
+.lp-plan-feat{font-size:13px;color:rgba(255,255,255,.65);padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:8px}
+.lp-plan-feat:last-child{border-bottom:none}
+.lp-plan-feat::before{content:'✓';color:#00a550;font-weight:700;flex-shrink:0}
+.lp-footer{border-top:1px solid rgba(255,255,255,.07);padding:28px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.lp-footer-logo{font-size:18px;font-weight:900;color:#fff}
+.lp-footer-logo span{color:#00a550}
+.lp-footer-copy{font-size:12px;color:rgba(255,255,255,.25)}
+@media(max-width:600px){.lp-h1{letter-spacing:-.5px}.lp-hero{padding:60px 16px 50px}.lp-section{padding:48px 16px}}
+</style>
+
 <div id="auth-screen">
   <!-- LANDING PAGE -->
-  <div id="landing-page" style="width:100%;height:100%;overflow-y:auto;background:var(--bg)">
+  <div id="landing-page" style="width:100%;height:100%;overflow-y:auto;background:#0a0e14">
+  <div id="lp">
 
-    <!-- Sticky Nav -->
-    <div style="position:sticky;top:0;background:rgba(13,17,23,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;z-index:10">
-      <div style="font-size:22px;font-weight:900">Saudi<span style="color:var(--accent2)">POS</span></div>
-      <div style="display:flex;gap:10px">
-        <button onclick="showLoginForm()" style="padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:13px;font-weight:600;cursor:pointer">Sign In</button>
-        <button onclick="showSignupForm()" style="padding:8px 18px;border-radius:8px;border:none;background:var(--accent2);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Start Free Trial</button>
+    <!-- NAV -->
+    <nav class="lp-nav">
+      <div class="lp-logo">Saudi<span>POS</span></div>
+      <div class="lp-nav-btns">
+        <button class="lp-btn-ghost" onclick="showLoginForm()">Sign In</button>
+        <button class="lp-btn-primary" onclick="showSignupForm()">Start Free Trial</button>
       </div>
-    </div>
+    </nav>
 
-    <!-- Hero -->
-    <div style="text-align:center;padding:70px 20px 50px;max-width:800px;margin:0 auto">
-      <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 16px;border-radius:20px;background:rgba(0,165,80,.12);border:1px solid rgba(0,165,80,.3);color:var(--accent2);font-size:12px;font-weight:700;margin-bottom:24px">
-        🇸🇦 Built for Saudi Arabia · VAT Ready · Arabic Support
-      </div>
-      <h1 style="font-size:clamp(32px,5.5vw,58px);font-weight:900;line-height:1.1;margin-bottom:20px">
-        One POS Platform.<br>
-        <span style="background:linear-gradient(135deg,var(--accent2),#00d4aa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Every Business Type.</span>
+    <!-- HERO -->
+    <div class="lp-hero">
+      <div class="lp-badge">🇸🇦 Built for Saudi Arabia &nbsp;·&nbsp; VAT 15% Ready &nbsp;·&nbsp; Arabic Support</div>
+      <h1 class="lp-h1">
+        <span class="white">One Platform for</span><br>
+        <span class="green">Every Saudi Business</span>
       </h1>
-      <p style="font-size:16px;color:var(--muted);max-width:560px;margin:0 auto 16px;line-height:1.6">
-        SaudiPOS powers restaurants, retail shops, coffee shops, bakeries and more — with multi-branch management, real-time analytics, and a 14-day free trial.
-      </p>
-      <!-- Business type pills -->
-      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:32px">
-        <span style="padding:5px 14px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);font-size:12px;font-weight:600">🍔 Restaurants</span>
-        <span style="padding:5px 14px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);font-size:12px;font-weight:600">🛒 Retail Shops</span>
-        <span style="padding:5px 14px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);font-size:12px;font-weight:600">☕ Coffee Shops</span>
-        <span style="padding:5px 14px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);font-size:12px;font-weight:600">🥐 Bakeries</span>
-        <span style="padding:5px 14px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);font-size:12px;font-weight:600">🏪 &amp; More</span>
+      <p class="lp-sub">SaudiPOS gives restaurants, retail shops, coffee shops and bakeries everything they need — smart POS, multi-branch control, real-time analytics, and staff management.</p>
+      <div class="lp-types">
+        <span class="lp-type-pill">🍔 Restaurants</span>
+        <span class="lp-type-pill">🛒 Retail Shops</span>
+        <span class="lp-type-pill">☕ Coffee Shops</span>
+        <span class="lp-type-pill">🥐 Bakeries</span>
+        <span class="lp-type-pill">🏪 &amp; More</span>
       </div>
-      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-        <button onclick="showSignupForm()" style="padding:15px 36px;border-radius:12px;border:none;background:var(--accent2);color:#fff;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(0,165,80,.3)">🚀 Start Free Trial</button>
-        <button onclick="showLoginForm()" style="padding:15px 36px;border-radius:12px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:16px;font-weight:700;cursor:pointer">Sign In →</button>
+      <div class="lp-hero-btns">
+        <button class="lp-cta-main" onclick="showSignupForm()">🚀 Start 14-Day Free Trial</button>
+        <button class="lp-cta-sec" onclick="showLoginForm()">Sign In →</button>
       </div>
-      <div style="margin-top:16px;font-size:12px;color:var(--muted)">✅ 14-day free trial &nbsp;·&nbsp; No credit card required &nbsp;·&nbsp; Cancel anytime</div>
+      <div class="lp-trial-note">✅ No credit card required &nbsp;·&nbsp; Cancel anytime &nbsp;·&nbsp; Setup in minutes</div>
     </div>
 
-    <!-- Stats Bar -->
-    <div style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:20px;margin-bottom:48px">
-      <div style="max-width:800px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;text-align:center">
-        <div><div style="font-size:28px;font-weight:900;color:var(--accent2)">4+</div><div style="font-size:12px;color:var(--muted)">Business Types</div></div>
-        <div><div style="font-size:28px;font-weight:900;color:#58a6ff">Multi</div><div style="font-size:12px;color:var(--muted)">Branch Support</div></div>
-        <div><div style="font-size:28px;font-weight:900;color:var(--amber)">15%</div><div style="font-size:12px;color:var(--muted)">VAT Ready</div></div>
-        <div><div style="font-size:28px;font-weight:900;color:var(--accent2)">14</div><div style="font-size:12px;color:var(--muted)">Day Free Trial</div></div>
-      </div>
+    <!-- STATS -->
+    <div class="lp-stats">
+      <div class="lp-stat"><div class="lp-stat-num">4+</div><div class="lp-stat-label">Business Types</div></div>
+      <div class="lp-stat"><div class="lp-stat-num">∞</div><div class="lp-stat-label">Branches per Account</div></div>
+      <div class="lp-stat"><div class="lp-stat-num">15%</div><div class="lp-stat-label">VAT Ready</div></div>
+      <div class="lp-stat"><div class="lp-stat-num">14</div><div class="lp-stat-label">Day Free Trial</div></div>
+      <div class="lp-stat"><div class="lp-stat-num">24/7</div><div class="lp-stat-label">Always Online</div></div>
     </div>
 
-    <!-- Core Features -->
-    <div style="max-width:960px;margin:0 auto;padding:0 20px 48px">
-      <div style="text-align:center;margin-bottom:32px">
-        <div style="font-size:11px;font-weight:700;color:var(--accent2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Everything You Need</div>
-        <div style="font-size:26px;font-weight:900">Built for Saudi Businesses</div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px">
-          <div style="font-size:32px;margin-bottom:12px">🧾</div>
-          <div style="font-size:15px;font-weight:700;margin-bottom:6px">Smart POS</div>
-          <div style="font-size:13px;color:var(--muted);line-height:1.5">Fast checkout, split bills, multiple payment methods. Works on any device — tablet, phone, or desktop.</div>
-        </div>
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px">
-          <div style="font-size:32px;margin-bottom:12px">🏪</div>
-          <div style="font-size:15px;font-weight:700;margin-bottom:6px">Multi-Branch</div>
-          <div style="font-size:13px;color:var(--muted);line-height:1.5">Run all your locations from one account. Each branch has its own menu visibility, staff, and orders.</div>
-        </div>
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px">
-          <div style="font-size:32px;margin-bottom:12px">📊</div>
-          <div style="font-size:15px;font-weight:700;margin-bottom:6px">Owner Dashboard</div>
-          <div style="font-size:13px;color:var(--muted);line-height:1.5">See revenue, orders, and top items across all branches in real time. Daily, weekly, or monthly.</div>
-        </div>
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px">
-          <div style="font-size:32px;margin-bottom:12px">🍳</div>
-          <div style="font-size:15px;font-weight:700;margin-bottom:6px">Kitchen Display</div>
-          <div style="font-size:13px;color:var(--muted);line-height:1.5">Orders go directly to the kitchen screen. No paper, no shouting. Real-time updates for your team.</div>
-        </div>
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px">
-          <div style="font-size:32px;margin-bottom:12px">📦</div>
-          <div style="font-size:15px;font-weight:700;margin-bottom:6px">Inventory & Stock</div>
-          <div style="font-size:13px;color:var(--muted);line-height:1.5">Track stock levels, get low stock alerts, scan barcodes to add items. Full inventory control.</div>
-        </div>
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px">
-          <div style="font-size:32px;margin-bottom:12px">👥</div>
-          <div style="font-size:15px;font-weight:700;margin-bottom:6px">Staff & Loyalty</div>
-          <div style="font-size:13px;color:var(--muted);line-height:1.5">PIN-based staff login, role management, customer loyalty points, and purchase history.</div>
-        </div>
+    <!-- FEATURES -->
+    <div class="lp-section" style="text-align:center">
+      <div class="lp-section-label">Platform Features</div>
+      <div class="lp-section-title">Everything Your Business Needs</div>
+      <div class="lp-section-sub">One subscription. All tools included. Works on any device.</div>
+      <div class="lp-features" style="text-align:left">
+        <div class="lp-feat"><div class="lp-feat-icon">🧾</div><div class="lp-feat-title">Smart POS</div><div class="lp-feat-desc">Lightning-fast checkout, split bills, hold orders, multiple payment methods. Works on tablet, phone, or desktop.</div></div>
+        <div class="lp-feat"><div class="lp-feat-icon">🏪</div><div class="lp-feat-title">Multi-Branch Management</div><div class="lp-feat-desc">Run all your locations from one account. Each branch has its own staff, orders and menu visibility.</div></div>
+        <div class="lp-feat"><div class="lp-feat-icon">📊</div><div class="lp-feat-title">Owner Dashboard</div><div class="lp-feat-desc">Real-time revenue and order data across all branches. Daily, weekly, monthly reports at a glance.</div></div>
+        <div class="lp-feat"><div class="lp-feat-icon">🍳</div><div class="lp-feat-title">Kitchen Display System</div><div class="lp-feat-desc">Orders go directly to the kitchen screen. No paper tickets. Real-time status updates for your team.</div></div>
+        <div class="lp-feat"><div class="lp-feat-icon">📦</div><div class="lp-feat-title">Inventory &amp; Barcode</div><div class="lp-feat-desc">Track stock levels, get low-stock alerts, scan barcodes to add items instantly. Full inventory control.</div></div>
+        <div class="lp-feat"><div class="lp-feat-icon">👥</div><div class="lp-feat-title">Staff &amp; Loyalty</div><div class="lp-feat-desc">PIN-based staff login, role permissions, customer loyalty points, and full purchase history.</div></div>
+        <div class="lp-feat"><div class="lp-feat-icon">🎯</div><div class="lp-feat-title">Promotions &amp; Discounts</div><div class="lp-feat-desc">BOGO, happy hour, Buy X Get 1 Free, percentage and fixed discounts. Drive more sales effortlessly.</div></div>
+        <div class="lp-feat"><div class="lp-feat-icon">🖥</div><div class="lp-feat-title">Customer Display</div><div class="lp-feat-desc">Customer-facing screen shows order total and items in real time. Professional checkout experience.</div></div>
+        <div class="lp-feat"><div class="lp-feat-icon">⚙️</div><div class="lp-feat-title">IT Admin Portal</div><div class="lp-feat-desc">PIN-protected management portal. Add branches, manage menu visibility, configure settings — without entering a branch.</div></div>
       </div>
     </div>
 
-    <!-- Business Types -->
-    <div style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:48px 20px;margin-bottom:48px">
-      <div style="max-width:960px;margin:0 auto">
-        <div style="text-align:center;margin-bottom:32px">
-          <div style="font-size:11px;font-weight:700;color:var(--accent2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Works For Every Business</div>
-          <div style="font-size:26px;font-weight:900">Choose Your Business Type</div>
-          <div style="font-size:13px;color:var(--muted);margin-top:8px">Sample menu auto-loads on signup based on your type</div>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
-          <div style="background:var(--bg3);border:1.5px solid rgba(0,165,80,.3);border-radius:14px;padding:20px;text-align:center">
-            <div style="font-size:36px;margin-bottom:10px">🍔</div>
-            <div style="font-size:14px;font-weight:800;margin-bottom:4px">Restaurant</div>
-            <div style="font-size:11px;color:var(--muted)">Tables, kitchen display, dine-in & delivery</div>
+    <!-- BUSINESS TYPES -->
+    <div style="background:rgba(255,255,255,.025);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)">
+      <div class="lp-section" style="text-align:center">
+        <div class="lp-section-label">Who It's For</div>
+        <div class="lp-section-title">Built for Every Business Type</div>
+        <div class="lp-section-sub" id="landing-sub">Select your type during signup — sample menu loads automatically</div>
+        <div class="lp-biz-grid">
+          <div class="lp-biz-card" style="background:rgba(0,165,80,.06);border-color:rgba(0,165,80,.25)">
+            <div class="lp-biz-emoji">🍔</div>
+            <div class="lp-biz-name">Restaurant &amp; Cafe</div>
+            <div class="lp-biz-desc" style="color:rgba(0,200,100,.6)">Tables · Kitchen Display · Dine-in &amp; Delivery · Combos</div>
           </div>
-          <div style="background:var(--bg3);border:1.5px solid rgba(88,166,255,.3);border-radius:14px;padding:20px;text-align:center">
-            <div style="font-size:36px;margin-bottom:10px">🛒</div>
-            <div style="font-size:14px;font-weight:800;margin-bottom:4px">Retail Shop</div>
-            <div style="font-size:11px;color:var(--muted)">Barcode scanner, stock management, SKU</div>
+          <div class="lp-biz-card" style="background:rgba(88,166,255,.06);border-color:rgba(88,166,255,.25)">
+            <div class="lp-biz-emoji">🛒</div>
+            <div class="lp-biz-name">Retail Shop</div>
+            <div class="lp-biz-desc" style="color:rgba(88,166,255,.7)">Barcode Scanner · SKU · Stock Tracking · Low Stock Alerts</div>
           </div>
-          <div style="background:var(--bg3);border:1.5px solid rgba(210,153,34,.3);border-radius:14px;padding:20px;text-align:center">
-            <div style="font-size:36px;margin-bottom:10px">☕</div>
-            <div style="font-size:14px;font-weight:800;margin-bottom:4px">Coffee Shop</div>
-            <div style="font-size:11px;color:var(--muted)">Fast POS, loyalty rewards, hot &amp; cold menu</div>
+          <div class="lp-biz-card" style="background:rgba(210,153,34,.06);border-color:rgba(210,153,34,.25)">
+            <div class="lp-biz-emoji">☕</div>
+            <div class="lp-biz-name">Coffee Shop</div>
+            <div class="lp-biz-desc" style="color:rgba(210,153,34,.7)">Fast POS · Loyalty Rewards · Hot &amp; Cold Menu · Happy Hour</div>
           </div>
-          <div style="background:var(--bg3);border:1.5px solid rgba(248,81,73,.3);border-radius:14px;padding:20px;text-align:center">
-            <div style="font-size:36px;margin-bottom:10px">🥐</div>
-            <div style="font-size:14px;font-weight:800;margin-bottom:4px">Bakery</div>
-            <div style="font-size:11px;color:var(--muted)">Stock tracking, daily items, customer orders</div>
+          <div class="lp-biz-card" style="background:rgba(248,81,73,.06);border-color:rgba(248,81,73,.25)">
+            <div class="lp-biz-emoji">🥐</div>
+            <div class="lp-biz-name">Bakery</div>
+            <div class="lp-biz-desc" style="color:rgba(248,81,73,.7)">Daily Stock · Custom Orders · Customer Loyalty · Reports</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Pricing -->
-    <div style="max-width:960px;margin:0 auto;padding:0 20px 60px;text-align:center">
-      <div style="font-size:11px;font-weight:700;color:var(--accent2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Pricing</div>
-      <div style="font-size:26px;font-weight:900;margin-bottom:8px">Simple, Transparent Pricing</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:36px">Start free. No credit card. Upgrade anytime.</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:20px">
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;text-align:left">
-          <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Starter</div>
-          <div style="font-size:36px;font-weight:900;margin-bottom:2px">99 <span style="font-size:14px;color:var(--muted)">SAR/mo</span></div>
-          <div style="font-size:11px;color:var(--muted);margin-bottom:18px">1 branch · Up to 3 staff</div>
-          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)">✅ POS &amp; Orders</div>
-          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)">✅ Kitchen / Barcode</div>
-          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)">✅ Basic Reports</div>
-          <div style="font-size:12px;padding:5px 0">✅ Email Support</div>
+    <!-- PRICING -->
+    <div class="lp-section" style="text-align:center">
+      <div class="lp-section-label">Pricing</div>
+      <div class="lp-section-title">Simple, Transparent Plans</div>
+      <div class="lp-section-sub">Start free for 14 days. No credit card required.</div>
+      <div class="lp-pricing" style="text-align:left;margin-bottom:32px">
+        <div class="lp-plan">
+          <div class="lp-plan-name" style="color:rgba(255,255,255,.5)">Starter</div>
+          <div class="lp-plan-price">99 <span>SAR/mo</span></div>
+          <div class="lp-plan-desc">1 branch · Up to 3 staff</div>
+          <div class="lp-plan-feat">POS &amp; Orders</div>
+          <div class="lp-plan-feat">Kitchen / Barcode Scanner</div>
+          <div class="lp-plan-feat">Basic Reports</div>
+          <div class="lp-plan-feat">Email Support</div>
         </div>
-        <div style="background:linear-gradient(135deg,rgba(0,165,80,.12),rgba(0,108,53,.08));border:2px solid var(--accent2);border-radius:16px;padding:24px;text-align:left;position:relative">
-          <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent2);color:#fff;font-size:10px;font-weight:800;padding:4px 14px;border-radius:20px;white-space:nowrap">⭐ MOST POPULAR</div>
-          <div style="font-size:12px;font-weight:700;color:var(--accent2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Growth</div>
-          <div style="font-size:36px;font-weight:900;margin-bottom:2px">199 <span style="font-size:14px;color:var(--muted)">SAR/mo</span></div>
-          <div style="font-size:11px;color:var(--muted);margin-bottom:18px">3 branches · Unlimited staff</div>
-          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.1)">✅ Everything in Starter</div>
-          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.1)">✅ Multi-Branch</div>
-          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.1)">✅ Customer Loyalty</div>
-          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.1)">✅ Promotions</div>
-          <div style="font-size:12px;padding:5px 0">✅ Priority Support</div>
+        <div class="lp-plan popular">
+          <div class="lp-plan-name" style="color:#00a550">Growth</div>
+          <div class="lp-plan-price">199 <span>SAR/mo</span></div>
+          <div class="lp-plan-desc">3 branches · Unlimited staff</div>
+          <div class="lp-plan-feat">Everything in Starter</div>
+          <div class="lp-plan-feat">Multi-Branch</div>
+          <div class="lp-plan-feat">Customer Loyalty</div>
+          <div class="lp-plan-feat">Promotions &amp; Discounts</div>
+          <div class="lp-plan-feat">Priority Support</div>
         </div>
-        <div style="background:var(--bg2);border:1px solid rgba(88,166,255,.4);border-radius:16px;padding:24px;text-align:left">
-          <div style="font-size:12px;font-weight:700;color:#58a6ff;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Enterprise</div>
-          <div style="font-size:36px;font-weight:900;margin-bottom:2px">399 <span style="font-size:14px;color:var(--muted)">SAR/mo</span></div>
-          <div style="font-size:11px;color:var(--muted);margin-bottom:18px">Unlimited branches &amp; staff</div>
-          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)">✅ Everything in Growth</div>
-          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)">✅ Unlimited Branches</div>
-          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)">✅ Owner Dashboard</div>
-          <div style="font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)">✅ Advanced Reports</div>
-          <div style="font-size:12px;padding:5px 0">✅ Dedicated Support</div>
+        <div class="lp-plan enterprise">
+          <div class="lp-plan-name" style="color:#58a6ff">Enterprise</div>
+          <div class="lp-plan-price">399 <span>SAR/mo</span></div>
+          <div class="lp-plan-desc">Unlimited branches &amp; staff</div>
+          <div class="lp-plan-feat">Everything in Growth</div>
+          <div class="lp-plan-feat">Unlimited Branches</div>
+          <div class="lp-plan-feat">Owner Dashboard</div>
+          <div class="lp-plan-feat">Advanced Reports</div>
+          <div class="lp-plan-feat">Dedicated Support</div>
         </div>
       </div>
-      <button onclick="showSignupForm()" style="padding:15px 40px;border-radius:12px;border:none;background:var(--accent2);color:#fff;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px">🚀 Start Your Free Trial</button>
+      <button class="lp-cta-main" onclick="showSignupForm()">🚀 Start Your Free Trial</button>
+      <div class="lp-trial-note" style="margin-top:14px">All plans include a 14-day free trial · No credit card required · Cancel anytime</div>
     </div>
 
-    <!-- Footer -->
-    <div style="border-top:1px solid var(--border);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-      <div style="font-size:16px;font-weight:900">Saudi<span style="color:var(--accent2)">POS</span> <span style="font-size:11px;color:var(--muted);font-weight:400">by SaudiPOS Co.</span></div>
-      <div style="font-size:11px;color:var(--muted)">© 2026 SaudiPOS · saudipos.biz · All rights reserved</div>
+    <!-- FOOTER -->
+    <div class="lp-footer">
+      <div class="lp-footer-logo">Saudi<span>POS</span> <span style="font-size:11px;color:rgba(255,255,255,.2);font-weight:400;margin-left:6px">by SaudiPOS Co.</span></div>
+      <div class="lp-footer-copy">© 2026 SaudiPOS · saudipos.biz · All rights reserved</div>
     </div>
 
   </div>
-
+  </div>
   <!-- LOGIN FORM -->
   <div id="login-form-panel" style="display:none;position:fixed;inset:0;background:var(--bg);align-items:center;justify-content:center;z-index:20">
     <div class="auth-box" style="max-width:400px">
