@@ -3307,31 +3307,39 @@ async function seedSampleData(){
   const sample=SAMPLES[sampleKey];
   if(!sample) return;
 
-  showToast('🌱 Setting up sample menu...');
+  showToast('🌱 Setting up your menu...');
 
-  // Clear any default categories first, then insert sample ones
+  // Delete default cats
   await sb.from('categories').delete().eq('biz_id',bizId);
-  const catRecords=sample.cats.map((c,i)=>({biz_id:bizId,name:c.name,name_ar:c.name_ar,emoji:c.emoji,sort_order:i}));
-  const{data:savedCats}=await sb.from('categories').insert(catRecords).select();
-  _cats=savedCats||[];
 
-  // Insert products
-  const prodRecords=sample.products.map((p,i)=>({
-    biz_id:bizId,
-    name:p.name,
-    name_ar:p.name_ar,
-    emoji:p.emoji,
-    price:p.price,
-    cat_id:_cats[p.cat]?.id||null,
-    is_active:true,
-    sort_order:i,
-    stock:p.stock??null,
-    barcode:p.barcode||null,
-  }));
-  const{data:savedProds}=await sb.from('products').insert(prodRecords).select();
-  _products=savedProds||[];
+  // Insert categories one by one with error checking
+  const savedCats=[];
+  for(let i=0;i<sample.cats.length;i++){
+    const c=sample.cats[i];
+    const{data,error}=await sb.from('categories').insert({biz_id:bizId,name:c.name,name_ar:c.name_ar,emoji:c.emoji,sort_order:i}).select().single();
+    if(data) savedCats.push(data);
+    else console.warn('Cat insert failed:',error?.message);
+  }
+  _cats=savedCats;
+  if(!_cats.length){showToast('Could not create sample menu — add items manually',true);return;}
 
-  showToast(`✅ Sample ${sampleKey} menu loaded — ${_products.length} items ready!`);
+  // Insert products one by one
+  const savedProds=[];
+  for(let i=0;i<sample.products.length;i++){
+    const p=sample.products[i];
+    const{data,error}=await sb.from('products').insert({
+      biz_id:bizId,name:p.name,name_ar:p.name_ar,emoji:p.emoji,
+      price:p.price,cat_id:_cats[p.cat]?.id||null,
+      is_active:true,sort_order:i,stock:p.stock??null,barcode:p.barcode||null,
+    }).select().single();
+    if(data) savedProds.push(data);
+    else console.warn('Product insert failed:',error?.message);
+  }
+  _products=savedProds;
+
+  // Re-render
+  renderCatBar();renderProducts();renderProductsList();updateLowStockBanner();
+  showToast(`✅ ${_products.length} sample items ready!`);
 }
 
 // ── REALTIME: sync kitchen_status across all open windows/devices ─────────────
