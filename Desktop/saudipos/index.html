@@ -3190,162 +3190,12 @@ function renderBranchesSettings(){
 async function loadAll(){
   await Promise.all([loadCats(),loadProducts(),loadOrders(),loadTables(),loadCustomers(),loadStaff(),loadPromos()]);
   // Auto-seed sample data for new businesses
-  // Seeding done in renderPOS on first load
   loadDevices();
   await loadShift();
   setInterval(updateShiftBtn,60000);
   subscribeKitchenRealtime();
   loadCartState();
   if(_cart.length){renderCart();updateOrderNum();renderTableBadge();}
-}
-
-// ── SAMPLE DATA SEEDING ───────────────────────────────────────────────────────
-async function seedSampleData(){
-  const bizId=_businessId||_bizId;
-  if(!bizId) return;
-  // Get the actual business type from DB settings (coffee/bakery/retail/restaurant)
-  const{data:bizRow}=await sb.from('businesses').select('type').eq('id',bizId).single();
-  const type=bizRow?.type||_mode||'restaurant';
-
-  const SAMPLES={
-    restaurant:{
-      cats:[
-        {name:'Burgers',name_ar:'برجر',emoji:'🍔'},
-        {name:'Sandwiches',name_ar:'ساندويتش',emoji:'🥪'},
-        {name:'Sides',name_ar:'إضافات',emoji:'🍟'},
-        {name:'Drinks',name_ar:'مشروبات',emoji:'🥤'},
-        {name:'Desserts',name_ar:'حلويات',emoji:'🍰'},
-      ],
-      products:[
-        {name:'Cheese Burger',name_ar:'برجر الجبن',emoji:'🍔',price:25,cat:0,stock:null},
-        {name:'Chicken Burger',name_ar:'برجر دجاج',emoji:'🍔',price:25,cat:0,stock:null},
-        {name:'Double Burger',name_ar:'برجر مزدوج',emoji:'🍔',price:35,cat:0,stock:null},
-        {name:'Club Sandwich',name_ar:'كلوب ساندويتش',emoji:'🥪',price:20,cat:1,stock:null},
-        {name:'Chicken Sandwich',name_ar:'ساندويتش دجاج',emoji:'🥪',price:18,cat:1,stock:null},
-        {name:'French Fries',name_ar:'بطاطس مقلية',emoji:'🍟',price:10,cat:2,stock:null},
-        {name:'Onion Rings',name_ar:'حلقات البصل',emoji:'🍟',price:12,cat:2,stock:null},
-        {name:'Pepsi',name_ar:'بيبسي',emoji:'🥤',price:5,cat:3,stock:null},
-        {name:'Water',name_ar:'ماء',emoji:'💧',price:2,cat:3,stock:null},
-        {name:'Fresh Juice',name_ar:'عصير طازج',emoji:'🥤',price:12,cat:3,stock:null},
-        {name:'Cheesecake',name_ar:'كيك الجبن',emoji:'🍰',price:15,cat:4,stock:null},
-        {name:'Ice Cream',name_ar:'آيس كريم',emoji:'🍦',price:10,cat:4,stock:null},
-      ]
-    },
-    coffee:{
-      cats:[
-        {name:'Hot Coffee',name_ar:'قهوة ساخنة',emoji:'☕'},
-        {name:'Cold Coffee',name_ar:'قهوة باردة',emoji:'🧊'},
-        {name:'Hot Drinks',name_ar:'مشروبات ساخنة',emoji:'🍵'},
-        {name:'Cold Drinks',name_ar:'مشروبات باردة',emoji:'🥤'},
-        {name:'Food',name_ar:'طعام',emoji:'🥐'},
-      ],
-      products:[
-        {name:'Espresso',name_ar:'إسبريسو',emoji:'☕',price:8,cat:0,stock:null},
-        {name:'Americano',name_ar:'أمريكانو',emoji:'☕',price:10,cat:0,stock:null},
-        {name:'Cappuccino',name_ar:'كابوتشينو',emoji:'☕',price:15,cat:0,stock:null},
-        {name:'Latte',name_ar:'لاتيه',emoji:'☕',price:16,cat:0,stock:null},
-        {name:'Flat White',name_ar:'فلات وايت',emoji:'☕',price:16,cat:0,stock:null},
-        {name:'Iced Latte',name_ar:'آيس لاتيه',emoji:'🧊',price:18,cat:1,stock:null},
-        {name:'Cold Brew',name_ar:'كولد برو',emoji:'🧊',price:20,cat:1,stock:null},
-        {name:'Frappuccino',name_ar:'فرابتشينو',emoji:'🧊',price:22,cat:1,stock:null},
-        {name:'Matcha Latte',name_ar:'ماتشا لاتيه',emoji:'🍵',price:18,cat:2,stock:null},
-        {name:'Hot Chocolate',name_ar:'شوكولاتة ساخنة',emoji:'🍵',price:15,cat:2,stock:null},
-        {name:'Croissant',name_ar:'كرواسان',emoji:'🥐',price:12,cat:4,stock:50},
-        {name:'Cheesecake Slice',name_ar:'قطعة كيك الجبن',emoji:'🍰',price:18,cat:4,stock:30},
-      ]
-    },
-    bakery:{
-      cats:[
-        {name:'Bread',name_ar:'خبز',emoji:'🍞'},
-        {name:'Pastries',name_ar:'معجنات',emoji:'🥐'},
-        {name:'Cakes',name_ar:'كيك',emoji:'🎂'},
-        {name:'Cookies',name_ar:'بسكويت',emoji:'🍪'},
-        {name:'Drinks',name_ar:'مشروبات',emoji:'🥤'},
-      ],
-      products:[
-        {name:'White Bread',name_ar:'خبز أبيض',emoji:'🍞',price:5,cat:0,stock:20},
-        {name:'Whole Wheat Bread',name_ar:'خبز قمح',emoji:'🍞',price:7,cat:0,stock:15},
-        {name:'Sourdough',name_ar:'خبز العجين المخمر',emoji:'🍞',price:15,cat:0,stock:10},
-        {name:'Croissant',name_ar:'كرواسان',emoji:'🥐',price:8,cat:1,stock:25},
-        {name:'Pain au Chocolat',name_ar:'معجنة شوكولاتة',emoji:'🥐',price:10,cat:1,stock:20},
-        {name:'Danish Pastry',name_ar:'دنش',emoji:'🥐',price:10,cat:1,stock:15},
-        {name:'Birthday Cake',name_ar:'كيك عيد ميلاد',emoji:'🎂',price:80,cat:2,stock:5},
-        {name:'Cheesecake',name_ar:'كيك الجبن',emoji:'🍰',price:12,cat:2,stock:10},
-        {name:'Chocolate Cake',name_ar:'كيك الشوكولاتة',emoji:'🍫',price:12,cat:2,stock:10},
-        {name:'Chocolate Cookies',name_ar:'بسكويت شوكولاتة',emoji:'🍪',price:5,cat:3,stock:50},
-        {name:'Coffee',name_ar:'قهوة',emoji:'☕',price:10,cat:4,stock:null},
-        {name:'Orange Juice',name_ar:'عصير برتقال',emoji:'🥤',price:8,cat:4,stock:null},
-      ]
-    },
-    retail:{
-      cats:[
-        {name:'Electronics',name_ar:'إلكترونيات',emoji:'📱'},
-        {name:'Clothing',name_ar:'ملابس',emoji:'👕'},
-        {name:'Groceries',name_ar:'بقالة',emoji:'🛒'},
-        {name:'Health & Beauty',name_ar:'صحة وجمال',emoji:'🧴'},
-        {name:'Accessories',name_ar:'إكسسوارات',emoji:'⌚'},
-      ],
-      products:[
-        {name:'Phone Case',name_ar:'كفر جوال',emoji:'📱',price:15,cat:0,stock:50,barcode:'SKU-001'},
-        {name:'Earphones',name_ar:'سماعات',emoji:'🎧',price:45,cat:0,stock:30,barcode:'SKU-002'},
-        {name:'USB Cable',name_ar:'كابل يو إس بي',emoji:'🔌',price:10,cat:0,stock:100,barcode:'SKU-003'},
-        {name:'T-Shirt',name_ar:'تيشيرت',emoji:'👕',price:35,cat:1,stock:40,barcode:'SKU-004'},
-        {name:'Jeans',name_ar:'جينز',emoji:'👖',price:85,cat:1,stock:20,barcode:'SKU-005'},
-        {name:'Jacket',name_ar:'جاكيت',emoji:'🧥',price:120,cat:1,stock:15,barcode:'SKU-006'},
-        {name:'Water Bottle',name_ar:'زجاجة ماء',emoji:'🍶',price:8,cat:2,stock:60,barcode:'SKU-007'},
-        {name:'Chips',name_ar:'شيبس',emoji:'🍟',price:5,cat:2,stock:80,barcode:'SKU-008'},
-        {name:'Shampoo',name_ar:'شامبو',emoji:'🧴',price:18,cat:3,stock:35,barcode:'SKU-009'},
-        {name:'Face Cream',name_ar:'كريم وجه',emoji:'🧴',price:25,cat:3,stock:25,barcode:'SKU-010'},
-        {name:'Watch',name_ar:'ساعة',emoji:'⌚',price:150,cat:4,stock:10,barcode:'SKU-011'},
-        {name:'Sunglasses',name_ar:'نظارة شمسية',emoji:'🕶',price:55,cat:4,stock:20,barcode:'SKU-012'},
-      ]
-    }
-  };
-
-  // Map types to sample set
-  const sampleKey=type==='retail'?'retail':type==='coffee'?'coffee':type==='bakery'?'bakery':'restaurant';
-  const sample=SAMPLES[sampleKey];
-  if(!sample) return;
-
-  showToast('🌱 Setting up your menu...');
-
-  // Delete existing cats and products first
-  await sb.from('products').delete().eq('biz_id',bizId);
-  await sb.from('categories').delete().eq('biz_id',bizId);
-
-  // Insert all categories at once
-  const{data:savedCats,error:catErr}=await sb.from('categories')
-    .insert(sample.cats.map((c,i)=>({biz_id:bizId,name:c.name,name_ar:c.name_ar,emoji:c.emoji,sort_order:i})))
-    .select();
-  if(catErr||!savedCats?.length){
-    console.error('Category insert failed:',catErr?.message);
-    showToast('Menu setup failed — check console',true);
-    return;
-  }
-  _cats=savedCats;
-
-  // Map cat index to actual DB id
-  const catIdMap={};
-  savedCats.forEach((c,i)=>{catIdMap[i]=c.id;});
-
-  // Insert all products at once using actual cat ids
-  const{data:savedProds,error:prodErr}=await sb.from('products')
-    .insert(sample.products.map((p,i)=>({
-      biz_id:bizId,name:p.name,name_ar:p.name_ar,emoji:p.emoji,
-      price:p.price,cat_id:catIdMap[p.cat]||null,
-      is_active:true,sort_order:i,stock:p.stock??null,barcode:p.barcode||null,
-    })))
-    .select();
-  if(prodErr){
-    console.error('Product insert failed:',prodErr?.message);
-    showToast('Products failed: '+prodErr.message,true);
-    return;
-  }
-  _products=savedProds||[];
-
-  // Re-render everything
-  renderCatBar();renderProducts();renderProductsList();updateLowStockBanner();
-  showToast(`✅ ${_products.length} sample items loaded!`);
 }
 
 // ── REALTIME: sync kitchen_status across all open windows/devices ─────────────
@@ -3520,10 +3370,6 @@ function setScreen(name){
 
 // ── POS ───────────────────────────────────────────────────────────────────────
 function renderPOS(){
-  // Seed sample data on first load if no products
-  if(!_isBranchMode()&&_products.length===0){
-    seedSampleData().then(()=>{renderCatBar();renderProducts();});
-  }
   renderCatBar();
   renderProducts();
   updateOrderNum();
